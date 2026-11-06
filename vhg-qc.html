@@ -652,6 +652,68 @@ button.li{width:100%;text-align:left}
 @media (max-width:640px){.bk-tt{flex-wrap:wrap}.bk-tt .n{order:3;flex-basis:100%;padding-left:42px}.bk-tr{align-items:flex-start;padding-top:12px}}
 @media (max-width:640px){.tk-row .tag{white-space:normal;max-width:100%;height:auto;line-height:16px;padding-top:4px;padding-bottom:4px}.tk-row .body{min-width:0}}
 
+/* cột kế hoạch trong danh sách PO: 1 PO = 1 kế hoạch */
+.plan-cell{display:flex;flex-direction:column;gap:6px;max-width:340px}
+.plan-cell .pc-t{display:flex;gap:6px;align-items:baseline;min-width:0;font-size:13px}.plan-cell .pc-t .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plan-cell .pc-bar{position:relative;height:6px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.plan-cell .pc-bar span{position:absolute;left:0;top:0;bottom:0;border-radius:999px}.plan-cell .pc-bar .a{background:color-mix(in srgb,var(--primary) 35%,transparent)}.plan-cell .pc-bar .d{background:var(--primary)}
+.plan-cell .pc-m{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--text-2)}
+.plan-cell.none{flex-direction:row;align-items:center;gap:6px;color:var(--violet,var(--muted));font-size:13px;font-weight:500}
+.plan-cell .pc-t b{white-space:nowrap}
+
+/* ===== Cây kế hoạch: Kế hoạch → Task → PO Line ===== */
+.tr-root{padding:12px 20px;border-bottom:1px solid var(--line);display:grid;gap:6px;background:var(--surface-2)}
+.tr-rt{display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap}
+.tr-root .pc-bar,.plan-cell .pc-bar{position:relative;height:6px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.tr-root .pc-bar span{position:absolute;left:0;top:0;bottom:0;border-radius:999px}.tr-root .pc-bar .a{background:color-mix(in srgb,var(--primary) 35%,transparent)}.tr-root .pc-bar .d{background:var(--primary)}
+.tr-root .pc-m{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--text-2)}
+.tree{display:flex;flex-direction:column}
+.tr-task{border-bottom:1px solid var(--line)}.tr-task:last-child{border-bottom:0}
+.tr-task.na .tr-tt b{color:var(--muted)}
+.tr-th{display:flex;align-items:flex-start;gap:10px;padding:12px 20px 12px 12px}
+.tr-caret{width:28px;height:28px;flex:none;display:grid;place-items:center;border:0;background:none;border-radius:6px;color:var(--muted);cursor:pointer}
+.tr-caret:hover:not([disabled]){background:var(--surface-3);color:var(--text)}.tr-caret[disabled]{opacity:.3;cursor:default}
+.tr-th .ico{margin-top:2px}
+.tr-tt{flex:1;min-width:0}.tr-tt .meta{margin-top:4px}
+.tr-acts{display:flex;flex-direction:column;gap:6px;flex:none}
+.tr-lns{margin:0 20px 12px 50px;border-left:2px solid var(--line);}
+.tr-ln{position:relative;display:grid;grid-template-columns:24px minmax(150px,1.3fr) minmax(150px,1.2fr) minmax(120px,1fr) auto;align-items:center;gap:10px;padding:7px 10px 7px 14px;font-size:13px}
+.tr-ln::before{content:"";position:absolute;left:-2px;top:50%;width:12px;border-top:2px solid var(--line)}
+.tr-ln.head{padding-top:4px;padding-bottom:4px}.tr-ln.head::before{display:none}
+.tr-ln:hover{background:var(--surface-2)}.tr-ln.on{background:var(--primary-soft)}
+.tr-ln .tr-pick input{width:16px;height:16px;accent-color:var(--primary)}
+.tr-main{display:flex;flex-direction:column;min-width:0}.tr-main b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr-main .muted{font-size:12px}
+.tr-who{display:flex;align-items:center;gap:8px;min-width:0;font-size:12px;flex-wrap:wrap}
+.tr-res .res{font-size:12px;font-weight:500}.res.ok{color:var(--green)}.res.bad{color:var(--red)}.res.warn{color:var(--amber)}.res.gray{color:var(--muted)}
+.tr-st{justify-self:end}
+.as-lines{display:grid;gap:2px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:var(--r);padding:6px 10px}
+.as-lines label{display:flex;align-items:center;gap:10px;font-size:13px;padding:4px 0;cursor:pointer}.as-lines label.dis{color:var(--muted);cursor:default}
+.as-lines label > span{flex:1}.as-lines input{width:16px;height:16px;accent-color:var(--primary)}
+.as-lines .all{border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:2px}
+.bk-ip{padding:6px 0}.bk-ip + .bk-ip{border-top:1px dashed var(--line)}
+.bk-ip > label{display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer}.bk-ip.dis > label{color:var(--muted);cursor:default}
+.bk-ip > label .r{margin-left:auto;font-size:12px}
+.bk-lns{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px 27px}
+.ln-chip{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface);font-size:12px;cursor:pointer;color:var(--text-2)}
+.ln-chip.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary-text);font-weight:600}
+.ln-chip[disabled]{opacity:.5;cursor:not-allowed;text-decoration:line-through}
+@media (max-width:760px){
+  .tr-th{padding:12px 12px 12px 4px;flex-wrap:wrap}.tr-acts{flex-direction:row;flex-wrap:wrap;width:100%;padding-left:66px}
+  .tr-lns{margin:0 12px 12px 22px}
+  .tr-ln{grid-template-columns:24px minmax(0,1fr) auto;row-gap:2px}
+  .tr-ln .tr-who,.tr-ln .tr-res{grid-column:2 / 4}
+  .tr-ln .tr-st{grid-row:1;grid-column:3}
+}
+.tr-tt .meta{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:12px;line-height:18px;color:var(--muted)}
+.tr-ln{grid-template-columns:24px minmax(140px,1fr) minmax(170px,1.2fr) minmax(110px,1fr) auto;padding-top:5px;padding-bottom:5px}
+.tr-who{flex-wrap:nowrap}.tr-who .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tr-who .tag{flex:none}
+.tr-main{flex-direction:row;align-items:baseline;gap:8px}.tr-main .muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:760px){.tr-ln{grid-template-columns:24px minmax(0,1fr) auto}.tr-main{flex-direction:column;gap:0}}
+.tr-ln{grid-template-columns:24px minmax(150px,1.5fr) auto minmax(110px,1fr) auto}
+.tr-main{flex-direction:column;align-items:flex-start;gap:0}.tr-main b{white-space:normal;overflow:visible}
+@media (max-width:960px){.tabs{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}.card{min-width:0;max-width:100%}}
+@media (max-width:640px){table.mcard td:has(> .plan-cell){min-width:0!important;flex-direction:column;align-items:stretch;gap:6px;text-align:left}table.mcard td .plan-cell{max-width:none;width:100%}}
+
 </style>
 </head>
 <body>
@@ -858,6 +920,8 @@ function seedDB() {
       lines: ln([L('AF TIMBER W30', 'Frame', 120, 'Frame'), L('AF TIMBER W36', 'Frame', 90, 'Frame'), L('DS GTI VSD42', 'Door', 60, 'Door'), L('DS GTR DB24', 'Door', 48, 'Door')]), progress: [100, 40, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
     { id: '48162', customer: 'Fabuwood', cust: 'FBW', series: 'AF Timber · Frame + Door', color: 'Timber', factory: 'Xưởng #96', finisher: 'Xưởng #96', paint: 'VVT', unit: 'pcs', value: 45200, etd: d(30), cont: 'Cont 3', syncedAt: d(-3, 8), hold: false,
       lines: ln([L('AF TIMBER B21', 'Frame', 150, 'Frame'), L('AF TIMBER B36', 'Frame', 110, 'Frame'), L('AF TIMBER W24', 'Frame', 80, 'Frame'), L('DS GTI VSD24', 'Door', 72, 'Door'), L('DS GTR DB36', 'Door', 64, 'Door')]), progress: [100, 100, 60, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+    { id: '56180', customer: 'Woodaxis (NCC)', cust: 'WAX', series: 'Plywood 1/2" · raw', color: 'Birch D+', factory: 'Woodaxis', unit: 'pcs', value: 24300, etd: at('15/10/2026'), cont: 'Lô 1', syncedAt: at('01/10/2026', 8), hold: false, closed: { at: at('10/10/2026', 15), by: 'lead1' },
+      lines: ln([{ code: 'PLY-BIRCH-D+ 2440x1220x12 R', part: 'Plywood', qty: 600, desc: 'Plywood Panel – Veneer Birch D+ · W2440×D1220×H12 · raw' }, { code: 'PLY-BIRCH-B 2440x1220x6', part: 'Plywood', qty: 300, desc: 'Plywood Panel – Veneer Birch B · W2440×D1220×H6 · raw' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
     { id: '56205', customer: 'Rongpeng (NCC)', cust: 'RPG', series: 'Plywood 1/2" · raw', color: 'Birch D+', factory: 'Rongpeng', unit: 'pcs', value: 21600, etd: d(5), cont: 'Lô 2', syncedAt: d(-12, 8), hold: false,
       lines: ln([{ code: 'PLY-BIRCH-D+ 2443x1223x12 R', part: 'Plywood', qty: 800, desc: 'Plywood Panel – Veneer Birch D+ · W2443×D1223×H12 · raw' }, { code: 'PLY-BIRCH-B 2443x1223x6', part: 'Plywood', qty: 400, desc: 'Plywood Panel – Veneer Birch B · W2443×D1223×H6 · raw' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
     { id: '56240', customer: 'Woodaxis (NCC)', cust: 'WAX', series: 'Plywood · UV + raw', color: 'Birch D+', factory: 'Woodaxis', unit: 'pcs', value: 27900, etd: d(25), cont: 'Lô 2', syncedAt: d(0, 7), hold: false,
@@ -943,8 +1007,12 @@ function seedDB() {
     I({ id: 'DIR-96-0311', tasks: ['TK-48150-TMB-DIRF', 'TK-48151-TMB-DIRD', 'TK-48153-TMB-DIRD'], type: 'DIR', title: 'Daily Inline #96 · 03/11', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(-1), status: 'submitted', data: dir96, createdAt: d(-2), submittedAt: d(-1, 17, 20) }),
     I({ id: 'DIR-96-0411', tasks: ['TK-48150-TMB-DIRF', 'TK-48151-TMB-DIRD', 'TK-48153-TMB-DIRD'], type: 'DIR', title: 'Daily Inline #96 · hôm nay', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(0), status: 'todo', createdAt: d(-1), recur: 'daily' }),
     I({ id: 'DIR-VHGI-01', tasks: ['TK-4200017234-GLX-DIR'], type: 'DIR', title: 'Daily Inline VHGI · lót AC Galaxy Dove', pos: ['4200017234'], factory: 'VHGI', assignee: 'qc1', due: d(1), status: 'todo', createdAt: d(-1), recur: 'daily' }),
-    I({ id: 'PLY-56191', tasks: ['TK-56191-PLY-IN'], type: 'PLY', title: 'Plywood Woodaxis · PO 56191', pos: ['56191'], factory: 'Woodaxis', assignee: 'qc4', team: ['qc4'], due: d(-4), status: 'submitted', data: plyW, createdAt: d(-8), submittedAt: d(-3, 16) }),
-    I({ id: 'FIN-48151', tasks: ['TK-48151-TMB-FIN', 'TK-48153-TMB-FIN'], type: 'FIN', title: 'Final / Packing · PO 48151 · 48153', pos: ['48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(3), status: 'todo', createdAt: d(-1) }),
+    I({ id: 'PLY-56191', tasks: ['TK-56191-PLY-IN'], type: 'PLY', title: 'Plywood Woodaxis · PO 56191', pos: ['56191'], factory: 'Woodaxis', assignee: 'qc4', team: ['qc4'], due: d(-4), status: 'approved', data: plyW, createdAt: d(-8), submittedAt: d(-3, 16), review: { by: 'lead1', at: d(-2, 9), decision: 'approve' } }),
+    I({ id: 'PLY-56191-UV', tasks: ['TK-56191-PLY-UV'], type: 'PLY', title: 'Plywood Woodaxis sau cán UV · PO 56191', pos: ['56191'], codes: ['PLY-BIRCH-D+ 2440x1220x12'], factory: 'Woodaxis', assignee: 'qc4', team: ['qc4'], due: d(-2), status: 'approved', createdAt: d(-3), submittedAt: d(-2, 15), review: { by: 'lead1', at: d(-1, 9), decision: 'approve' },
+      data: Object.assign(JSON.parse(JSON.stringify(plyW)), { header: Object.assign({}, plyW.header, { reportNo: 'VHGLF ' + fd(d(-2)).replace(/\//g, '') + ' UV' }), defects: [], conclusion: 'pass' }) }),
+    I({ id: 'PLY-56180', tasks: ['TK-56180-PLY-IN'], type: 'PLY', title: 'Plywood Woodaxis · PO 56180', pos: ['56180'], factory: 'Woodaxis', assignee: 'qc4', team: ['qc4'], due: at('08/10/2026'), status: 'approved', createdAt: at('05/10/2026'), submittedAt: at('08/10/2026', 16), review: { by: 'lead1', at: at('09/10/2026', 9), decision: 'approve' },
+      data: Object.assign(JSON.parse(JSON.stringify(plyW)), { header: Object.assign({}, plyW.header, { reportNo: 'VHGLF 08102026', itemNo: 'Plywood 1/2" raw', qty: 900, sampling: 80 }), defects: [], deviations: [], conclusion: 'pass' }) }),
+    I({ id: 'FIN-48151', tasks: ['TK-48150-TMB-FIN', 'TK-48151-TMB-FIN', 'TK-48153-TMB-FIN'], type: 'FIN', title: 'Final / Packing · PO 48150 · 48151 · 48153', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(3), status: 'todo', createdAt: d(-1) }),
     I({ id: 'PLY-56205', tasks: ['TK-56205-PLY-IN'], type: 'PLY', title: 'Plywood Rongpeng · PO 56205', pos: ['56205'], factory: 'Rongpeng', assignee: 'qc3', team: ['qc3'], due: d(-6), status: 'approved', createdAt: d(-9), submittedAt: d(-6, 16), review: { by: 'lead1', at: d(-5, 10), decision: 'approve' },
       data: Object.assign(JSON.parse(JSON.stringify(plyR)), { header: Object.assign({}, plyR.header, { reportNo: 'VHGLF ' + fd(d(-6)).replace(/\//g, ''), itemNo: 'Plywood 1/2" raw', qty: 1200, sampling: 80 }), defects: [], deviations: [], conclusion: 'pass' }) }),
     I({ id: 'PC-2001', kind: 'prod', type: 'PC', title: 'Cập nhật tiến độ PO 4200017234', pos: ['4200017234'], factory: 'VHGI', assignee: 'qc3', due: d(0), status: 'todo' }),
@@ -952,7 +1020,7 @@ function seedDB() {
 
 
   /* kế hoạch đánh giá: 48160 và 56240 chưa lập (Chờ lập kế hoạch) */
-  const PLANS = { '4200017234': 'GLX', '4200017236': 'GLX', '48150': 'TMB', '48151': 'TMB', '48153': 'TMB', '48162': 'TMB', '56191': 'PLY', '55672': 'PLY', '56205': 'PLY' };
+  const PLANS = { '4200017234': 'GLX', '4200017236': 'GLX', '48150': 'TMB', '48151': 'TMB', '48153': 'TMB', '48162': 'TMB', '56191': 'PLY', '56180': 'PLY', '55672': 'PLY', '56205': 'PLY' };
   const plans = Object.entries(PLANS).map(([po, tpl]) => ({ id: 'KH-' + po, po, tpl, at: pos.find(p => p.id === po).syncedAt, by: 'lead1' }));
   const tasks = plans.flatMap(pl => genTasks(pos.find(p => p.id === pl.po), pl.tpl));
   tasks.forEach(t => { const f = ins.filter(i => (i.tasks || []).includes(t.id)).at(-1); if (f) Object.assign(t, { assignee: f.assignee, due: f.due, assignedAt: f.createdAt, assignedBy: 'lead1' }); });
@@ -975,6 +1043,7 @@ function seedDB() {
     lines: [{ ln: 1, code: 'DS GD B21', part: 'Cánh', qty: 420, sku: 'DS GD B21' }, { ln: 2, code: 'DS GD B21', part: 'Mặt hộc', qty: 420, sku: 'DS GD B21 · MK' }, { ln: 3, code: 'DS GD W3036', part: 'Cánh', qty: 500, sku: 'DS GD W3036' }, { ln: 4, code: 'DS GD WDC2442', part: 'Cánh', qty: 120, sku: 'DS GD WDC2442' }],
     progress: [10, 0, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null }];
   const reports = [
+    { id: 'RPT-56180-1.0', po: '56180', ver: 'v1.0', at: at('10/10/2026', 15), by: 'lead1', note: 'Chốt PO — plywood raw đạt, 1/1 task có kết quả' },
     { id: 'RPT-55672-1.0', po: '55672', ver: 'v1.0', at: at('24/09/2026', 16), by: 'lead1', note: 'Chốt PO — plywood đạt có điều kiện, dent/putty đã sửa' },
     { id: 'RPT-55672-1.1', po: '55672', ver: 'v1.1', at: at('26/09/2026', 10), by: 'lead1', note: 'Bổ sung kết quả trao đổi với Fabuwood về UV 2 mặt' },
   ];
@@ -987,7 +1056,7 @@ function seedDB() {
     { at: at('17/09/2026', 10), who: 'lead1', po: '4200017234', k: 'approve', t: 'Duyệt phiếu hàng trắng Cont 2 (WW-C2) — 23/26 mã Passed, 3 mã N/A' },
     { at: at('24/09/2026', 16), who: 'lead1', po: '55672', k: 'close', t: 'Chốt PO 55672 và xuất báo cáo v1.0' },
   ];
-  return { v: 7, pos, ins, plans, tasks, alerts: [], syncLog, baseQueue, reports, log, online: true, outbox: [], seq: { ins: 100, al: 0, sy: 9, gv: 0 } };
+  return { v: 8, pos, ins, plans, tasks, alerts: [], syncLog, baseQueue, reports, log, online: true, outbox: [], seq: { ins: 100, al: 0, sy: 9, gv: 0 } };
 }
 
 /* ============ ICONS (lucide) ============ */
@@ -1006,6 +1075,7 @@ const ICONS = {
   file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
   sheet: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/>',
   history: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+  right: '<path d="m9 18 6-6-6-6"/>',
   down: '<path d="m6 9 6 6 6-6"/>',
   up: '<path d="m18 15-6-6-6 6"/>',
   scan: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8"/><path d="M11 8v8"/><path d="M15 8v8"/>',
@@ -1062,8 +1132,8 @@ let DB, ME = null;
 const UI = { open: {}, reviewTab: 'submitted', workFilter: 'all', workQ: '', poTab: 'active', repType: 'all', repQ: '', histQ: '', cam: {} };
 function load() {
   try { DB = JSON.parse(localStorage.getItem(KEY)); } catch (e) { DB = null; }
-  if (!DB || DB.v !== 7) { DB = seedDB(); save(); }
-  applyCat(); save();
+  if (!DB || DB.v !== 8) { DB = seedDB(); save(); }
+  applyCat(); migrateData(); save();
   ME = USERS.find(u => u.id === localStorage.getItem(KEY + '-me') && u.active !== false) || null;
 }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { } }
@@ -1395,47 +1465,72 @@ const taskLabel = t => { const d = tdef(t); return `${TYPES[d.type].code}${d.tag
 function lineMatch(f, l) { if (!f) return true; const v = String(l[f.f] ?? ''); return f.op === 'has' ? v.includes(f.v) : v === f.v; }
 const filterText = f => !f ? 'Tất cả PO Line' : `${{ desc: 'PO Line có mô tả', part: 'PO Line có chi tiết' }[f.f] || f.f} ${f.op === 'has' ? 'chứa' : 'bằng'} “${f.v}”`;
 function genTasks(p, tplKey) {
-  return TEMPLATES[tplKey].tasks.map(d => ({ id: `TK-${p.id}-${d.k}`, plan: `KH-${p.id}`, po: p.id, tpl: tplKey, k: d.k, codes: p.lines.filter(l => lineMatch(d.lines, l)).map(l => l.code), assignee: null, due: null, reuse: null }));
+  return TEMPLATES[tplKey].tasks.map(d => { const ls = p.lines.filter(l => lineMatch(d.lines, l)); return { id: `TK-${p.id}-${d.k}`, plan: `KH-${p.id}`, po: p.id, tpl: tplKey, k: d.k, lns: ls.map(l => l.ln), codes: ls.map(l => l.code), assignee: null, due: null, reuse: null }; });
 }
 
-/* ---------- trạng thái Task ---------- */
-const TK_UI = { na: ['Không áp dụng', 'gray'], reused: ['Dùng lại', 'teal'], unassigned: ['Chưa giao', 'violet'], blocked: ['Chờ task trước', 'gray'], assigned: ['Đã giao', 'info'], progress: ['Đang kiểm', 'info'], review: ['Chờ duyệt', 'warn'], partial: ['Đạt một phần', 'warn'], done: ['Đã duyệt', 'ok'] };
-function wwCovered(t, forms) { const cov = new Set(); forms.filter(i => i.status === 'approved' && i.data).forEach(i => i.data.items.forEach(it => { if (it.po === t.po && ['P', 'F'].includes(wwKL(it))) cov.add(it.code); })); return t.codes.filter(c => !cov.has(c)); }
+/* =====================================================================
+   CÂY CÔNG VIỆC: Kế hoạch → Task (đầu mục cố định theo template) → Task con (từng PO Line)
+   Giao việc ở mức PO Line: Lead chọn nhiều PO Line của 1 hay nhiều task để giao cho QC.
+   Phiếu kiểm lưu đúng các PO Line được giao (ins.lns = { po: [số dòng] }) → kết quả từng dòng
+   được ghi vào phiếu và tổng hợp lại theo cây khi in báo cáo.
+   ===================================================================== */
+const lineOf = (t, ln) => PO(t.po).lines.find(l => l.ln === ln);
+const taskLines = t => PO(t.po).lines.filter(l => t.lns.includes(l.ln));
+function covers(i, po, l) { if (!i.pos.includes(po)) return false; if (i.lns) return (i.lns[po] || []).includes(l.ln); if (i.codes) return i.codes.includes(l.code); return true; }
+const lineForms = (t, ln) => { const l = lineOf(t, ln); return taskForms(t).filter(i => covers(i, t.po, l)); };
+/* kết quả của 1 PO Line lấy từ phiếu đã có số liệu (để hiện trên cây và in báo cáo) */
+function lineResult(t, ln, i) {
+  const l = lineOf(t, ln); if (!i || !i.data) return null;
+  if (i.type === 'WW') { const it = i.data.items.find(x => x.po === t.po && x.ln === ln) || i.data.items.find(x => x.po === t.po && x.code === l.code && x.part === l.part); if (!it) return null; const k = wwKL(it);
+    return { k, txt: k === 'P' ? `Passed · kiểm ${it.slkiem}` : k === 'F' ? `Không đạt · ${it.crit.filter(x => x === 'F').length} tiêu chí` : k === 'NA' ? 'N/A — chưa kiểm' : 'Đang kiểm', c: k === 'P' ? 'ok' : k === 'F' ? 'bad' : 'gray', qi: it.slkiem, rj: k === 'F' ? it.slkiem : 0 }; }
+  if (i.type === 'DIR' || i.type === 'FIN') { const r = (i.data.rows || []).find(x => x.po === t.po && x.code === l.code); if (!r) return null; return { k: +r.rj ? 'F' : 'P', txt: `Kiểm ${r.qi} · C/M/m ${r.cr}/${r.ma}/${r.mi} · reject ${r.rj}`, c: +r.cr ? 'bad' : +r.rj ? 'warn' : 'ok', qi: +r.qi, rj: +r.rj, cr: +r.cr, ma: +r.ma, mi: +r.mi }; }
+  const e = evalInsp(i); return { k: e.verdict === 'FAIL' ? 'F' : 'P', txt: VERDICT[e.verdict][0], c: VERDICT[e.verdict][1], qi: e.insp, rj: e.rej };
+}
+const LN_UI = { na: ['Không áp dụng', 'gray'], reused: ['Dùng lại', 'teal'], unassigned: ['Chưa giao', 'violet'], redo: ['Cần kiểm bù', 'warn'], blocked: ['Chờ task trước', 'gray'], assigned: ['Đã giao', 'info'], progress: ['Đang kiểm', 'info'], review: ['Chờ duyệt', 'warn'], done: ['Có kết quả', 'ok'] };
+function lineState(t, ln) {
+  if (!t.lns.includes(ln)) return 'na'; if (t.reuse) return 'reused';
+  const fs = lineForms(t, ln); if (!fs.length) return 'unassigned';
+  const open = fs.filter(i => i.status !== 'approved');
+  if (open.length) return open.some(i => ['submitted', 'offline'].includes(i.status)) ? 'review' : open.some(i => ['draft', 'returned'].includes(i.status)) ? 'progress' : open.every(i => blockedBy(i)) ? 'blocked' : 'assigned';
+  const r = lineResult(t, ln, fs.filter(i => i.status === 'approved').at(-1));
+  return tdef(t).type === 'WW' && (!r || r.k === 'NA') ? 'redo' : 'done';
+}
+const lineAssignable = (t, ln) => ['unassigned', 'redo'].includes(lineState(t, ln));
+const assignableLns = t => PO(t.po).closed ? [] : t.lns.filter(ln => lineAssignable(t, ln));
+
+/* ---------- trạng thái Task (tổng hợp từ các task con) ---------- */
+const TK_UI = { na: ['Không áp dụng', 'gray'], reused: ['Dùng lại', 'teal'], unassigned: ['Chưa giao', 'violet'], partial: ['Còn PO Line chưa giao', 'warn'], blocked: ['Chờ task trước', 'gray'], assigned: ['Đã giao', 'info'], progress: ['Đang kiểm', 'info'], review: ['Chờ duyệt', 'warn'], done: ['Có kết quả', 'ok'] };
 function taskState(t) {
-  if (!t.codes.length) return 'na';
-  if (t.reuse) return 'reused';
-  const fs = taskForms(t); if (!fs.length) return 'unassigned';
-  const ap = fs.filter(i => i.status === 'approved'); const open = fs.filter(i => i.status !== 'approved');
-  if (fs.some(i => ['submitted', 'offline'].includes(i.status))) return 'review';
-  if (open.length) return open.some(i => ['draft', 'returned'].includes(i.status)) ? 'progress' : open.every(i => blockedBy(i)) ? 'blocked' : 'assigned';
-  if (tdef(t).type === 'WW' && wwCovered(t, ap).length) return 'partial';
-  return 'done';
+  if (!t.lns.length) return 'na'; if (t.reuse) return 'reused';
+  const st = t.lns.map(ln => lineState(t, ln));
+  if (st.every(s => s === 'done')) return 'done';
+  if (st.every(s => s === 'unassigned')) return 'unassigned';
+  if (st.some(s => ['unassigned', 'redo'].includes(s))) return 'partial';
+  if (st.includes('review')) return 'review'; if (st.includes('progress')) return 'progress';
+  return st.filter(s => s !== 'done').every(s => s === 'blocked') ? 'blocked' : 'assigned';
 }
 const taskOK = t => ['done', 'reused', 'na'].includes(taskState(t));
-/* giao được = chưa giao, hoặc đã duyệt nhưng còn PO Line chưa có kết quả (kiểm bù) */
-const taskAssignable = t => !PO(t.po).closed && ['unassigned', 'partial'].includes(taskState(t));
+const taskAssignable = t => assignableLns(t).length > 0;
 const tkPill = t => { const s = TK_UI[taskState(t)]; return pill(s[0], s[1]); };
-
-/* ---------- thứ tự chờ giữa các đầu mục (trong cùng kế hoạch) ---------- */
+const lnPill = (t, ln) => { const s = LN_UI[lineState(t, ln)]; return pill(s[0], s[1]); };
 function blockedBy(i) {
   if (i.kind !== 'qc' || !['todo', 'draft'].includes(i.status) || !(i.tasks || []).length) return null;
   const miss = []; const seen = new Set();
   i.tasks.map(TASK).filter(Boolean).forEach(t => (tdef(t).after || []).forEach(k => { const pt = DB.tasks.find(x => x.po === t.po && x.k === k); if (pt && !taskOK(pt) && !seen.has(pt.id)) { seen.add(pt.id); const d = tdef(pt); miss.push({ id: pt.id, po: t.po, type: d.type, name: d.name }); } }));
   return miss.length ? miss : null;
 }
-
-/* ---------- tổng hợp theo loại phiếu (tương thích báo cáo cũ) ---------- */
 const planTypes = p => [...new Set(tasksOf(p).filter(t => taskState(t) !== 'na').map(t => tdef(t).type))];
 function typeState(p, ty) {
   const ts = tasksOf(p).filter(t => tdef(t).type === ty && taskState(t) !== 'na');
   if (!ts.length) return { state: 'na', list: [] };
-  const list = [...new Set(ts.flatMap(taskForms))]; const st = ts.map(taskState);
-  const r = ts.find(t => t.reuse);
+  const list = [...new Set(ts.flatMap(taskForms))]; const st = ts.map(taskState); const r = ts.find(t => t.reuse);
   if (st.every(s => s === 'reused')) return { state: 'reused', list, from: INS(r.reuse) };
   if (st.every(s => ['done', 'reused'].includes(s))) return { state: 'done', list };
   for (const [a, b] of [['review', 'review'], ['progress', 'progress'], ['assigned', 'progress'], ['blocked', 'waiting'], ['partial', 'partial']]) if (st.includes(a)) return { state: b, list };
   return { state: 'none', list };
 }
+/* các dòng PO mà phiếu kiểm phải kiểm (dùng cho màn kiểm của QC) */
+const insLines = i => insPOs(i).flatMap(p => p.lines.filter(l => covers(i, p.id, l)).map(l => ({ p, l })));
 
 /* ---------- tạo kế hoạch: 1 PO ↔ 1 kế hoạch ---------- */
 function createPlan(pid, tplKey) {
@@ -1444,82 +1539,86 @@ function createPlan(pid, tplKey) {
   const old = planOf(pid);
   if (old) {
     if (tasksOf(p).some(t => taskForms(t).length || t.reuse)) return toast('PO đã có kế hoạch và đã giao việc — không thể tạo kế hoạch khác', 'bad');
-    DB.tasks = DB.tasks.filter(t => t.po !== pid); DB.plans = DB.plans.filter(x => x.po !== pid); // đổi template khi chưa giao gì: vẫn chỉ 1 kế hoạch
+    DB.tasks = DB.tasks.filter(t => t.po !== pid); DB.plans = DB.plans.filter(x => x.po !== pid);
   }
   const ts = genTasks(p, tplKey);
   DB.plans.push({ id: `KH-${pid}`, po: pid, tpl: tplKey, at: nowISO(), by: ME.id }); DB.tasks.push(...ts);
-  addLog('plan', `${old ? 'Đổi' : 'Lập'} kế hoạch đánh giá ${TEMPLATES[tplKey].code} cho PO ${pid} — ${ts.length} task (${ts.filter(t => !t.codes.length).length} không áp dụng)`, pid);
+  addLog('plan', `${old ? 'Đổi' : 'Lập'} kế hoạch đánh giá ${TEMPLATES[tplKey].code} cho PO ${pid} — ${ts.length} task, ${ts.reduce((a, t) => a + t.lns.length, 0)} task con PO Line`, pid);
   save(); closeModal(); render(); toast(`Đã lập kế hoạch ${TEMPLATES[tplKey].code} · ${ts.length} task`, 'ok');
 }
-/* gợi ý template: template dùng nhiều nhất cho các PO cùng xưởng, cùng khách hàng */
 function suggestTpl(p) { const c = {}; DB.plans.forEach(x => { const q = PO(x.po); if (q && q.factory === p.factory && q.customer === p.customer) c[x.tpl] = (c[x.tpl] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || Object.keys(TEMPLATES)[0]; }
 function planCreateModal(pid) {
   const p = PO(pid); const cur = planOf(p); const sug = suggestTpl(p); UI.tplPick = cur ? cur.tpl : sug;
-  const card = k => { const T = TEMPLATES[k]; const ts = genTasks(p, k); const na = ts.filter(t => !t.codes.length).length;
+  const card = k => { const T = TEMPLATES[k]; const ts = genTasks(p, k); const na = ts.filter(t => !t.lns.length).length;
     return `<label class="tpl-opt ${UI.tplPick === k ? 'on' : ''}"><input type="radio" name="tpl" value="${k}" ${UI.tplPick === k ? 'checked' : ''} onchange="UI.tplPick='${k}';document.querySelectorAll('.tpl-opt').forEach(x=>x.classList.toggle('on',x.querySelector('input').checked))">
       <div class="body"><div class="row between"><b>${T.code} · ${esc(T.name)}${!cur && k === sug ? ' <span class="pill teal nodot">Gợi ý</span>' : ''}</b><span class="t-xs muted">${ts.length} task${na ? ` · ${na} không áp dụng` : ''}</span></div><p class="t-xs muted mt4">${esc(T.desc)}</p>
-      <ol class="tpl-tasks">${T.tasks.map((d, j) => { const n = ts[j].codes.length; return `<li><span>${TYPES[d.type].code} · ${esc(d.name)}</span><span class="${n ? 'muted' : 'na'}">${n ? `${n}/${p.lines.length} PO Line` : 'Không áp dụng — không có PO Line phù hợp'}</span></li>`; }).join('')}</ol></div></label>`; };
+      <ol class="tpl-tasks">${T.tasks.map((d, j) => { const n = ts[j].lns.length; return `<li><span>${TYPES[d.type].code} · ${esc(d.name)}</span><span class="${n ? 'muted' : 'na'}">${n ? `${n}/${p.lines.length} PO Line` : 'Không áp dụng — không có PO Line phù hợp'}</span></li>`; }).join('')}</ol></div></label>`; };
   openModal({ title: cur ? 'Đổi template kế hoạch' : 'Lập kế hoạch đánh giá', sub: `PO ${pid} · ${p.customer} · ${p.series} · ${p.lines.length} PO Line`, size: 'lg',
-    body: `<div class="stack">${banner('info', 'info', 'Mỗi PO chỉ có 01 kế hoạch đánh giá', 'Hệ thống sinh đủ task theo template đã chọn. Task không có PO Line phù hợp vẫn được giữ, đánh dấu “Không áp dụng”.')}<div class="stack-8">${Object.keys(TEMPLATES).map(card).join('')}</div></div>`,
+    body: `<div class="stack">${banner('info', 'info', 'Mỗi PO chỉ có 01 kế hoạch đánh giá', 'Hệ thống sinh đủ task theo template đã chọn; mỗi PO Line phù hợp thành một task con để giao việc và ghi kết quả.')}<div class="stack-8">${Object.keys(TEMPLATES).map(card).join('')}</div></div>`,
     foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="createPlan('${pid}',UI.tplPick)">${ic('check')} ${cur ? 'Đổi template' : 'Tạo kế hoạch'}</button>` });
 }
 
-/* ---------- giao việc: dùng chung cho giao đơn lẻ và giao hàng loạt ---------- */
+/* ---------- giao việc ở mức PO Line (dùng chung cho giao đơn lẻ và hàng loạt) ---------- */
 function placeFor(t) { const p = PO(t.po); return ['PLY', 'WW'].includes(tdef(t).type) ? p.factory : (p.finisher || p.factory); }
-/* 11C là báo cáo theo ngày: mỗi task (PO × đầu mục) chỉ một phiếu 11C cho mỗi ngày kiểm */
+/* 11C là báo cáo theo ngày: mỗi task chỉ một phiếu 11C cho mỗi ngày kiểm */
 function dupDaily(taskIds, dueISO) { const ts = taskIds.map(TASK); if (!dueISO || !ts.some(t => tdef(t).type === 'DIR')) return null; const k = fd(dueISO); return DB.ins.find(i => i.type === 'DIR' && i.kind === 'qc' && (i.tasks || []).some(x => taskIds.includes(x)) && fd(i.due) === k) || null; }
-/* nhóm task thành phiếu: cùng đầu mục template + cùng nơi kiểm → 1 phiếu */
-function groupTasks(ids) {
-  const g = new Map(); ids.map(TASK).forEach(t => { const key = t.tpl + '|' + t.k + '|' + placeFor(t); if (!g.has(key)) g.set(key, []); g.get(key).push(t); });
-  return [...g.values()];
-}
-function assignTasks(ids, assignee, dueISO, note, opts = {}) {
-  ids = [...new Set(ids)]; const ok = [], skip = [], forms = [];
-  ids.forEach(id => { const t = TASK(id); (t && (opts.extra ? !PO(t.po).closed && taskState(t) !== 'na' : taskAssignable(t)) ? ok : skip).push(id); });
-  groupTasks(ok).forEach(ts => {
+function groupTasks(ids) { const g = new Map(); ids.map(TASK).forEach(t => { const key = t.tpl + '|' + t.k + '|' + placeFor(t); if (!g.has(key)) g.set(key, []); g.get(key).push(t); }); return [...g.values()]; }
+/* sel: { taskId: [số dòng PO Line] } hoặc mảng taskId (= mọi PO Line còn giao được). opts.extra: phiên mới cho task đã giao (11C ngày mới) */
+function assignTasks(sel, assignee, dueISO, note, opts = {}) {
+  if (Array.isArray(sel)) sel = Object.fromEntries([...new Set(sel)].map(id => [id, null]));
+  const pick = {}, skip = [], forms = [];
+  Object.entries(sel).forEach(([id, lns]) => { const t = TASK(id); if (!t || PO(t.po).closed || taskState(t) === 'na' || t.reuse) { skip.push(id); return; }
+    const ok = opts.extra ? (lns || t.lns).filter(ln => t.lns.includes(ln)) : (lns || t.lns).filter(ln => lineAssignable(t, ln));
+    ok.length ? pick[id] = [...new Set(ok)].sort((a, b) => a - b) : skip.push(id); });
+  groupTasks(Object.keys(pick)).forEach(ts => {
     const d = tdef(ts[0]); const pos = [...new Set(ts.map(t => t.po))];
-    const dup = dupDaily(ts.map(t => t.id), dueISO); if (dup) { ts.forEach(t => skip.push(t.id)); return; }
-    let codes = [...new Set(ts.flatMap(t => taskState(t) === 'partial' ? wwCovered(t, taskForms(t)) : t.codes))];
-    if (ts.every(t => taskState(t) !== 'partial' && t.codes.length === PO(t.po).lines.length)) codes = undefined;
-    const i = { id: `${d.type}-${++DB.seq.ins}`, type: d.type, kind: 'qc', tasks: ts.map(t => t.id), title: `${d.name} · PO ${pos.join(' + ')}`, pos, codes, factory: placeFor(ts[0]), assignee, team: [], due: dueISO, status: 'todo', priority: 'normal', note: note || '', createdBy: ME.id, createdAt: nowISO(), batch: opts.batch || null, data: null };
+    const dup = opts.extra || d.type === 'DIR' ? dupDaily(ts.map(t => t.id), dueISO) : null; if (dup) { ts.forEach(t => skip.push(t.id)); return; }
+    const full = ts.every(t => pick[t.id].length === PO(t.po).lines.length);
+    const lnsMap = Object.fromEntries(ts.map(t => [t.po, pick[t.id]]));
+    const i = { id: `${d.type}-${++DB.seq.ins}`, type: d.type, kind: 'qc', tasks: ts.map(t => t.id), title: `${d.name} · PO ${pos.join(' + ')}`, pos, lns: full ? undefined : lnsMap,
+      codes: full ? undefined : [...new Set(ts.flatMap(t => pick[t.id].map(ln => lineOf(t, ln).code)))], factory: placeFor(ts[0]), assignee, team: [], due: dueISO, status: 'todo', priority: 'normal', note: note || '', createdBy: ME.id, createdAt: nowISO(), batch: opts.batch || null, data: null };
     if (d.type === 'PIG' && INS('PIG-DOVE')) { const p = PO(pos[0]); i.color = p.color; i.data = JSON.parse(JSON.stringify(INS('PIG-DOVE').data)); Object.assign(i.data, { steps: PIG_STEPS.map(() => ({ ok: false, date: '' })), xr: {}, sec: {}, kcma: KCMA.map(() => ({ r: '', note: '' })), approval: { qty: 7, signed: false }, conclusion: '', note: '' }); i.data.header = { ...i.data.header, color: p.color.toUpperCase(), start: fd(nowISO()), completion: '' }; }
     DB.ins.push(i); forms.push(i);
     ts.forEach(t => Object.assign(t, { assignee, due: dueISO, assignedAt: nowISO(), assignedBy: ME.id }));
   });
-  if (forms.length) addLog('task', `${opts.batch ? `Giao việc hàng loạt ${opts.batch}` : 'Giao việc'}: ${forms.map(i => `${i.id} (${i.tasks.length} task · PO ${i.pos.join(', ')})`).join('; ')} → ${U(assignee).name}, hạn ${fd(dueISO)}`, forms[0].pos[0]);
+  if (forms.length) addLog('task', `${opts.batch ? `Giao việc hàng loạt ${opts.batch}` : 'Giao việc'}: ${forms.map(i => `${i.id} (${i.pos.map(po => `PO ${po}: ${i.lns ? i.lns[po].length : PO(po).lines.length} PO Line`).join(', ')})`).join('; ')} → ${U(assignee).name}, hạn ${fd(dueISO)}`, forms[0].pos[0]);
   save(); return { forms, skip };
 }
 const dueVal = () => { const v = document.getElementById('as-d').value; return v ? new Date(v + 'T09:00:00').toISOString() : ''; };
 const qcOptions = sel => activeQC().map(u => `<option value="${u.id}" ${u.id === sel ? 'selected' : ''}>${u.name} — ${u.title}</option>`).join('');
 const tomorrow = () => new Date(Date.now() + DAY).toISOString().slice(0, 10);
+const lnLabel = l => `#${l.ln} ${esc(l.code)} · ${esc(l.part)} · ${num(l.qty)}`;
 
-/* giao 1 hoặc vài task của cùng PO (từ màn chi tiết PO); extra = thêm phiên kiểm mới cho task đã giao (11C theo ngày, kiểm lại) */
-function assignModal(ids, extra) {
-  ids = typeof ids === 'string' ? [ids] : ids; const ts = ids.map(TASK); const p = PO(ts[0].po);
-  openModal({ title: extra ? 'Thêm phiên kiểm cho task' : 'Giao việc', sub: `PO ${p.id} · ${TEMPLATES[ts[0].tpl].code}`, body: `<div class="stack">
-    <div class="card"><div class="list">${ts.map(t => { const d = tdef(t); return `<div class="li"><span class="ico sm tone-teal">${ic(TYPES[d.type].icon, '', 'width:14px;height:14px')}</span><div class="body"><div class="title t-sm">${esc(d.name)}</div><div class="meta"><span>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)}</span><span>${t.codes.length} PO Line</span><span>Nơi kiểm ${placeFor(t)}</span></div></div>${tkPill(t)}</div>`; }).join('')}</div></div>
-    <div class="grid g2"><label class="field"><span>Nhân viên QC thực hiện</span><select class="sel" id="as-a">${qcOptions(ts[0].assignee)}</select></label>
+/* giao 1 task: chọn PO Line cần xử lý (mặc định các dòng đang chọn trên cây, hoặc mọi dòng còn giao được) */
+function assignModal(tid, lns, extra) {
+  const t = TASK(tid); const d = tdef(t); const p = PO(t.po);
+  const can = extra ? t.lns : assignableLns(t); const pre = new Set(lns && lns.length ? lns : can);
+  openModal({ title: extra ? 'Thêm phiên kiểm' : 'Giao việc', sub: `PO ${p.id} · ${esc(d.name)} · ${TYPES[d.type].code}`, body: `<div class="stack">
+    <div class="field"><span>PO Line cần xử lý <small class="muted">(${can.length} dòng có thể giao)</small></span><div class="as-lines">
+      <label class="chk-in all"><input type="checkbox" ${can.every(x => pre.has(x)) ? 'checked' : ''} onchange="document.querySelectorAll('.as-ln').forEach(x=>{if(!x.disabled)x.checked=this.checked})"> Chọn tất cả</label>
+      ${taskLines(t).map(l => { const ok = can.includes(l.ln); return `<label class="${ok ? '' : 'dis'}"><input type="checkbox" class="as-ln" value="${l.ln}" ${ok && pre.has(l.ln) ? 'checked' : ''} ${ok ? '' : 'disabled'}><span>${lnLabel(l)}</span>${ok ? '' : lnPill(t, l.ln)}</label>`; }).join('')}</div></div>
+    <div class="grid g2"><label class="field"><span>Nhân viên QC thực hiện</span><select class="sel" id="as-a">${qcOptions(t.assignee)}</select></label>
       <label class="field"><span>Thời hạn hoàn thành</span><input class="inp" type="date" id="as-d" value="${tomorrow()}" onchange="asHint()"></label></div>
     <label class="field"><span>Ghi chú cho QC</span><input class="inp" id="as-n" placeholder="VD: Kiểm bù các mã chưa kiểm do chất hàng trước"></label><div id="as-hint"></div></div>`,
-    foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" id="as-ok" onclick="doAssign(${JSON.stringify(ids).replace(/"/g, '&quot;')},${extra ? 1 : 0})">${ic('send')} Giao việc</button>` });
-  UI.asIds = ids; asHint();
+    foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" id="as-ok" onclick="doAssign('${tid}',${extra ? 1 : 0})">${ic('send')} Giao việc</button>` });
+  UI.asIds = [tid]; asHint();
 }
 function asHint() {
   const el = document.getElementById('as-hint'); if (!el) return; const ts = UI.asIds.map(TASK); let h = '';
   const dup = dupDaily(UI.asIds, dueVal()); const b = document.getElementById('as-ok'); if (b) b.disabled = !!dup;
   if (dup) h += banner('bad', 'alert', `Đã có phiếu ${dup.id} ngày ${fd(dup.due)}`, '11C là báo cáo theo ngày — mỗi task chỉ một phiếu cho mỗi ngày kiểm. Chọn ngày khác.');
   const blk = ts.flatMap(t => (tdef(t).after || []).map(k => DB.tasks.find(x => x.po === t.po && x.k === k)).filter(x => x && !taskOK(x)));
-  h += blk.length ? banner('warn', 'hourglass', 'Có task phải chờ', `Phiếu ở trạng thái “Chờ task trước” cho tới khi ${[...new Set(blk.map(x => tdef(x).name))].join(', ')} có kết quả.`) : '';
+  if (blk.length) h += banner('warn', 'hourglass', 'Có task phải chờ', `Phiếu ở trạng thái “Chờ task trước” cho tới khi ${[...new Set(blk.map(x => tdef(x).name))].join(', ')} có kết quả.`);
   el.innerHTML = h;
 }
-function doAssign(ids, extra) {
+function doAssign(tid, extra) {
+  const lns = [...document.querySelectorAll('.as-ln:checked')].map(x => +x.value); if (!lns.length) return toast('Chọn ít nhất một PO Line', 'bad');
   const a = document.getElementById('as-a').value, due = dueVal(); if (!a || !due) return toast('Chọn nhân viên QC và thời hạn', 'bad');
-  const r = assignTasks(ids, a, due, document.getElementById('as-n').value.trim(), { extra });
-  closeModal(); render();
-  if (!r.forms.length) return toast('Không có task nào được giao — task đã được giao trước đó hoặc trùng ngày kiểm', 'bad');
-  toast(`Đã giao ${r.forms.map(i => i.id).join(', ')} cho ${U(a).name}${r.skip.length ? ` · bỏ qua ${r.skip.length} task đã giao` : ''}`, 'ok');
+  const r = assignTasks({ [tid]: lns }, a, due, document.getElementById('as-n').value.trim(), { extra });
+  if (UI.treeSel) delete UI.treeSel[tid]; closeModal(); render();
+  if (!r.forms.length) return toast('Không có PO Line nào được giao — đã được giao trước đó hoặc trùng ngày kiểm', 'bad');
+  toast(`Đã giao ${r.forms[0].id} · ${lns.length} PO Line cho ${U(a).name}`, 'ok');
 }
-/* đổi người / hạn: chỉ khi phiếu chưa bắt đầu; phiếu dùng chung cho nhiều task thì đổi cho cả phiếu */
 function reassignModal(tid) {
   const t = TASK(tid); const f = taskForms(t).find(i => i.status === 'todo' && !i.data); if (!f) return toast('Phiếu đã bắt đầu kiểm — không đổi người được', 'bad');
   openModal({ title: 'Đổi người / thời hạn', sub: `${f.id} · ${esc(f.title)}`, body: `<div class="stack">${f.tasks.length > 1 ? banner('info', 'layers', `Phiếu ${f.id} dùng chung cho ${f.tasks.length} task`, `Thay đổi áp dụng cho cả phiếu: ${f.tasks.map(x => 'PO ' + TASK(x).po).join(', ')}.`) : ''}
@@ -1531,100 +1630,128 @@ function doReassign(fid) {
   f.assignee = a; f.due = due; f.tasks.map(TASK).forEach(t => Object.assign(t, { assignee: a, due, assignedAt: nowISO(), assignedBy: ME.id }));
   addLog('task', `Đổi người/hạn ${f.id} → ${U(a).name}, hạn ${fd(due)}`, f.pos[0]); save(); closeModal(); render(); toast(`Đã cập nhật ${f.id}`, 'ok');
 }
-/* dùng lại kết quả đã duyệt (plywood cùng lô, mẫu màu đã ký) cho task */
 function reuseCands(t) {
   const d = tdef(t); if (!d.reuse || taskState(t) !== 'unassigned') return [];
-  const p = PO(t.po);
-  return DB.ins.filter(i => i.type === d.type && i.status === 'approved' && !i.pos.includes(p.id) && (d.type !== 'PIG' || i.color === p.color));
+  const p = PO(t.po); return DB.ins.filter(i => i.type === d.type && i.status === 'approved' && !i.pos.includes(p.id) && (d.type !== 'PIG' || i.color === p.color));
 }
 function useResult(tid, iid) { const t = TASK(tid); t.reuse = iid; addLog('reuse', `Dùng lại ${iid} cho task “${tdef(t).name}”`, t.po); save(); render(); toast(`Đã liên kết kết quả ${iid}`, 'ok'); }
 
 /* =====================================================================
-   GIAO VIỆC HÀNG LOẠT — thay cho “Đề xuất gộp phiếu”
-   Chọn nhiều PO cùng template → danh sách task chung (theo mã đầu mục template, không theo tên)
-   → chọn task → 1 QC + 1 hạn → mỗi đầu mục tạo 1 phiếu chung cho các PO đã chọn.
+   GIAO VIỆC HÀNG LOẠT — nhiều PO cùng template → task chung (theo mã đầu mục) → chọn PO Line → 1 QC + 1 hạn
    ===================================================================== */
 function bulkModal(pre) {
   UI.bulk = { pos: pre ? [pre] : [], sel: {}, open: {}, qc: activeQC()[0] && activeQC()[0].id, due: tomorrow(), note: '' };
-  if (pre) tasksOf(pre).filter(taskAssignable).forEach(t => UI.bulk.sel[t.id] = 1);
-  openModal({ title: 'Giao việc hàng loạt', sub: 'Chọn nhiều PO cùng template kế hoạch, chọn task rồi giao cho một nhân viên QC', size: 'xl', body: '<div id="bulk"></div>', foot: '<div id="bulk-f" class="row" style="width:100%;gap:8px"></div>' });
+  if (pre) tasksOf(pre).filter(taskAssignable).forEach(t => UI.bulk.sel[t.id] = assignableLns(t));
+  openModal({ title: 'Giao việc hàng loạt', sub: 'Chọn nhiều PO cùng template kế hoạch, chọn task và PO Line rồi giao cho một nhân viên QC', size: 'xl', body: '<div id="bulk"></div>', foot: '<div id="bulk-f" class="row" style="width:100%;gap:8px"></div>' });
   bulkDraw();
 }
 function bulkTpl() { const p0 = UI.bulk.pos[0]; return p0 ? planOf(p0).tpl : null; }
 function bulkTogglePO(id) {
   const B = UI.bulk; const i = B.pos.indexOf(id);
   if (i >= 0) { B.pos.splice(i, 1); tasksOf(id).forEach(t => delete B.sel[t.id]); }
-  else { if (bulkTpl() && planOf(id).tpl !== bulkTpl()) return toast('Chỉ chọn được các PO cùng template kế hoạch', 'bad'); B.pos.push(id); tasksOf(id).filter(taskAssignable).forEach(t => B.sel[t.id] = 1); }
+  else { if (bulkTpl() && planOf(id).tpl !== bulkTpl()) return toast('Chỉ chọn được các PO cùng template kế hoạch', 'bad'); B.pos.push(id); tasksOf(id).filter(taskAssignable).forEach(t => B.sel[t.id] = assignableLns(t)); }
   bulkDraw();
 }
 const bulkInst = k => UI.bulk.pos.map(pid => tasksOf(pid).find(t => t.k === k)).filter(Boolean);
-function bulkToggleK(k, on) { bulkInst(k).filter(taskAssignable).forEach(t => on ? UI.bulk.sel[t.id] = 1 : delete UI.bulk.sel[t.id]); bulkDraw(); }
-function bulkToggleT(id, on) { on ? UI.bulk.sel[id] = 1 : delete UI.bulk.sel[id]; bulkDraw(); }
-function bulkAll(on) { const T = TEMPLATES[bulkTpl()]; T.tasks.forEach(d => bulkInst(d.k).filter(taskAssignable).forEach(t => on ? UI.bulk.sel[t.id] = 1 : delete UI.bulk.sel[t.id])); bulkDraw(); }
-function instReason(t) { const s = taskState(t); if (s === 'na') return 'Không áp dụng — không có PO Line phù hợp'; if (s === 'reused') return 'Dùng lại kết quả'; if (taskAssignable(t)) return s === 'partial' ? 'Kiểm bù PO Line chưa có kết quả' : 'Chưa giao'; return `Đã giao ${U(t.assignee).name}${t.due ? ' · hạn ' + fd(t.due) : ''} · ${TK_UI[s][0]}`; }
+function bulkToggleK(k, on) { bulkInst(k).filter(taskAssignable).forEach(t => on ? UI.bulk.sel[t.id] = assignableLns(t) : delete UI.bulk.sel[t.id]); bulkDraw(); }
+function bulkToggleT(id, on) { const t = TASK(id); on ? UI.bulk.sel[id] = assignableLns(t) : delete UI.bulk.sel[id]; bulkDraw(); }
+function bulkToggleL(id, ln) { const B = UI.bulk; const cur = new Set(B.sel[id] || []); cur.has(ln) ? cur.delete(ln) : cur.add(ln); cur.size ? B.sel[id] = [...cur] : delete B.sel[id]; bulkDraw(); }
+function bulkAll(on) { const T = TEMPLATES[bulkTpl()]; T.tasks.forEach(d => bulkInst(d.k).filter(taskAssignable).forEach(t => on ? UI.bulk.sel[t.id] = assignableLns(t) : delete UI.bulk.sel[t.id])); bulkDraw(); }
+function instReason(t) { const s = taskState(t); if (s === 'na') return 'Không áp dụng — không có PO Line phù hợp'; if (s === 'reused') return 'Dùng lại kết quả'; const n = assignableLns(t).length; if (n) return `${n}/${t.lns.length} PO Line chưa giao`; return `Đã giao ${U(t.assignee).name}${t.due ? ' · hạn ' + fd(t.due) : ''} · ${TK_UI[s][0]}`; }
 function bulkDraw() {
   const B = UI.bulk; const el = document.getElementById('bulk'); if (!el) return; const tk = bulkTpl();
   const cand = DB.pos.filter(p => !p.closed);
   const groups = Object.keys(TEMPLATES).map(k => ({ k, ps: cand.filter(p => planOf(p) && planOf(p).tpl === k) }));
   const noPlan = cand.filter(p => !planOf(p));
-  const poRow = p => { const on = B.pos.includes(p.id); const n = tasksOf(p).filter(taskAssignable).length; const other = tk && planOf(p).tpl !== tk;
-    return `<label class="bk-po ${on ? 'on' : ''} ${other ? 'dis' : ''}" title="${other ? 'Khác template — không chọn chung được' : ''}"><input type="checkbox" ${on ? 'checked' : ''} ${other ? 'disabled' : ''} onchange="bulkTogglePO('${p.id}')"><span class="body"><b>PO ${p.id}</b><small>${esc(p.series)} · ${p.factory}</small></span><span class="n ${n ? '' : 'z'}">${n ? n + ' task chưa giao' : 'Đã giao đủ'}</span></label>`; };
+  const poRow = p => { const on = B.pos.includes(p.id); const n = tasksOf(p).reduce((a, t) => a + assignableLns(t).length, 0); const other = tk && planOf(p).tpl !== tk;
+    return `<label class="bk-po ${on ? 'on' : ''} ${other ? 'dis' : ''}" title="${other ? 'Khác template — không chọn chung được' : ''}"><input type="checkbox" ${on ? 'checked' : ''} ${other ? 'disabled' : ''} onchange="bulkTogglePO('${p.id}')"><span class="body"><b>PO ${p.id}</b><small>${esc(p.series)} · ${p.factory}</small></span><span class="n ${n ? '' : 'z'}">${n ? n + ' PO Line chưa giao' : 'Đã giao đủ'}</span></label>`; };
   const sec1 = `<div class="bk-sec"><div class="bk-h"><b>1 · Chọn PO</b><span class="t-xs muted">Chỉ chọn chung được các PO cùng template — mỗi template có danh sách task khác nhau.</span></div>
     ${groups.filter(g => g.ps.length).map(g => `<div class="bk-grp ${tk && tk !== g.k ? 'dim' : ''}"><div class="bk-gh">${TEMPLATES[g.k].code} · ${esc(TEMPLATES[g.k].name)} <span class="muted">· ${TEMPLATES[g.k].tasks.length} task</span>${tk && tk !== g.k ? '<span class="pill gray nodot" style="margin-left:auto">Khác template</span>' : ''}</div><div class="bk-pos">${g.ps.map(poRow).join('')}</div></div>`).join('')}
     ${noPlan.length ? `<p class="t-xs muted">Chưa lập kế hoạch nên chưa giao được: ${noPlan.map(p => 'PO ' + p.id).join(', ')}.</p>` : ''}</div>`;
-  let sec2 = `<div class="bk-sec"><div class="bk-h"><b>2 · Chọn task</b></div><div class="t-sm muted">Chọn ít nhất một PO để xem danh sách task chung.</div></div>`;
-  if (tk) { const T = TEMPLATES[tk]; const allA = T.tasks.flatMap(d => bulkInst(d.k).filter(taskAssignable)); const allOn = allA.length && allA.every(t => B.sel[t.id]);
-    sec2 = `<div class="bk-sec"><div class="bk-h"><b>2 · Chọn task</b><label class="chk-in"><input type="checkbox" ${allOn ? 'checked' : ''} ${allA.length ? '' : 'disabled'} onchange="bulkAll(this.checked)"> Chọn tất cả (${allA.length})</label></div><div class="bk-tasks">
-      ${T.tasks.map(d => { const inst = bulkInst(d.k); const av = inst.filter(taskAssignable); const on = av.filter(t => B.sel[t.id]).length; const open = B.open[d.k];
-        return `<div class="bk-task ${av.length ? '' : 'dis'}"><div class="bk-tr"><input type="checkbox" ${av.length && on === av.length ? 'checked' : ''} ${av.length ? '' : 'disabled'} onchange="bulkToggleK('${d.k}',this.checked)" ${on && on < av.length ? 'data-ind="1"' : ''}>
+  let sec2 = `<div class="bk-sec"><div class="bk-h"><b>2 · Chọn task và PO Line</b></div><div class="t-sm muted">Chọn ít nhất một PO để xem danh sách task chung.</div></div>`;
+  if (tk) { const T = TEMPLATES[tk]; const allA = T.tasks.flatMap(d => bulkInst(d.k).filter(taskAssignable)); const allOn = allA.length && allA.every(t => B.sel[t.id] && B.sel[t.id].length === assignableLns(t).length);
+    sec2 = `<div class="bk-sec"><div class="bk-h"><b>2 · Chọn task và PO Line</b><label class="chk-in"><input type="checkbox" ${allOn ? 'checked' : ''} ${allA.length ? '' : 'disabled'} onchange="bulkAll(this.checked)"> Chọn tất cả</label></div><div class="bk-tasks">
+      ${T.tasks.map(d => { const inst = bulkInst(d.k); const av = inst.filter(taskAssignable); const nAv = av.reduce((a, t) => a + assignableLns(t).length, 0); const nOn = av.reduce((a, t) => a + (B.sel[t.id] || []).length, 0); const open = B.open[d.k];
+        return `<div class="bk-task ${av.length ? '' : 'dis'}"><div class="bk-tr"><input type="checkbox" ${nAv && nOn === nAv ? 'checked' : ''} ${nAv ? '' : 'disabled'} onchange="bulkToggleK('${d.k}',this.checked)" ${nOn && nOn < nAv ? 'data-ind="1"' : ''}>
           <button type="button" class="bk-tt" onclick="UI.bulk.open['${d.k}']=!UI.bulk.open['${d.k}'];bulkDraw()"><span class="ico sm tone-teal">${ic(TYPES[d.type].icon, '', 'width:14px;height:14px')}</span><span class="body"><b>${esc(d.name)}</b><small>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)} · ${filterText(d.lines)}${d.after ? ' · phải chờ ' + d.after.map(k => T.tasks.find(x => x.k === k).name).join(', ') : ''}</small></span>
-          <span class="n ${av.length ? '' : 'z'}">${on}/${av.length} có thể giao</span>${ic(open ? 'up' : 'down', 'muted', 'width:16px;height:16px')}</button></div>
-          ${open ? `<div class="bk-inst">${inst.map(t => { const ok = taskAssignable(t); return `<label class="${ok ? '' : 'dis'}"><input type="checkbox" ${B.sel[t.id] ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="bulkToggleT('${t.id}',this.checked)"><b>PO ${t.po}</b><span class="muted">${t.codes.length ? t.codes.length + ' PO Line: ' + esc(t.codes.slice(0, 4).join(', ')) + (t.codes.length > 4 ? '…' : '') : '—'}</span><span class="r">${instReason(t)}</span></label>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div></div>`; }
-  const picked = Object.keys(B.sel).filter(id => TASK(id) && B.pos.includes(TASK(id).po));
-  const prev = groupTasks(picked);
-  const sec3 = `<div class="bk-sec"><div class="bk-h"><b>3 · Giao việc</b><span class="t-xs muted">${picked.length} task · ${new Set(picked.map(id => TASK(id).po)).size} PO đã chọn</span></div>
-    ${prev.length ? `<div class="bk-prev">${prev.map(ts => `<div>${ic('clipboard', 'muted', 'width:14px;height:14px')}<span>Tạo 1 phiếu <b>${esc(tdef(ts[0]).name)}</b> · PO ${ts.map(t => t.po).join(' + ')} · ${placeFor(ts[0])}</span></div>`).join('')}</div>` : ''}
+          <span class="n ${nAv ? '' : 'z'}">${nOn}/${nAv} PO Line</span>${ic(open ? 'up' : 'down', 'muted', 'width:16px;height:16px')}</button></div>
+          ${open ? `<div class="bk-inst">${inst.map(t => { const can = assignableLns(t); const sel = new Set(B.sel[t.id] || []); return `<div class="bk-ip ${can.length ? '' : 'dis'}"><label><input type="checkbox" ${can.length && sel.size === can.length ? 'checked' : ''} ${can.length ? '' : 'disabled'} onchange="bulkToggleT('${t.id}',this.checked)"><b>PO ${t.po}</b><span class="r">${instReason(t)}</span></label>
+            ${can.length ? `<div class="bk-lns">${taskLines(t).map(l => { const ok = can.includes(l.ln); return `<button type="button" class="ln-chip ${sel.has(l.ln) ? 'on' : ''}" ${ok ? `onclick="bulkToggleL('${t.id}',${l.ln})"` : 'disabled'} title="${ok ? '' : LN_UI[lineState(t, l.ln)][0]}">${ok ? (sel.has(l.ln) ? ic('check', '', 'width:12px;height:12px') : '') : ''}${esc(l.code)} · ${esc(l.part)}</button>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div></div>`; }
+  const picked = Object.entries(B.sel).filter(([id, l]) => TASK(id) && B.pos.includes(TASK(id).po) && l.length);
+  const prev = groupTasks(picked.map(x => x[0])); const nLn = picked.reduce((a, x) => a + x[1].length, 0);
+  const sec3 = `<div class="bk-sec"><div class="bk-h"><b>3 · Giao việc</b><span class="t-xs muted">${picked.length} task · ${nLn} PO Line · ${new Set(picked.map(x => TASK(x[0]).po)).size} PO đã chọn</span></div>
+    ${prev.length ? `<div class="bk-prev">${prev.map(ts => `<div>${ic('clipboard', 'muted', 'width:14px;height:14px')}<span>Tạo 1 phiếu <b>${esc(tdef(ts[0]).name)}</b> · ${ts.map(t => `PO ${t.po} (${B.sel[t.id].length} dòng)`).join(' + ')} · ${placeFor(ts[0])}</span></div>`).join('')}</div>` : ''}
     <div class="grid g3"><label class="field"><span>Nhân viên QC thực hiện</span><select class="sel" id="as-a" onchange="UI.bulk.qc=this.value">${qcOptions(B.qc)}</select></label>
       <label class="field"><span>Thời hạn hoàn thành</span><input class="inp" type="date" id="as-d" value="${B.due}" onchange="UI.bulk.due=this.value"></label>
       <label class="field"><span>Ghi chú</span><input class="inp" id="as-n" value="${esc(B.note)}" oninput="UI.bulk.note=this.value" placeholder="Không bắt buộc"></label></div></div>`;
   el.innerHTML = `<div class="stack">${sec1}${sec2}${sec3}</div>`;
   el.querySelectorAll('[data-ind]').forEach(x => x.indeterminate = true);
-  document.getElementById('bulk-f').innerHTML = `<button class="btn" onclick="closeModal()">Hủy</button><span class="grow"></span><button class="btn btn-primary" ${picked.length ? '' : 'disabled'} onclick="doBulk()">${ic('send')} Giao ${picked.length} task</button>`;
+  document.getElementById('bulk-f').innerHTML = `<button class="btn" onclick="closeModal()">Hủy</button><span class="grow"></span><button class="btn btn-primary" ${nLn ? '' : 'disabled'} onclick="doBulk()">${ic('send')} Giao ${nLn} PO Line</button>`;
 }
 function doBulk() {
-  const B = UI.bulk; const ids = Object.keys(B.sel).filter(id => TASK(id) && B.pos.includes(TASK(id).po));
-  if (!ids.length) return toast('Chọn ít nhất một task', 'bad');
+  const B = UI.bulk; const sel = Object.fromEntries(Object.entries(B.sel).filter(([id, l]) => TASK(id) && B.pos.includes(TASK(id).po) && l.length));
+  if (!Object.keys(sel).length) return toast('Chọn ít nhất một PO Line', 'bad');
   if (!B.qc || !B.due) return toast('Chọn nhân viên QC và thời hạn', 'bad');
   const gv = `GV-${String(++DB.seq.gv).padStart(3, '0')}`;
-  const r = assignTasks(ids, B.qc, new Date(B.due + 'T09:00:00').toISOString(), B.note, { batch: gv });
+  const r = assignTasks(sel, B.qc, new Date(B.due + 'T09:00:00').toISOString(), B.note, { batch: gv });
   closeModal(); render();
-  if (!r.forms.length) return toast('Không có task nào được giao — đã được giao trước đó hoặc trùng ngày kiểm', 'bad');
-  toast(`${gv}: đã tạo ${r.forms.length} phiếu cho ${ids.length - r.skip.length} task · ${U(B.qc).name}${r.skip.length ? ` · bỏ qua ${r.skip.length} task` : ''}`, 'ok');
+  if (!r.forms.length) return toast('Không có PO Line nào được giao — đã được giao trước đó hoặc trùng ngày kiểm', 'bad');
+  toast(`${gv}: đã tạo ${r.forms.length} phiếu · ${U(B.qc).name}${r.skip.length ? ` · bỏ qua ${r.skip.length} task` : ''}`, 'ok');
 }
 
-/* ---------- hiển thị ---------- */
+/* ---------- hiển thị: cây Kế hoạch → Task → PO Line ---------- */
 const taskChip = t => { const s = TK_UI[taskState(t)]; return `<span class="pill ${s[1]}" title="${esc(tdef(t).name)}: ${s[0]}">${taskLabel(t)} ${s[0]}</span>`; };
-function planSummary(p) { const ts = tasksOf(p).filter(t => taskState(t) !== 'na'); const asg = ts.filter(t => !taskAssignable(t) || taskState(t) === 'partial').length; return { total: ts.length, assigned: ts.filter(t => taskState(t) !== 'unassigned').length, done: ts.filter(taskOK).length, na: tasksOf(p).length - ts.length, asg }; }
+function planSummary(p) {
+  const all = tasksOf(p); const ts = all.filter(t => taskState(t) !== 'na'); const lns = ts.flatMap(t => t.lns.map(ln => lineState(t, ln)));
+  return { total: ts.length, assigned: ts.filter(t => !taskAssignable(t)).length, done: ts.filter(taskOK).length, na: all.length - ts.length,
+    lnTotal: lns.length, lnAsg: lns.filter(s => !['unassigned', 'redo'].includes(s)).length, lnDone: lns.filter(s => ['done', 'reused'].includes(s)).length };
+}
+function treeTogglePick(tid, ln, on) { UI.treeSel = UI.treeSel || {}; const s = new Set(UI.treeSel[tid] || []); on ? s.add(ln) : s.delete(ln); UI.treeSel[tid] = [...s]; render(); }
+function treePickAll(tid, on) { UI.treeSel = UI.treeSel || {}; UI.treeSel[tid] = on ? assignableLns(TASK(tid)) : []; render(); }
 function planCard(p) {
   const pl = planOf(p);
-  if (!pl) return `<div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá</h2><p>Mỗi PO có 01 kế hoạch, sinh từ template.</p></div></div><div class="card-b">${empty('PO chưa có kế hoạch đánh giá', `Chọn template phù hợp — hệ thống sinh đủ danh sách task theo template.${p.closed ? '' : `<div class="mt12"><button class="btn btn-primary" onclick="planCreateModal('${p.id}')">${ic('plus')} Lập kế hoạch đánh giá</button></div>`}`, 'calendar')}</div></div>`;
-  const T = TEMPLATES[pl.tpl]; const ts = tasksOf(p); const sm = planSummary(p); const touched = ts.some(t => taskForms(t).length || t.reuse); const canA = ts.filter(taskAssignable);
-  const row = t => { const d = tdef(t); const s = taskState(t); const fs = taskForms(t); const blk = fs.map(blockedBy).filter(Boolean).flat(); const rc = reuseCands(t); const tone = { ok: 'green', warn: 'amber', info: 'blue', teal: 'teal', gray: 'gray', violet: 'violet' }[TK_UI[s][1]];
-    const lines = p.lines.filter(l => t.codes.includes(l.code));
-    const open = fs.find(i => i.status === 'todo' && !i.data);
-    return `<div class="li tk-row ${s === 'na' ? 'locked' : ''}" style="align-items:flex-start"><span class="ico tone-${tone}">${ic(TYPES[d.type].icon)}</span><div class="body">
-      <div class="title"><span class="trunc">${esc(d.name)}</span>${tkPill(t)}</div>
-      <div class="meta"><span>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)}</span><span>${s === 'na' ? 'Không có PO Line phù hợp' : `${lines.length}/${p.lines.length} PO Line`}</span>${t.assignee ? `<span>${ic('users', '', 'width:12px;height:12px;vertical-align:-2px')} ${U(t.assignee).name}</span><span>${ic('clock', '', 'width:12px;height:12px;vertical-align:-2px')} hạn ${fd(t.due)}</span>` : ''}</div>
-      ${lines.length && lines.length < p.lines.length || d.lines ? `<details class="tk-lines"><summary>${filterText(d.lines)} · ${lines.length} PO Line</summary>${lines.length ? `<div class="row wrap mt4">${lines.map(l => `<span class="tag">${esc(l.code)} · ${esc(l.part)} · ${num(l.qty)}</span>`).join('')}</div>` : '<span class="t-xs muted">Không có</span>'}</details>` : ''}
-      ${t.reuse ? `<div class="meta"><span>${ic('link', '', 'width:12px;height:12px;vertical-align:-2px')} Dùng lại <a class="link" href="#/report/ins/${t.reuse}">${esc(INS(t.reuse).title)}</a> (${t.reuse})</span></div>` : ''}
-      ${fs.length ? `<div class="row wrap mt8">${fs.map(i => `<a class="tag" href="#/${i.status === 'submitted' ? 'review' : i.status === 'approved' ? 'report/ins' : 'task'}/${i.id}">${i.id}${i.type === 'DIR' ? ' · ' + fd(i.due).slice(0, 5) : ''} · ${U(i.assignee).name} · ${IS[insState(i)][0]}${i.tasks.length > 1 ? ` · ${i.tasks.length} PO chung phiếu` : ''}</a>`).join('')}</div>` : ''}
-      ${blk.length ? `<div class="meta mt4"><span>${ic('hourglass', '', 'width:12px;height:12px;vertical-align:-2px')} Chờ ${[...new Set(blk.map(b => b.name))].join(', ')} có kết quả</span></div>` : ''}
-      ${s === 'partial' ? `<div class="meta mt4" style="color:var(--amber)"><span>Còn ${wwCovered(t, fs).length} PO Line chưa có kết quả — giao kiểm bù.</span></div>` : ''}
-      ${rc.length ? `<div class="mt8">${banner('teal', 'repeat', 'Có kết quả đã duyệt để dùng lại', `${esc(rc[0].title)} · ${rc[0].id} · duyệt ${fd(rc[0].review.at)}`, `<button class="btn btn-sm btn-primary" onclick="useResult('${t.id}','${rc[0].id}')">Dùng lại</button>`)}</div>` : ''}</div>
-      ${p.closed ? '' : `<div class="tk-acts">${taskAssignable(t) ? `<button class="btn btn-sm btn-primary" onclick="assignModal('${t.id}')">${ic('send')} ${s === 'partial' ? 'Giao kiểm bù' : 'Giao việc'}</button>` : ''}${open ? `<button class="btn btn-sm" onclick="reassignModal('${t.id}')">${ic('edit')} Đổi người / hạn</button>` : ''}${d.daily && fs.length && s !== 'na' ? `<button class="btn btn-sm" onclick="assignModal('${t.id}',1)">${ic('plus')} Phiên ngày mới</button>` : ''}</div>`}</div>`; };
-  return `<div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá · ${pl.id}</h2><p>Template ${T.code} · ${esc(T.name)} · ${sm.assigned}/${sm.total} task đã giao · ${sm.done - 0}/${sm.total} có kết quả${sm.na ? ` · ${sm.na} không áp dụng` : ''}</p></div>
-    ${p.closed ? '' : `<div class="acts">${touched ? '' : `<button class="btn btn-sm" onclick="planCreateModal('${p.id}')">${ic('repeat')} Đổi template</button>`}${canA.length > 1 ? `<button class="btn btn-sm btn-primary" onclick="bulkModal('${p.id}')">${ic('send')} Giao ${canA.length} task</button>` : ''}</div>`}</div>
-    <div class="list">${ts.map(row).join('')}</div></div>`;
+  if (!pl) return `<div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá</h2><p>Mỗi PO có 01 kế hoạch, sinh từ template.</p></div></div><div class="card-b">${empty('PO chưa có kế hoạch đánh giá', `Chọn template phù hợp — hệ thống sinh đủ task và task con theo từng PO Line.${p.closed ? '' : `<div class="mt12"><button class="btn btn-primary" onclick="planCreateModal('${p.id}')">${ic('plus')} Lập kế hoạch đánh giá</button></div>`}`, 'calendar')}</div></div>`;
+  const T = TEMPLATES[pl.tpl]; const ts = tasksOf(p); const m = planSummary(p); const touched = ts.some(t => taskForms(t).length || t.reuse);
+  UI.treeOpen = UI.treeOpen || {}; UI.treeSel = UI.treeSel || {};
+  const pa = m.lnTotal ? Math.round(m.lnAsg / m.lnTotal * 100) : 0, pd = m.lnTotal ? Math.round(m.lnDone / m.lnTotal * 100) : 0;
+  const lnRow = (t, l, last) => { const s = lineState(t, l.ln); const fs = lineForms(t, l.ln); const f = fs.at(-1); const ok = !p.closed && lineAssignable(t, l.ln); const on = (UI.treeSel[t.id] || []).includes(l.ln);
+    const r = lineResult(t, l.ln, fs.filter(i => i.data && i.status !== 'todo').at(-1));
+    return `<div class="tr-ln ${last ? 'last' : ''} ${on ? 'on' : ''}"><span class="tr-pick">${ok ? `<input type="checkbox" ${on ? 'checked' : ''} onchange="treeTogglePick('${t.id}',${l.ln},this.checked)" aria-label="Chọn PO Line ${esc(l.code)}">` : ''}</span>
+      <div class="tr-main"><b>#${l.ln} ${esc(l.code)}</b><span class="muted">${esc(l.part)} · ${num(l.qty)} pcs</span></div>
+      <div class="tr-who">${f ? `<a class="tag" title="${U(f.assignee).name} · hạn ${fd(f.due)}" href="#/${f.status === 'submitted' ? 'review' : f.status === 'approved' ? 'report/ins' : 'task'}/${f.id}">${f.id} · ${esc(U(f.assignee).name.split(' ').at(-1))}</a>` : t.reuse ? `<a class="tag" href="#/report/ins/${t.reuse}">${t.reuse}</a>` : '<span class="muted">—</span>'}</div>
+      <div class="tr-res">${r ? `<span class="res ${r.c}">${esc(r.txt)}</span>` : ''}</div>
+      <div class="tr-st">${lnPill(t, l.ln)}</div></div>`; };
+  const taskRow = t => { const d = tdef(t); const s = taskState(t); const fs = taskForms(t); const blk = [...new Map(fs.map(blockedBy).filter(Boolean).flat().map(b => [b.id, b])).values()]; const rc = reuseCands(t);
+    const lines = taskLines(t); const open = UI.treeOpen[t.id] ?? (s !== 'na' && s !== 'done' && s !== 'reused'); const can = assignableLns(t); const picked = (UI.treeSel[t.id] || []).filter(x => can.includes(x));
+    const lnSt = t.lns.map(ln => lineState(t, ln)); const nA = lnSt.filter(x => !['unassigned', 'redo'].includes(x)).length, nD = lnSt.filter(x => ['done', 'reused'].includes(x)).length;
+    const who = [...new Set(fs.map(i => i.assignee))].map(x => U(x).name);
+    const reF = fs.find(i => i.status === 'todo' && !i.data);
+    return `<div class="tr-task ${s === 'na' ? 'na' : ''}"><div class="tr-th">
+      <button type="button" class="tr-caret" ${lines.length ? '' : 'disabled'} onclick="UI.treeOpen['${t.id}']=${!open};render()" aria-label="Mở / đóng">${ic(open ? 'down' : 'right', '', 'width:16px;height:16px')}</button>
+      <span class="ico sm tone-teal">${ic(TYPES[d.type].icon, '', 'width:14px;height:14px')}</span>
+      <div class="tr-tt"><div class="row wrap" style="gap:8px"><b>${esc(d.name)}</b>${tkPill(t)}</div>
+        <div class="meta"><span>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)}</span><span>${filterText(d.lines)}</span>${s === 'na' ? '' : `<span>Đã giao <b>${nA}/${t.lns.length}</b> · có kết quả <b>${nD}/${t.lns.length}</b> PO Line</span>`}${who.length ? `<span>${ic('users', '', 'width:12px;height:12px;vertical-align:-2px')} ${who.join(', ')}</span>` : ''}</div>
+        ${blk.length ? `<div class="meta"><span>${ic('hourglass', '', 'width:12px;height:12px;vertical-align:-2px')} Chờ ${blk.map(b => esc(b.name)).join(', ')} có kết quả</span></div>` : ''}
+        ${rc.length ? `<div class="mt8">${banner('teal', 'repeat', 'Có kết quả đã duyệt để dùng lại', `${esc(rc[0].title)} · ${rc[0].id}`, `<button class="btn btn-sm btn-primary" onclick="useResult('${t.id}','${rc[0].id}')">Dùng lại</button>`)}</div>` : ''}</div>
+      ${p.closed || s === 'na' ? '' : `<div class="tr-acts">${can.length ? `<button class="btn btn-sm btn-primary" onclick="assignModal('${t.id}',UI.treeSel['${t.id}'])">${ic('send')} ${picked.length ? `Giao ${picked.length} PO Line` : 'Giao việc'}</button>` : ''}${reF ? `<button class="btn btn-sm" onclick="reassignModal('${t.id}')">${ic('edit')} Đổi người / hạn</button>` : ''}${d.daily && fs.length ? `<button class="btn btn-sm" onclick="assignModal('${t.id}',null,1)">${ic('plus')} Phiên ngày mới</button>` : ''}</div>`}</div>
+      ${open && lines.length ? `<div class="tr-lns">${can.length && !p.closed ? `<div class="tr-ln head"><span class="tr-pick"><input type="checkbox" ${picked.length === can.length ? 'checked' : ''} onchange="treePickAll('${t.id}',this.checked)" aria-label="Chọn tất cả"></span><div class="tr-main muted">Chọn PO Line để giao (${can.length} dòng chưa giao)</div></div>` : ''}${lines.map((l, j) => lnRow(t, l, j === lines.length - 1)).join('')}</div>` : ''}</div>`; };
+  return `<div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá · ${pl.id}</h2><p>Template ${T.code} · ${esc(T.name)} · các task cố định theo template, mỗi PO Line là một task con.</p></div>
+    ${p.closed ? '' : `<div class="acts">${touched ? '' : `<button class="btn btn-sm" onclick="planCreateModal('${p.id}')">${ic('repeat')} Đổi template</button>`}${ts.filter(taskAssignable).length > 1 ? `<button class="btn btn-sm btn-primary" onclick="bulkModal('${p.id}')">${ic('send')} Giao nhiều task</button>` : ''}</div>`}</div>
+    <div class="tr-root"><div class="tr-rt">${ic('layers', '', 'width:16px;height:16px;color:var(--primary)')}<b>${pl.id}</b><span class="muted">${ts.length} task · ${m.lnTotal} task con PO Line${m.na ? ` · ${m.na} task không áp dụng` : ''}</span></div>
+      <div class="pc-bar"><span class="a" style="width:${pa}%"></span><span class="d" style="width:${pd}%"></span></div>
+      <div class="pc-m"><span>Đã giao <b>${m.lnAsg}/${m.lnTotal}</b> PO Line</span><span>Có kết quả <b>${m.lnDone}/${m.lnTotal}</b></span><span>Task xong <b>${m.done}/${m.total}</b></span></div></div>
+    <div class="tree">${ts.map(taskRow).join('')}</div></div>`;
+}
+
+/* nâng cấp dữ liệu đã lưu trong trình duyệt từ bản trước (không xóa dữ liệu người dùng):
+   task tạo trước khi có task con PO Line chưa có danh sách lns → suy ra từ mã hàng / bộ lọc template */
+function migrateData() {
+  DB.plans = DB.plans || []; DB.tasks = DB.tasks || []; DB.seq.gv = DB.seq.gv || 0;
+  DB.tasks.forEach(t => { if (Array.isArray(t.lns)) return; const p = PO(t.po); if (!p) { t.lns = []; return; }
+    const d = TEMPLATES[t.tpl] && TEMPLATES[t.tpl].tasks.find(x => x.k === t.k);
+    const ls = p.lines.filter(l => (t.codes ? t.codes.includes(l.code) : true) && (!d || lineMatch(d.lines, l)));
+    t.lns = ls.map(l => l.ln); t.codes = ls.map(l => l.code); });
+  DB.tasks = DB.tasks.filter(t => PO(t.po) && TEMPLATES[t.tpl]);
 }
 
 /* =====================================================================
@@ -1704,7 +1831,7 @@ function pageTask(id) {
   if (i.kind === 'prod') return pageProd(i);
   if (['submitted', 'offline', 'approved'].includes(i.status)) return pageSent(i);
   const s = insState(i); const ps = insPOs(i); UI.confirm = UI.confirm || {}; const started = !!i.data;
-  const lines = ps.flatMap(p => p.lines.filter(l => !i.codes || i.codes.includes(l.code)).map(l => ({ p, l })));
+  const lines = insLines(i);
   const N = lines.reduce((a, x) => a + x.l.qty, 0);
   const sample = i.type === 'WW' || i.type === 'FIN' ? lines.reduce((a, x) => a + aql(x.l.qty).n, 0) : i.type === 'DIR' ? lines.reduce((a, x) => a + Math.min(12, x.l.qty), 0) : i.type === 'PLY' ? aql(N).n : 7;
   return `${pageHead('Xác nhận phiên kiểm', `${i.id} · hạn ${fd(i.due)}`, '', 'work')}<div class="stack">
@@ -1721,7 +1848,7 @@ function pageTask(id) {
   ${s !== 'blocked' ? `<div class="sticky-actions"><a class="btn btn-lg hide-m" href="#/work">Quay lại</a><button class="btn btn-primary btn-lg grow" ${started || UI.confirm[id] ? '' : 'disabled'} onclick="startInspect('${id}')">${ic(started ? 'edit' : 'clipboard')} ${started ? 'Tiếp tục phiếu kiểm' : 'Bắt đầu kiểm tra'}</button></div>` : ''}</div>`;
 }
 function initData(i) {
-  const ps = insPOs(i); const lines = ps.flatMap(p => p.lines.filter(l => !i.codes || i.codes.includes(l.code)).map(l => ({ p, l })));
+  const ps = insPOs(i); const lines = insLines(i);
   if (i.type === 'WW') return { date: fd(nowISO()), items: lines.map(x => ({ po: x.p.id, ln: x.l.ln, code: x.l.code, part: x.l.part, slsx: x.l.qty, slkiem: aql(x.l.qty).n, crit: WW_CRIT.map(() => ''), kl: '', dg: '', ph: {} })), load: {}, improve: [], note: '', conclusion: '', sig: ME.id === 'qc2' ? 'sig_van' : '' };
   if (i.type === 'DIR' || i.type === 'FIN') {
     const p0 = ps[0]; const base = { rows: lines.map(x => ({ po: x.p.id, desc: x.l.desc || x.l.part, code: x.l.code, qo: x.l.qty, qi: i.type === 'DIR' ? Math.min(12, x.l.qty) : aql(x.l.qty).n, cr: 0, ma: 0, mi: 0, rj: 0, rm: i.type === 'DIR' ? 'Inline' : 'Final' })), defects: [], conclusion: '', note: '' };
@@ -1958,6 +2085,14 @@ function saveProd(id) {
    LEAD QC — Dashboard · Đồng bộ · PO & kế hoạch đánh giá · Duyệt
    ===================================================================== */
 const planChips = p => planOf(p) ? tasksOf(p).filter(t => taskState(t) !== 'na').map(taskChip).join('') : pill('Chưa lập kế hoạch', 'violet');
+/* 1 PO ↔ 1 kế hoạch: một khối duy nhất — mã kế hoạch, template, tiến độ giao việc / có kết quả */
+function planCell(p) {
+  const pl = planOf(p); if (!pl) return `<div class="plan-cell none">${ic('calendar', '', 'width:14px;height:14px')}<span>Chưa lập kế hoạch</span></div>`;
+  const T = TEMPLATES[pl.tpl]; const m = planSummary(p); const pa = m.lnTotal ? Math.round(m.lnAsg / m.lnTotal * 100) : 0, pd = m.lnTotal ? Math.round(m.lnDone / m.lnTotal * 100) : 0;
+  return `<div class="plan-cell"><div class="pc-t" title="Kế hoạch ${pl.id}"><b>${T.code}</b><span class="muted">${esc(T.name)}</span></div>
+    <div class="pc-bar" title="Đã giao ${m.lnAsg}/${m.lnTotal} PO Line · có kết quả ${m.lnDone}/${m.lnTotal}"><span class="a" style="width:${pa}%"></span><span class="d" style="width:${pd}%"></span></div>
+    <div class="pc-m"><span>${m.total} task · ${m.lnTotal} PO Line</span><span>Đã giao <b>${m.lnAsg}/${m.lnTotal}</b></span><span>Có kết quả <b>${m.lnDone}/${m.lnTotal}</b></span>${m.na ? `<span class="muted">${m.na} không áp dụng</span>` : ''}</div></div>`;
+}
 
 /* ---------------- DASHBOARD (P2) ---------------- */
 function actionItems() {
@@ -2047,7 +2182,7 @@ function pagePOs() {
   return `${pageHead('Purchase Orders', 'PO đồng bộ từ Base. Mỗi PO có 01 kế hoạch đánh giá, sinh danh sách task từ template.', `<a class="btn" href="#/sync">${ic('refresh')} Đồng bộ Base</a><button class="btn btn-primary" onclick="bulkModal()">${ic('send')} Giao việc hàng loạt</button>`)}
   <div class="card"><div class="tabs" style="padding:0 20px">${tabs.map(t => `<button class="${t[0] === cur[0] ? 'on' : ''}" onclick="UI.poTab='${t[0]}';render()">${t[1]} <span class="n">${DB.pos.filter(p => poState(p) === t[0]).length}</span></button>`).join('')}</div>
   <div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>PO</th><th>Khách hàng · dòng hàng</th><th>Xưởng</th><th class="r">Số lượng</th><th>ETD</th><th>Kế hoạch đánh giá</th><th>Trạng thái</th></tr></thead><tbody>
-  ${list.length ? list.map(p => `<tr class="click" onclick="go('po/${p.id}')"><td class="nw"><b>${p.id}</b><div class="t-xs muted">${p.lines.length} PO Line</div></td><td>${p.customer}<div class="t-xs muted">${p.series} · ${p.color}</div></td><td class="nw">${p.factory}</td><td class="r nw">${num(poQty(p))}</td><td class="nw num">${fd(p.etd)}</td><td><div class="row wrap">${planChips(p)}</div>${prog(p)}</td><td>${psPill(p)}</td></tr>`).join('') : `<tr><td colspan="7">${empty('Không có PO', '', 'box')}</td></tr>`}</tbody></table></div></div>`;
+  ${list.length ? list.map(p => `<tr class="click" onclick="go('po/${p.id}')"><td class="nw"><b>${p.id}</b><div class="t-xs muted">${p.lines.length} PO Line</div></td><td>${p.customer}<div class="t-xs muted">${p.series} · ${p.color}</div></td><td class="nw">${p.factory}</td><td class="r nw">${num(poQty(p))}</td><td class="nw num">${fd(p.etd)}</td><td style="min-width:220px">${planCell(p)}</td><td>${psPill(p)}</td></tr>`).join('') : `<tr><td colspan="7">${empty('Không có PO', '', 'box')}</td></tr>`}</tbody></table></div></div>`;
 }
 
 /* ---------------- PO DETAIL (04–07, 23–26) ---------------- */
@@ -2068,8 +2203,6 @@ function pagePO(id) {
   <div class="card"><div class="card-b"><div class="kv-grid">${kv('Số lượng', num(poQty(p)) + ' pcs')}${kv('Giá trị', money(p.value))}${kv('ETD', fd(p.etd))}${kv('Tiến độ', poPct(p) + '%')}${kv('Kế hoạch', planOf(p) ? TEMPLATES[planOf(p).tpl].code : 'Chưa lập')}</div><div class="sep"></div>${poStepper(p)}</div></div>
   <div class="grid g-main"><div class="stack">
     ${planCard(p)}
-    <div class="card"><div class="card-h"><div class="ttl"><h2>PO Line</h2><p>Nguồn chọn của task: mỗi PO Line thuộc các task có bộ lọc phù hợp trong template. Kết quả đã duyệt tự liên kết theo mã hàng.</p></div></div><div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>#</th><th>Mã hàng</th><th>Chi tiết</th><th class="r">SL</th><th>Thuộc task</th>${planTypes(p).includes('WW') ? '<th>11A Hàng trắng</th>' : ''}${planTypes(p).includes('DIR') ? '<th>11C Daily</th>' : ''}</tr></thead><tbody>
-      ${p.lines.map(l => `<tr><td class="muted">${l.ln}</td><td class="nw fw6">${l.code}</td><td>${l.part}</td><td class="r">${num(l.qty)}</td><td><div class="row" style="gap:4px;flex-wrap:nowrap">${tasksOf(p).filter(t => t.codes.includes(l.code)).map(t => `<span class="tag" title="${esc(tdef(t).name)}">${taskLabel(t)}</span>`).join('') || '<span class="muted">—</span>'}</div></td>${planTypes(p).includes('WW') ? `<td>${lineWW(p, l)}</td>` : ''}${planTypes(p).includes('DIR') ? `<td>${lineDIR(p, l)}</td>` : ''}</tr>`).join('')}</tbody></table></div></div>
   </div><div class="stack">
     <div class="card"><div class="card-h"><div class="ttl"><h2>Điều kiện chốt PO</h2><p>Bước 24</p></div></div><div class="card-b stack-8">${chk.conds.map(c => `<div class="row" style="align-items:flex-start">${ic(c.ok ? 'checkc' : 'xc', '', `color:var(--${c.ok ? 'green' : 'red'});margin-top:2px`)}<div><div class="t-sm fw5">${c.t}</div>${!c.ok && c.sub ? `<div class="t-xs muted">${c.sub}</div>` : ''}</div></div>`).join('')}${st === 'closed' ? '' : `<button class="btn ${chk.ready ? 'btn-primary' : ''} btn-block mt8" ${chk.ready ? '' : 'disabled'} onclick="closePO('${p.id}')">${ic('flag')} Chốt PO & xuất báo cáo</button>`}</div></div>
     <div class="card"><div class="card-h"><div class="ttl"><h2>Báo cáo PO</h2><p>Bước 26 · lưu phiên bản</p></div></div><div class="list">${reps.length ? reps.slice().reverse().map(r => `<a class="li" href="#/report/po/${r.id}">${ic('file', '', 'color:var(--primary)')}<div class="body"><div class="title t-sm">${r.ver} <span class="muted fw5">${fdt(r.at)}</span></div><div class="meta"><span>${esc(r.note)}</span></div></div></a>`).join('') : `<div class="card-b t-sm muted">Chưa có. Báo cáo được tạo khi chốt PO.</div>`}</div></div>
@@ -2343,6 +2476,8 @@ function paperPO(r) {
   <tr><td colspan="2" class="hd">Kế hoạch</td><td colspan="10">${planOf(p) ? `${planOf(p).id} · ${TEMPLATES[planOf(p).tpl].code} ${TEMPLATES[planOf(p).tpl].name}` : 'Chưa lập'}</td></tr>
   <tr><td colspan="12" class="sec">KẾT QUẢ THEO TASK CỦA KẾ HOẠCH ĐÁNH GIÁ</td></tr><tr><th colspan="3">Task / mẫu phiếu</th><th colspan="3">Phiên kiểm</th><th colspan="2">QC</th><th>Ngày duyệt</th><th>Kiểm / SL</th><th>Lỗi C/M/m</th><th>Kết luận</th></tr>
   ${L.map(x => { const e = x.i && evalInsp(x.i); return `<tr><td colspan="3">${esc(x.d.name)}<br><span style="color:#666">${TYPES[x.d.type].code} · ${TYPES[x.d.type].doc} · ${x.t.codes.length} PO Line</span></td><td colspan="3">${x.s === 'na' ? 'Không áp dụng — không có PO Line phù hợp' : x.i ? x.i.title + ' (' + x.i.id + ')' + (x.s === 'reused' ? ' — dùng lại' : '') : TK_UI[x.s][0]}</td><td colspan="2">${x.i ? U(x.i.assignee).name : ''}</td><td class="c">${x.i ? fd(x.i.review.at) : ''}</td><td class="c">${e ? `${num(e.insp)} / ${num(e.N)}` : ''}</td><td class="c">${e ? `${e.crit}/${e.maj}/${e.min}` : ''}</td><td class="c ${e && e.verdict === 'FAIL' ? 'ng' : 'ok'}">${e ? VERDICT[e.verdict][0] : ''}</td></tr>`; }).join('')}
+  <tr><td colspan="12" class="sec">CHI TIẾT THEO TASK · PO LINE</td></tr><tr><th colspan="4">Task / PO Line</th><th colspan="2">Chi tiết</th><th>SL</th><th colspan="2">Phiếu · QC</th><th colspan="3">Kết quả</th></tr>
+  ${tasksOf(p).filter(t => t.lns.length).map(t => { const d = tdef(t); return `<tr><td colspan="12" class="b" style="background:#f2f6f5">${esc(d.name)} · ${TYPES[d.type].code}</td></tr>` + taskLines(t).map(l => { const f = lineForms(t, l.ln).filter(x => x.status === 'approved').at(-1) || (t.reuse ? INS(t.reuse) : null); const rs = lineResult(t, l.ln, f); return `<tr><td colspan="4" style="padding-left:16px">#${l.ln} ${esc(l.code)}</td><td colspan="2">${esc(l.part)}</td><td class="c">${num(l.qty)}</td><td colspan="2">${f ? f.id + ' · ' + U(f.assignee).name : '—'}</td><td colspan="3" class="${rs && rs.c === 'bad' ? 'ng' : ''}">${rs ? esc(rs.txt) : LN_UI[lineState(t, l.ln)][0]}</td></tr>`; }).join(''); }).join('')}
   <tr><td colspan="12" class="sec">LỊCH SỬ PHIÊN BẢN</td></tr><tr><th colspan="2">Phiên bản</th><th colspan="3">Thời gian</th><th colspan="2">Người xuất</th><th colspan="5">Ghi chú</th></tr>${DB.reports.filter(x => x.po === p.id).map(x => `<tr><td colspan="2">${x.ver}</td><td colspan="3">${fdt(x.at)}</td><td colspan="2">${U(x.by).name}</td><td colspan="5">${esc(x.note)}</td></tr>`).join('')}
   <tr class="noborder"><td colspan="4" class="c" style="padding-top:24px">QA/QC Lead<br><br><br><b>${U(r.by).name}</b></td><td colspan="4" class="c" style="padding-top:24px">QA Manager</td><td colspan="4" class="c" style="padding-top:24px">Customer / Inspector</td></tr></table></div>
   ${poForms(p).map(x => `<div class="pg" data-p="${TYPES[x.i.type].code} · ${x.i.id}"></div>${paperIns(x.i)}`).join('')}`;
@@ -2614,7 +2749,8 @@ function saveUser(id) {
   if (DB.cat.users.some(x => x.email.toLowerCase() === email && x.id !== id)) { toast('Email đã được dùng cho tài khoản khác', 'bad'); return; }
   if (id) { const u = DB.cat.users.find(x => x.id === id); Object.assign(u, { name, email, title: v('u-t') }); if (id !== ME.id) u.role = v('u-r'); }
   else DB.cat.users.push({ id: 'u' + Date.now().toString(36), name, email, title: v('u-t'), role: v('u-r'), active: true });
-  closeModal(); catSave(`${id ? 'Sửa' : 'Thêm'} người dùng ${name} (${ROLES[v('u-r')][0]})`); toast(`Đã lưu ${name}`, 'ok');
+  const roleName = ROLES[id === ME.id ? ME.role : v('u-r')][0]; /* đọc trước khi đóng hộp thoại */
+  closeModal(); catSave(`${id ? 'Sửa' : 'Thêm'} người dùng ${name} (${roleName})`); toast(`Đã lưu ${name}`, 'ok');
 }
 function toggleUser(id) {
   const u = DB.cat.users.find(x => x.id === id); if (id === ME.id) return;
@@ -2774,6 +2910,33 @@ const I18N_EN = {
   "Random check mỗi chi tiết chính": "Random check of each main part",
   "Hàng trắng": "White wood",
   "Báo cáo kiểm trên Chuyền": "During Inline Report",
+  "Còn PO Line chưa giao": "PO Lines left to assign",
+  "Cần kiểm bù": "Needs re-check",
+  "PO Line cần xử lý": "PO Lines to handle",
+  "dòng có thể giao": "assignable lines",
+  "Chọn ít nhất một PO Line": "Select at least one PO Line",
+  "Không có PO Line nào được giao — đã được giao trước đó hoặc trùng ngày kiểm": "No PO Line assigned — already assigned or the inspection date is taken",
+  "Thêm phiên kiểm": "Add inspection session",
+  "Chọn nhiều PO cùng template kế hoạch, chọn task và PO Line rồi giao cho một nhân viên QC": "Select POs with the same plan template, pick tasks and PO Lines, then assign them to one QC inspector",
+  "PO Line chưa giao": "PO Lines unassigned",
+  "2 · Chọn task và PO Line": "2 · Select tasks and PO Lines",
+  "dòng": "lines",
+  "Giao nhiều task": "Assign several tasks",
+  "các task cố định theo template, mỗi PO Line là một task con.": "tasks are fixed by the template; each PO Line is a subtask.",
+  "task con PO Line": "PO Line subtasks",
+  "task không áp dụng": "tasks not applicable",
+  "Task xong": "Tasks done",
+  "Chọn PO Line để giao": "Select PO Lines to assign",
+  "dòng chưa giao": "lines unassigned",
+  "Mở / đóng": "Expand / collapse",
+  "Chọn template phù hợp — hệ thống sinh đủ task và task con theo từng PO Line.": "Pick a template — all tasks and per-PO-Line subtasks are generated.",
+  "Hệ thống sinh đủ task theo template đã chọn; mỗi PO Line phù hợp thành một task con để giao việc và ghi kết quả.": "All tasks of the selected template are generated; each matching PO Line becomes a subtask to assign and record results.",
+  "CHI TIẾT THEO TASK · PO LINE": "DETAILS BY TASK · PO LINE",
+  "Task / PO Line": "Task / PO Line",
+  "Phiếu · QC": "Form · QC",
+  "N/A — chưa kiểm": "N/A — not inspected",
+  "tiêu chí": "criteria",
+  "Có kết quả": "With results",
   "Gợi ý": "Suggested",
   "Cánh & mặt hộc sơn hoàn thiện": "Painted doors & drawer fronts",
   "Hàng trắng gia công ở xưởng ngoài → lót AC / topcoat tại VHGI → final đóng gói. Dùng cho dòng Galaxy (DS GD).": "White wood made at subcontractors → AC primer / topcoat at VHGI → final packing. For the Galaxy (DS GD) line.",
