@@ -1162,9 +1162,9 @@ function counts() {
 function navItems() {
   const c = counts();
   if (isLead()) return [
+    { r: 'dashboard', t: 'Tổng quan & Báo cáo', m: 'Báo cáo', i: 'dashboard', cnt: c.alerts, hot: 1 },
     { r: 'pos', t: 'Purchase Orders', m: 'PO', i: 'box' },
     { r: 'work', t: 'Lịch kiểm QC', m: 'Lịch kiểm', i: 'calendar', cnt: c.review },
-    { r: 'dashboard', t: 'Tổng quan & Báo cáo', m: 'Báo cáo', i: 'dashboard', cnt: c.alerts, hot: 1 },
   ];
   return [{ r: 'work', t: 'Việc của tôi', m: 'Việc', i: 'clipboard', cnt: c.work }];
 }
