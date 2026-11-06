@@ -1,0 +1,13 @@
+# Tài liệu gốc khách gửi — không đưa lên git
+*.zip
+*.xlsx
+*.xls
+*.pdf
+*.docx
+flow.jpg
+Tài liệu KH gửi/exports/
+Tài liệu KH gửi/screenshots/
+# hệ thống
+Thumbs.db
+.DS_Store
+node_modules/
