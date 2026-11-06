@@ -605,6 +605,53 @@ button.li{width:100%;text-align:left}
   .card-h .acts .btn{flex:1;justify-content:center}
 }
 
+/* ===== Kế hoạch đánh giá theo task · Giao việc hàng loạt ===== */
+.tpl-opt{display:flex;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-lg);cursor:pointer;background:var(--surface);transition:.12s}
+.tpl-opt:hover{border-color:var(--line-2)}
+.tpl-opt.on{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary);background:var(--primary-soft)}
+.tpl-opt input{margin-top:3px;accent-color:var(--primary);flex:none}
+.tpl-opt .body{flex:1;min-width:0}
+.tpl-tasks{margin:10px 0 0;padding-left:18px;display:grid;gap:4px;font-size:13px}
+.tpl-tasks li{display:flex;justify-content:space-between;gap:12px}
+.tpl-tasks li .na{color:var(--amber);font-size:12px}
+.tk-row .tk-acts{display:flex;flex-direction:column;gap:6px;align-items:stretch;flex:none}
+.tk-lines{margin-top:6px;font-size:12px}
+.tk-lines summary{cursor:pointer;color:var(--primary-text);font-weight:500}
+.bk-sec{border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;background:var(--surface)}
+.bk-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.bk-h .chk-in{margin-left:auto}
+.chk-in{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer}
+.chk-in input,.bk-po input,.bk-tr input,.bk-inst input{width:17px;height:17px;accent-color:var(--primary);flex:none}
+.bk-grp{margin-top:8px}.bk-grp.dim{opacity:.55}
+.bk-gh{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.bk-pos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.bk-po{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);cursor:pointer}
+.bk-po.on{border-color:var(--primary);background:var(--primary-soft)}
+.bk-po.dis{cursor:not-allowed}
+.bk-po .body{flex:1;min-width:0;display:flex;flex-direction:column}.bk-po small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-po .n,.bk-tt .n{font-size:11.5px;font-weight:600;color:var(--amber);white-space:nowrap}
+.bk-po .n.z,.bk-tt .n.z{color:var(--muted)}
+.bk-tasks{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.bk-task + .bk-task{border-top:1px solid var(--line)}
+.bk-task.dis .bk-tt b{color:var(--muted)}
+.bk-tr{display:flex;align-items:center;gap:10px;padding:0 0 0 12px}
+.bk-tt{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:10px 12px 10px 0;text-align:left;background:none;border:0;cursor:pointer;color:inherit}
+.bk-tt .body{flex:1;min-width:0;display:flex;flex-direction:column}.bk-tt small{font-size:12px;color:var(--muted)}
+.bk-inst{background:var(--surface-2);border-top:1px solid var(--line);padding:6px 12px 6px 39px;display:grid;gap:2px}
+.bk-inst label{display:flex;align-items:center;gap:10px;font-size:13px;padding:5px 0;cursor:pointer}
+.bk-inst label.dis{cursor:default;color:var(--muted)}
+.bk-inst .muted{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-inst .r{font-size:12px;white-space:nowrap}
+.bk-prev{display:grid;gap:6px;margin-bottom:12px;padding:10px 12px;border-radius:var(--r);background:var(--surface-2);font-size:13px}
+.bk-prev div{display:flex;gap:8px;align-items:center}
+@media (max-width:640px){
+  .tk-row .tk-acts{flex-direction:row;flex-wrap:wrap;width:100%;padding-left:48px}
+  .bk-inst{padding-left:12px}.bk-inst label{flex-wrap:wrap}.bk-inst .muted{flex-basis:100%;order:3;white-space:normal}
+  .tpl-tasks li{flex-direction:column;gap:0}
+}
+@media (max-width:640px){.bk-tt{flex-wrap:wrap}.bk-tt .n{order:3;flex-basis:100%;padding-left:42px}.bk-tr{align-items:flex-start;padding-top:12px}}
+@media (max-width:640px){.tk-row .tag{white-space:normal;max-width:100%;height:auto;line-height:16px;padding-top:4px;padding-bottom:4px}.tk-row .body{min-width:0}}
+
 </style>
 </head>
 <body>
@@ -649,6 +696,28 @@ const TYPES = {
 };
 const TYPE_ORDER = ['PLY', 'WW', 'PIG', 'DIR', 'FIN'];
 const PREREQ = { PLY: [], WW: ['PLY'], PIG: [], DIR: ['PIG'], FIN: ['DIR'] };
+/* ---------- Template kế hoạch đánh giá ----------
+   Mỗi PO có đúng 01 kế hoạch, sinh từ 01 template. Mỗi đầu mục (k = định danh nghiệp vụ, không dùng tên) → 01 task.
+   lines: bộ lọc PO Line của đầu mục (không khai báo = tất cả PO Line). after: đầu mục phải có kết quả trước.
+   daily: đầu mục kiểm theo ngày (11C) — mỗi PO tối đa 1 phiếu / ngày. reuse: cho phép dùng lại kết quả đã duyệt. */
+const TEMPLATES = {
+  GLX: { code: 'KH-GLX', name: 'Cánh & mặt hộc sơn hoàn thiện', desc: 'Hàng trắng gia công ở xưởng ngoài → lót AC / topcoat tại VHGI → final đóng gói. Dùng cho dòng Galaxy (DS GD).', tasks: [
+    { k: 'GLX-PLY', type: 'PLY', name: 'Plywood nguyên liệu đầu vào', reuse: 1 },
+    { k: 'GLX-WW', type: 'WW', name: 'Hàng trắng hoàn thiện', after: ['GLX-PLY'] },
+    { k: 'GLX-PIG', type: 'PIG', name: 'Theo dõi & ký mẫu màu', reuse: 1 },
+    { k: 'GLX-DIR', type: 'DIR', name: 'Kiểm trên chuyền lót AC → topcoat', after: ['GLX-PIG'], daily: 1 },
+    { k: 'GLX-FIN', type: 'FIN', name: 'Final – Đóng gói', after: ['GLX-WW', 'GLX-DIR'] },
+  ] },
+  TMB: { code: 'KH-TMB', name: 'Frame & Door sơn tại Xưởng #96', desc: 'Sơn và hoàn thiện ngay tại Xưởng #96, kiểm trên chuyền riêng cho Frame và Door, rồi final đóng gói.', tasks: [
+    { k: 'TMB-DIRF', type: 'DIR', tag: 'Frame', name: 'Kiểm trên chuyền – Frame', lines: { f: 'desc', v: 'Frame' }, daily: 1 },
+    { k: 'TMB-DIRD', type: 'DIR', tag: 'Door', name: 'Kiểm trên chuyền – Door', lines: { f: 'desc', v: 'Door' }, daily: 1 },
+    { k: 'TMB-FIN', type: 'FIN', name: 'Final – Đóng gói', after: ['TMB-DIRF', 'TMB-DIRD'] },
+  ] },
+  PLY: { code: 'KH-PLY', name: 'Plywood nhập từ nhà cung cấp', desc: 'Kiểm plywood tại NCC theo BM-VHGLF-02; tấm cán UV kiểm thêm sau cán.', tasks: [
+    { k: 'PLY-IN', type: 'PLY', name: 'Kiểm plywood tại NCC' },
+    { k: 'PLY-UV', type: 'PLY', tag: 'UV', name: 'Kiểm sau cán UV 2 mặt', lines: { f: 'desc', v: 'UV', op: 'has' }, after: ['PLY-IN'] },
+  ] },
+};
 /* 2 vùng đánh giá độc lập: thứ tự chặn (PREREQ) chỉ áp dụng trong cùng một vùng */
 const ZONES = [
   { k: 'raw', name: 'Vùng 1 · Nguyên liệu & hàng trắng', types: ['PLY', 'WW'] },
@@ -761,30 +830,38 @@ function seedDB() {
   const L = (code, part, qty, desc) => ({ code, part, qty, desc: desc || (part === 'Mặt hộc' ? 'Mặt hộc (drawer front)' : 'Cánh (door)') });
   const ln = arr => arr.map((x, i) => ({ ln: i + 1, ...x, sku: x.code + (x.part === 'Mặt hộc' ? ' · MK' : '') }));
   const pos = [
-    { id: '4200017234', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 186400, etd: at('12/12/2026'), cont: 'Cont 2', plyPO: '55672',
-      plan: ['PLY', 'WW', 'PIG', 'DIR', 'FIN'], syncedAt: at('02/09/2026', 8), hold: false,
+    { id: '4200017234', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 186400, etd: at('12/12/2026'), cont: 'Cont 2',
+      syncedAt: at('02/09/2026', 8), hold: false,
       lines: ln([L('DS GD B15', 'Cánh', 150), L('DS GD B15', 'Mặt hộc', 150), L('DS GD B24', 'Cánh', 560), L('DS GD B24', 'Mặt hộc', 280), L('DS GD B30', 'Cánh', 660), L('DS GD B30', 'Mặt hộc', 330), L('DS GD BLB48/51', 'Cánh', 40), L('DS GD BLB48/51', 'Mặt hộc', 40), L('DS GD DB21-MK1', 'Mặt hộc', 200), L('DS GD DB21-MK2', 'Mặt hộc', 100), L('DS GD DB36-2', 'Mặt hộc', 80), L('DS GD TP30', 'Cánh', 240), L('GD WP-BASE', 'Cánh', 310)]),
       progress: [100, 100, 100, 100, 62, 18, 0, 0, 0, 0], bottleneck: { g: 'PAINT', pcs: 0, note: 'Chờ ký mẫu màu Dove trước khi sơn đại trà' } },
-    { id: '4200017236', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 142900, etd: at('18/12/2026'), cont: 'Cont 2', plyPO: '55672',
-      plan: ['PLY', 'WW', 'PIG', 'DIR', 'FIN'], syncedAt: at('02/09/2026', 8), hold: false,
+    { id: '4200017236', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 142900, etd: at('18/12/2026'), cont: 'Cont 2',
+      syncedAt: at('02/09/2026', 8), hold: false,
       lines: ln([L('DS GD W1542', 'Cánh', 100), L('DS GD W1842', 'Cánh', 120), L('DS GD W2142', 'Cánh', 80), L('DS GD W2418', 'Cánh', 80), L('DS GD W2430', 'Cánh', 320), L('DS GD W2742', 'Cánh', 220), L('DS GD W3015', 'Cánh', 160), L('DS GD W3024', 'Cánh', 160), L('DS GD W3036', 'Cánh', 580), L('DS GD W3318', 'Cánh', 200), L('DS GD W3624', 'Cánh', 320), L('DS GD WBC3630', 'Cánh', 40), L('DS GD WDC2442', 'Cánh', 60)]),
       progress: [100, 100, 100, 88, 55, 12, 0, 0, 0, 0], bottleneck: { g: 'WW', pcs: 300, note: '3 mã W1542 / W1842 / W2418 chưa kiểm hàng trắng (chất hàng trước)' } },
     { id: '48150', customer: 'Fabuwood', cust: 'FBW', series: 'AF Timber (Frame)', color: 'Timber', factory: 'Xưởng #96', finisher: 'Xưởng #96', paint: 'VVT', unit: 'pcs', value: 61200, etd: at('20/11/2026'), cont: 'Cont 1',
-      plan: ['DIR', 'FIN'], syncedAt: at('10/10/2026', 8), hold: false,
+      syncedAt: at('10/10/2026', 8), hold: false,
       lines: ln([L('AF TIMBER DB24', 'Frame', 140, 'Frame'), L('AF TIMBER DB18', 'Frame', 120, 'Frame'), L('AF TIMBER B33', 'Frame', 100, 'Frame'), L('AF TIMBER B15', 'Frame', 100, 'Frame'), L('AF TIMBER B09FD', 'Frame', 110, 'Frame')]),
       progress: [100, 100, 100, 100, 100, 96, 14, 40, 20, 0], bottleneck: { g: 'PAINT', pcs: 13, note: 'Hairline, pinholes sau topcoat — 13/60 pcs mẫu' } },
     { id: '48151', customer: 'Fabuwood', cust: 'FBW', series: 'DS GTI (Door)', color: 'Timber', factory: 'Xưởng #96', finisher: 'Xưởng #96', paint: 'VVT', unit: 'pcs', value: 4900, etd: at('20/11/2026'), cont: 'Cont 1',
-      plan: ['DIR', 'FIN'], syncedAt: at('10/10/2026', 8), hold: false,
-      lines: ln([L('DS GTI VSD30', 'Door', 28, 'Door')]), progress: [100, 100, 100, 100, 100, 100, 0, 100, 90, 40], bottleneck: null },
+      syncedAt: at('10/10/2026', 8), hold: false,
+      lines: ln([L('DS GTI VSD30', 'Door', 28, 'Door'), L('DS GTI VSD18', 'Door', 24, 'Door'), L('DS GTI VSD36', 'Door', 30, 'Door')]), progress: [100, 100, 100, 100, 100, 100, 0, 100, 90, 40], bottleneck: null },
     { id: '48153', customer: 'Fabuwood', cust: 'FBW', series: 'DS GTR (Door)', color: 'Timber', factory: 'Xưởng #96', finisher: 'Xưởng #96', paint: 'VVT', unit: 'pcs', value: 9100, etd: at('20/11/2026'), cont: 'Cont 1',
-      plan: ['DIR', 'FIN'], syncedAt: at('10/10/2026', 8), hold: false,
-      lines: ln([L('DS GTR DB18', 'Door', 56, 'Door')]), progress: [100, 100, 100, 100, 100, 100, 0, 90, 70, 20], bottleneck: null },
+      syncedAt: at('10/10/2026', 8), hold: false,
+      lines: ln([L('DS GTR DB18', 'Door', 56, 'Door'), L('DS GTR DB12', 'Door', 40, 'Door'), L('DS GTR DB30', 'Door', 36, 'Door')]), progress: [100, 100, 100, 100, 100, 100, 0, 90, 70, 20], bottleneck: null },
     { id: '56191', customer: 'Woodaxis (NCC)', cust: 'WAX', series: 'Plywood 1/2" · 2 side UV clear', color: 'Birch D+', factory: 'Woodaxis', unit: 'pcs', value: 30450, etd: at('15/11/2026'), cont: 'Lô 1',
-      plan: ['PLY'], syncedAt: at('20/10/2026', 8), hold: false,
-      lines: ln([{ code: 'PLY-BIRCH-D+ 2440x1220x12', part: 'Plywood', qty: 1050, desc: 'Plywood Panel – Veneer Birch D+ · W2440×D1220×H12 · 2 side UV clear' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+      syncedAt: at('20/10/2026', 8), hold: false,
+      lines: ln([{ code: 'PLY-BIRCH-D+ 2440x1220x12', part: 'Plywood', qty: 1050, desc: 'Plywood Panel – Veneer Birch D+ · W2440×D1220×H12 · 2 side UV clear' }, { code: 'PLY-BIRCH-D+ 2440x1220x9', part: 'Plywood', qty: 600, desc: 'Plywood Panel – Veneer Birch D+ · W2440×D1220×H9 · raw' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
     { id: '55672', customer: 'Rongpeng (NCC)', cust: 'RPG', series: 'Plywood 1/2" · UV clear', color: 'Birch D+', factory: 'Rongpeng', unit: 'pcs', value: 30450, etd: at('30/09/2026'), cont: 'Lô 1',
-      plan: ['PLY'], syncedAt: at('01/09/2026', 8), hold: false, closed: { at: at('24/09/2026', 16), by: 'lead1' },
-      lines: ln([{ code: 'PLY-BIRCH-D+ 2443x1223x12', part: 'Plywood', qty: 1050, desc: 'Plywood Panel – Veneer Birch D+ · W2443×D1223×H12' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+      syncedAt: at('01/09/2026', 8), hold: false, closed: { at: at('24/09/2026', 16), by: 'lead1' },
+      lines: ln([{ code: 'PLY-BIRCH-D+ 2443x1223x12', part: 'Plywood', qty: 1050, desc: 'Plywood Panel – Veneer Birch D+ · W2443×D1223×H12' }, { code: 'PLY-BIRCH-B 2443x1223x9', part: 'Plywood', qty: 450, desc: 'Plywood Panel – Veneer Birch B · W2443×D1223×H9' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+    { id: '48160', customer: 'Fabuwood', cust: 'FBW', series: 'AF Timber · Frame + Door', color: 'Timber', factory: 'Xưởng #96', finisher: 'Xưởng #96', paint: 'VVT', unit: 'pcs', value: 38800, etd: d(40), cont: 'Cont 4', syncedAt: d(-1, 8), hold: false,
+      lines: ln([L('AF TIMBER W30', 'Frame', 120, 'Frame'), L('AF TIMBER W36', 'Frame', 90, 'Frame'), L('DS GTI VSD42', 'Door', 60, 'Door'), L('DS GTR DB24', 'Door', 48, 'Door')]), progress: [100, 40, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+    { id: '48162', customer: 'Fabuwood', cust: 'FBW', series: 'AF Timber · Frame + Door', color: 'Timber', factory: 'Xưởng #96', finisher: 'Xưởng #96', paint: 'VVT', unit: 'pcs', value: 45200, etd: d(30), cont: 'Cont 3', syncedAt: d(-3, 8), hold: false,
+      lines: ln([L('AF TIMBER B21', 'Frame', 150, 'Frame'), L('AF TIMBER B36', 'Frame', 110, 'Frame'), L('AF TIMBER W24', 'Frame', 80, 'Frame'), L('DS GTI VSD24', 'Door', 72, 'Door'), L('DS GTR DB36', 'Door', 64, 'Door')]), progress: [100, 100, 60, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+    { id: '56205', customer: 'Rongpeng (NCC)', cust: 'RPG', series: 'Plywood 1/2" · raw', color: 'Birch D+', factory: 'Rongpeng', unit: 'pcs', value: 21600, etd: d(5), cont: 'Lô 2', syncedAt: d(-12, 8), hold: false,
+      lines: ln([{ code: 'PLY-BIRCH-D+ 2443x1223x12 R', part: 'Plywood', qty: 800, desc: 'Plywood Panel – Veneer Birch D+ · W2443×D1223×H12 · raw' }, { code: 'PLY-BIRCH-B 2443x1223x6', part: 'Plywood', qty: 400, desc: 'Plywood Panel – Veneer Birch B · W2443×D1223×H6 · raw' }]), progress: [100, 100, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
+    { id: '56240', customer: 'Woodaxis (NCC)', cust: 'WAX', series: 'Plywood · UV + raw', color: 'Birch D+', factory: 'Woodaxis', unit: 'pcs', value: 27900, etd: d(25), cont: 'Lô 2', syncedAt: d(0, 7), hold: false,
+      lines: ln([{ code: 'PLY-BIRCH-D+ 2440x1220x18 UV', part: 'Plywood', qty: 500, desc: 'Plywood Panel – Veneer Birch D+ · W2440×D1220×H18 · 2 side UV clear' }, { code: 'PLY-BIRCH-B 2440x1220x9', part: 'Plywood', qty: 700, desc: 'Plywood Panel – Veneer Birch B · W2440×D1220×H9 · raw' }]), progress: [30, 0, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null },
   ];
   const lines = id => pos.find(p => p.id === id).lines;
 
@@ -858,23 +935,32 @@ function seedDB() {
 
   const I = o => Object.assign({ kind: 'qc', status: 'todo', team: [], createdBy: 'lead1', createdAt: d(-2), priority: 'normal' }, o);
   const ins = [
-    I({ id: 'PLY-55672', type: 'PLY', title: 'Plywood Rongpeng · PO 55672', pos: ['55672'], factory: 'Rongpeng', assignee: 'qc3', team: ['qc3', 'qc4'], due: at('22/09/2026'), status: 'approved', data: plyR, createdAt: at('18/09/2026'), submittedAt: at('22/09/2026', 17), review: { by: 'lead1', at: at('23/09/2026', 9), decision: 'approve' } }),
-    I({ id: 'WW-C2', type: 'WW', title: 'Hàng trắng hoàn thiện · Cont 2', pos: ['4200017234', '4200017236'], factory: 'Vỹ Thành', assignee: 'qc2', due: at('16/09/2026'), status: 'approved', data: ww, createdAt: at('12/09/2026'), submittedAt: at('16/09/2026', 18), review: { by: 'lead1', at: at('17/09/2026', 10), decision: 'approve' }, ncr: 'NCR-2609-03' }),
-    I({ id: 'WW-C2B', type: 'WW', title: 'Kiểm bù 3 mã W1542 · W1842 · W2418', pos: ['4200017236'], codes: naCodes, factory: 'VHGI', assignee: 'qc2', due: d(0), priority: 'high', status: 'todo', createdAt: d(-1),
+    I({ id: 'PLY-55672', tasks: ['TK-55672-PLY-IN'], type: 'PLY', title: 'Plywood Rongpeng · PO 55672', pos: ['55672'], factory: 'Rongpeng', assignee: 'qc3', team: ['qc3', 'qc4'], due: at('22/09/2026'), status: 'approved', data: plyR, createdAt: at('18/09/2026'), submittedAt: at('22/09/2026', 17), review: { by: 'lead1', at: at('23/09/2026', 9), decision: 'approve' } }),
+    I({ id: 'WW-C2', tasks: ['TK-4200017234-GLX-WW', 'TK-4200017236-GLX-WW'], type: 'WW', title: 'Hàng trắng hoàn thiện · Cont 2', pos: ['4200017234', '4200017236'], factory: 'Vỹ Thành', assignee: 'qc2', due: at('16/09/2026'), status: 'approved', data: ww, createdAt: at('12/09/2026'), submittedAt: at('16/09/2026', 18), review: { by: 'lead1', at: at('17/09/2026', 10), decision: 'approve' }, ncr: 'NCR-2609-03' }),
+    I({ id: 'WW-C2B', tasks: ['TK-4200017236-GLX-WW'], type: 'WW', title: 'Kiểm bù 3 mã W1542 · W1842 · W2418', pos: ['4200017236'], codes: naCodes, factory: 'VHGI', assignee: 'qc2', due: d(0), priority: 'high', status: 'todo', createdAt: d(-1),
       note: '3 mã chưa kiểm tại Vỹ Thành do chất hàng từ trước — kiểm tại VHGI trước khi lót AC.' }),
-    I({ id: 'PIG-DOVE', type: 'PIG', title: 'Mẫu màu Galaxy · Dove (Uylan door trial)', pos: ['4200017234', '4200017236'], factory: 'VHGI', assignee: 'qc1', due: d(0), status: 'draft', data: pig, createdAt: at('13/10/2026'), color: 'Dove' }),
-    I({ id: 'DIR-96-0311', type: 'DIR', title: 'Daily Inline #96 · 03/11', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(-1), status: 'submitted', data: dir96, createdAt: d(-2), submittedAt: d(-1, 17, 20) }),
-    I({ id: 'DIR-96-0411', type: 'DIR', title: 'Daily Inline #96 · hôm nay', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(0), status: 'todo', createdAt: d(-1), recur: 'daily' }),
-    I({ id: 'DIR-VHGI-01', type: 'DIR', title: 'Daily Inline VHGI · lót AC Galaxy Dove', pos: ['4200017234'], factory: 'VHGI', assignee: 'qc1', due: d(1), status: 'todo', createdAt: d(-1), recur: 'daily' }),
-    I({ id: 'PLY-56191', type: 'PLY', title: 'Plywood Woodaxis · PO 56191', pos: ['56191'], factory: 'Woodaxis', assignee: 'qc4', team: ['qc4'], due: d(-4), status: 'submitted', data: plyW, createdAt: d(-8), submittedAt: d(-3, 16) }),
-    I({ id: 'FIN-48151', type: 'FIN', title: 'Final / Packing · PO 48151 · 48153', pos: ['48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(3), status: 'todo', createdAt: d(-1) }),
+    I({ id: 'PIG-DOVE', tasks: ['TK-4200017234-GLX-PIG', 'TK-4200017236-GLX-PIG'], type: 'PIG', title: 'Mẫu màu Galaxy · Dove (Uylan door trial)', pos: ['4200017234', '4200017236'], factory: 'VHGI', assignee: 'qc1', due: d(0), status: 'draft', data: pig, createdAt: at('13/10/2026'), color: 'Dove' }),
+    I({ id: 'DIR-96-0311', tasks: ['TK-48150-TMB-DIRF', 'TK-48151-TMB-DIRD', 'TK-48153-TMB-DIRD'], type: 'DIR', title: 'Daily Inline #96 · 03/11', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(-1), status: 'submitted', data: dir96, createdAt: d(-2), submittedAt: d(-1, 17, 20) }),
+    I({ id: 'DIR-96-0411', tasks: ['TK-48150-TMB-DIRF', 'TK-48151-TMB-DIRD', 'TK-48153-TMB-DIRD'], type: 'DIR', title: 'Daily Inline #96 · hôm nay', pos: ['48150', '48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(0), status: 'todo', createdAt: d(-1), recur: 'daily' }),
+    I({ id: 'DIR-VHGI-01', tasks: ['TK-4200017234-GLX-DIR'], type: 'DIR', title: 'Daily Inline VHGI · lót AC Galaxy Dove', pos: ['4200017234'], factory: 'VHGI', assignee: 'qc1', due: d(1), status: 'todo', createdAt: d(-1), recur: 'daily' }),
+    I({ id: 'PLY-56191', tasks: ['TK-56191-PLY-IN'], type: 'PLY', title: 'Plywood Woodaxis · PO 56191', pos: ['56191'], factory: 'Woodaxis', assignee: 'qc4', team: ['qc4'], due: d(-4), status: 'submitted', data: plyW, createdAt: d(-8), submittedAt: d(-3, 16) }),
+    I({ id: 'FIN-48151', tasks: ['TK-48151-TMB-FIN', 'TK-48153-TMB-FIN'], type: 'FIN', title: 'Final / Packing · PO 48151 · 48153', pos: ['48151', '48153'], factory: 'Xưởng #96', assignee: 'qc1', due: d(3), status: 'todo', createdAt: d(-1) }),
+    I({ id: 'PLY-56205', tasks: ['TK-56205-PLY-IN'], type: 'PLY', title: 'Plywood Rongpeng · PO 56205', pos: ['56205'], factory: 'Rongpeng', assignee: 'qc3', team: ['qc3'], due: d(-6), status: 'approved', createdAt: d(-9), submittedAt: d(-6, 16), review: { by: 'lead1', at: d(-5, 10), decision: 'approve' },
+      data: Object.assign(JSON.parse(JSON.stringify(plyR)), { header: Object.assign({}, plyR.header, { reportNo: 'VHGLF ' + fd(d(-6)).replace(/\//g, ''), itemNo: 'Plywood 1/2" raw', qty: 1200, sampling: 80 }), defects: [], deviations: [], conclusion: 'pass' }) }),
     I({ id: 'PC-2001', kind: 'prod', type: 'PC', title: 'Cập nhật tiến độ PO 4200017234', pos: ['4200017234'], factory: 'VHGI', assignee: 'qc3', due: d(0), status: 'todo' }),
   ];
 
 
+  /* kế hoạch đánh giá: 48160 và 56240 chưa lập (Chờ lập kế hoạch) */
+  const PLANS = { '4200017234': 'GLX', '4200017236': 'GLX', '48150': 'TMB', '48151': 'TMB', '48153': 'TMB', '48162': 'TMB', '56191': 'PLY', '55672': 'PLY', '56205': 'PLY' };
+  const plans = Object.entries(PLANS).map(([po, tpl]) => ({ id: 'KH-' + po, po, tpl, at: pos.find(p => p.id === po).syncedAt, by: 'lead1' }));
+  const tasks = plans.flatMap(pl => genTasks(pos.find(p => p.id === pl.po), pl.tpl));
+  tasks.forEach(t => { const f = ins.filter(i => (i.tasks || []).includes(t.id)).at(-1); if (f) Object.assign(t, { assignee: f.assignee, due: f.due, assignedAt: f.createdAt, assignedBy: 'lead1' }); });
+  ['4200017234', '4200017236'].forEach(po => { tasks.find(t => t.id === 'TK-' + po + '-GLX-PLY').reuse = 'PLY-55672'; });
+
   const syncLog = [
     { id: 'SY-08', at: d(0, 6, 10), po: '4200017240', type: 'create', ok: false, issues: ['PO Line #3 (DS GD B36): thiếu số lượng', 'PO Line #5 (DS GD W3030): thiếu số lượng', 'Trường "Xưởng sản xuất" trống'],
-      payload: { id: '4200017240', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 98600, etd: d(55), cont: 'Cont 3', plyPO: '56191', plan: ['PLY', 'WW', 'PIG', 'DIR', 'FIN'],
+      payload: { id: '4200017240', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 98600, etd: d(55), cont: 'Cont 3',
         lines: [{ ln: 1, code: 'DS GD B18', part: 'Cánh', qty: 300, sku: 'DS GD B18' }, { ln: 2, code: 'DS GD B18', part: 'Mặt hộc', qty: 300, sku: 'DS GD B18 · MK' }, { ln: 3, code: 'DS GD B36', part: 'Cánh', qty: 240, sku: 'DS GD B36' }, { ln: 4, code: 'DS GD W3042', part: 'Cánh', qty: 260, sku: 'DS GD W3042' }, { ln: 5, code: 'DS GD W3030', part: 'Cánh', qty: 220, sku: 'DS GD W3030' }],
         progress: [20, 0, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null } },
     { id: 'SY-07', at: d(-1, 6, 5), po: '48150', type: 'update', ok: true, note: 'Cập nhật ETD 20/11/2026' },
@@ -885,7 +971,7 @@ function seedDB() {
     { id: 'SY-02', at: at('02/09/2026', 8), po: '4200017234', type: 'create', ok: true, note: '13 PO Line · 3.140 pcs' },
     { id: 'SY-01', at: at('02/09/2026', 8), po: '4200017236', type: 'create', ok: true, note: '13 PO Line · 2.440 pcs' },
   ];
-  const baseQueue = [{ id: '4200017241', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 121500, etd: d(62), cont: 'Cont 3', plyPO: '56191', plan: ['PLY', 'WW', 'PIG', 'DIR', 'FIN'],
+  const baseQueue = [{ id: '4200017241', customer: 'Fabuwood', cust: 'FBW', series: 'Galaxy (DS GD)', color: 'Dove', factory: 'Vỹ Thành', finisher: 'VHGI', paint: 'VVT', unit: 'pcs', value: 121500, etd: d(62), cont: 'Cont 3',
     lines: [{ ln: 1, code: 'DS GD B21', part: 'Cánh', qty: 420, sku: 'DS GD B21' }, { ln: 2, code: 'DS GD B21', part: 'Mặt hộc', qty: 420, sku: 'DS GD B21 · MK' }, { ln: 3, code: 'DS GD W3036', part: 'Cánh', qty: 500, sku: 'DS GD W3036' }, { ln: 4, code: 'DS GD WDC2442', part: 'Cánh', qty: 120, sku: 'DS GD WDC2442' }],
     progress: [10, 0, 0, 0, 0, 0, 0, 0, 0, 0], bottleneck: null }];
   const reports = [
@@ -893,6 +979,7 @@ function seedDB() {
     { id: 'RPT-55672-1.1', po: '55672', ver: 'v1.1', at: at('26/09/2026', 10), by: 'lead1', note: 'Bổ sung kết quả trao đổi với Fabuwood về UV 2 mặt' },
   ];
   const log = [
+    { at: d(0, 7), who: 'system', po: '56240', k: 'sync', t: 'Đồng bộ PO mới 56240 từ Base — 2 PO Line' },
     { at: d(0, 6, 10), who: 'system', po: '4200017240', k: 'sync_err', t: 'Đồng bộ thất bại: thiếu số lượng PO Line #3, #5' },
     { at: d(-1, 17, 20), who: 'qc1', po: '48150', k: 'submit', t: 'Gửi Daily Inspection Report #96 (DIR-96-0311) — 13 pcs rejected' },
     { at: d(-1, 9), who: 'qc1', po: '4200017234', k: 'prod', t: 'Đo X-Rite mốc 6 ngày mẫu Dove — ΔE 0.38' },
@@ -900,7 +987,7 @@ function seedDB() {
     { at: at('17/09/2026', 10), who: 'lead1', po: '4200017234', k: 'approve', t: 'Duyệt phiếu hàng trắng Cont 2 (WW-C2) — 23/26 mã Passed, 3 mã N/A' },
     { at: at('24/09/2026', 16), who: 'lead1', po: '55672', k: 'close', t: 'Chốt PO 55672 và xuất báo cáo v1.0' },
   ];
-  return { v: 6, pos, ins, alerts: [], syncLog, baseQueue, reports, log, online: true, outbox: [], seq: { ins: 100, al: 0, sy: 9 } };
+  return { v: 7, pos, ins, plans, tasks, alerts: [], syncLog, baseQueue, reports, log, online: true, outbox: [], seq: { ins: 100, al: 0, sy: 9, gv: 0 } };
 }
 
 /* ============ ICONS (lucide) ============ */
@@ -919,6 +1006,8 @@ const ICONS = {
   file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
   sheet: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/>',
   history: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
+  up: '<path d="m18 15-6-6-6 6"/>',
   scan: '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8"/><path d="M11 8v8"/><path d="M15 8v8"/>',
   search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
   bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
@@ -973,7 +1062,7 @@ let DB, ME = null;
 const UI = { open: {}, reviewTab: 'submitted', workFilter: 'all', workQ: '', poTab: 'active', repType: 'all', repQ: '', histQ: '', cam: {} };
 function load() {
   try { DB = JSON.parse(localStorage.getItem(KEY)); } catch (e) { DB = null; }
-  if (!DB || DB.v !== 6) { DB = seedDB(); DB.pos.forEach(p => { if (p.plyPO) p.reuse = { PLY: 'PLY-55672' }; }); save(); }
+  if (!DB || DB.v !== 7) { DB = seedDB(); save(); }
   applyCat(); save();
   ME = USERS.find(u => u.id === localStorage.getItem(KEY + '-me') && u.active !== false) || null;
 }
@@ -1082,40 +1171,25 @@ function evalRows(i, isDir) {
 }
 function evalInsp(i) { if (!i.data || !EVAL[i.type]) return { total: 0, done: 0, score: 0, crit: 0, maj: 0, min: 0, rej: 0, insp: 0, N: 0, verdict: 'COND', miss: [] }; return EVAL[i.type](i); }
 
-/* coverage of a PO by inspection type */
-function typeState(p, ty) {
-  if (!p.plan.includes(ty)) return { state: 'na', list: [] };
-  const list = DB.ins.filter(i => i.kind === 'qc' && i.type === ty && i.pos.includes(p.id));
-  if (p.reuse && p.reuse[ty]) return { state: 'reused', list, from: INS(p.reuse[ty]) };
-  const ap = list.filter(i => i.status === 'approved');
-  let done = ap.length > 0;
-  if (ty === 'WW' && done) { const cov = new Set(); ap.forEach(i => i.data.items.forEach(it => { if (it.po === p.id && ['P', 'F'].includes(wwKL(it))) cov.add(it.code + it.part); })); done = p.lines.every(l => cov.has(l.code + l.part)); }
-  if (done) return { state: 'done', list };
-  if (list.some(i => ['submitted', 'offline'].includes(i.status))) return { state: 'review', list };
-  const open = list.filter(i => i.status !== 'approved');
-  if (open.length) return { state: open.every(i => blockedBy(i)) ? 'waiting' : 'progress', list };
-  return { state: ap.length ? 'partial' : 'none', list };
-}
 const TS_UI = { done: ['Đã duyệt', 'ok'], reused: ['Dùng lại', 'teal'], review: ['Chờ duyệt', 'warn'], progress: ['Đang kiểm', 'info'], waiting: ['Chờ phiếu trước', 'gray'], partial: ['Đạt một phần', 'warn'], none: ['Chưa lập', 'gray'], na: ['Không áp dụng', 'gray'] };
-function blockedBy(i) {
-  if (i.kind !== 'qc' || !['todo', 'draft'].includes(i.status)) return null;
-  const miss = [];
-  insPOs(i).forEach(p => (PREREQ[i.type] || []).forEach(t => { if (p.plan.includes(t) && !['done', 'reused'].includes(typeState(p, t).state)) miss.push({ po: p.id, type: t }); }));
-  return miss.length ? miss : null;
-}
 const insState = i => blockedBy(i) ? 'blocked' : i.status;
 const IS = { blocked: ['Chờ phiếu trước', 'gray'], todo: ['Cần làm', 'teal'], draft: ['Đang làm', 'info'], offline: ['Chờ đồng bộ', 'warn'], submitted: ['Chờ duyệt', 'warn'], returned: ['Trả bổ sung', 'bad'], approved: ['Đã duyệt', 'ok'] };
 const isPill = i => { const s = IS[insState(i)]; return pill(s[0], s[1]); };
 function poCheck(p) {
-  const types = p.plan.map(t => ({ t, ...typeState(p, t) }));
+  const ts = tasksOf(p); const pl = planOf(p);
   const conds = [
-    { t: 'Đủ kết quả các loại đánh giá đã lập kế hoạch', ok: types.every(x => ['done', 'reused'].includes(x.state)), sub: types.filter(x => !['done', 'reused'].includes(x.state)).map(x => TYPES[x.t].short).join(', ') },
+    { t: 'Đã lập kế hoạch đánh giá', ok: !!pl, sub: pl ? '' : 'Chọn template để sinh danh sách task' },
+    { t: 'Tất cả task trong kế hoạch có kết quả', ok: !!pl && ts.every(taskOK), sub: ts.filter(t => !taskOK(t)).map(t => tdef(t).name).join(', ') },
     { t: 'Không còn phiếu chờ duyệt / chờ đồng bộ', ok: !DB.ins.some(i => i.pos.includes(p.id) && ['submitted', 'offline'].includes(i.status)), sub: '' },
   ];
-  return { types, conds, ready: conds.every(c => c.ok) };
+  return { tasks: ts, conds, ready: conds.every(x => x.ok) };
 }
-function poState(p) { if (p.closed) return 'closed'; if (poCheck(p).ready) return 'ready'; if (DB.ins.some(i => i.pos.includes(p.id)) || p.reuse) return 'in_qc'; return 'planning'; }
-const PS = { planning: ['Chờ lập kế hoạch', 'violet'], in_qc: ['Đang QC', 'info'], ready: ['Sẵn sàng chốt', 'teal'], closed: ['Đã chốt', 'ok'] };
+/* trạng thái PO theo kế hoạch: chưa có kế hoạch → còn task chưa giao → đang kiểm → sẵn sàng chốt → đã chốt */
+function poState(p) {
+  if (p.closed) return 'closed'; if (!planOf(p)) return 'planning'; if (poCheck(p).ready) return 'ready';
+  return tasksOf(p).some(t => taskState(t) === 'unassigned') ? 'assign' : 'in_qc';
+}
+const PS = { planning: ['Chờ lập kế hoạch', 'violet'], assign: ['Chờ giao việc', 'warn'], in_qc: ['Đang kiểm', 'info'], ready: ['Sẵn sàng chốt', 'teal'], closed: ['Đã chốt', 'ok'] };
 const psPill = p => { const s = PS[poState(p)]; return pill(s[0], s[1], s[1] === 'solid'); };
 const poQty = p => p.lines.reduce((a, l) => a + l.qty, 0);
 function stagePct(p, k) { const st = PROD_STEPS.map((s, i) => [s, p.progress[i]]).filter(([s]) => s.g === k); return Math.round(st.reduce((a, [, v]) => a + v, 0) / st.length); }
@@ -1221,7 +1295,7 @@ function render() {
   UI.wide = false; mobTables(); fitPaper();
 }
 function renderPage(rt) {
-  const L = { dashboard: pageDashboard, pos: pagePOs, po: () => pagePO(rt.a), merge: () => pageMerge(rt.a), sync: pageSync, review: () => rt.a ? pageReviewDetail(rt.a) : (UI.workFilter = 'submitted', history.replaceState(null, '', '#/work'), pageWork()), work: pageWork, task: () => pageInsView(rt.a), reports: pageReports, report: () => pageReportDoc(rt.a, rt.b), history: pageHistory };
+  const L = { dashboard: pageDashboard, pos: pagePOs, po: () => pagePO(rt.a), merge: () => (UI.poTab = 'assign', history.replaceState(null, '', '#/pos'), pagePOs()), sync: pageSync, review: () => rt.a ? pageReviewDetail(rt.a) : (UI.workFilter = 'submitted', history.replaceState(null, '', '#/work'), pageWork()), work: pageWork, task: () => pageInsView(rt.a), reports: pageReports, report: () => pageReportDoc(rt.a, rt.b), history: pageHistory };
   const R = {
     lead: L, admin: { ...L, admin: pageAdmin },
     qc: { work: pageWork, task: () => pageTask(rt.a), inspect: () => pageInspect(rt.a), history: pageHistory },
@@ -1303,6 +1377,257 @@ function doLogin() { ME = loginUser(); localStorage.setItem(KEY + '-me', ME.id);
 function logout() { ME = null; localStorage.removeItem(KEY + '-me'); location.hash = ''; render(); }
 
 /* =====================================================================
+   KẾ HOẠCH ĐÁNH GIÁ THEO TASK
+   - Mỗi PO liên kết tối đa 01 Kế hoạch đánh giá (DB.plans, khóa theo PO).
+   - Kế hoạch sinh từ 01 Template (TEMPLATES): mỗi đầu mục của template → 01 Task (DB.tasks),
+     không bỏ, không gộp đầu mục. Task không có PO Line phù hợp vẫn được sinh và đánh dấu "Không áp dụng".
+   - PO Line là nguồn chọn của Task: bộ lọc PO Line khai báo trong đầu mục template.
+   - Phiếu kiểm (DB.ins) thực hiện 01 hoặc nhiều Task cùng đầu mục (ins.tasks) — giao hàng loạt
+     nhiều PO cùng template tạo 01 phiếu cho mỗi đầu mục, giống mẫu Daily #96 khách đang dùng.
+   ===================================================================== */
+const planOf = p => DB.plans.find(x => x.po === (p && p.id || p)) || null;
+const TASK = id => DB.tasks.find(t => t.id === id);
+const tdef = t => TEMPLATES[t.tpl].tasks.find(x => x.k === t.k);
+const tplOf = p => { const pl = planOf(p); return pl ? TEMPLATES[pl.tpl] : null; };
+const tasksOf = p => { const id = p && p.id || p; const pl = planOf(id); if (!pl) return []; const order = TEMPLATES[pl.tpl].tasks.map(x => x.k); return DB.tasks.filter(t => t.po === id).sort((a, b) => order.indexOf(a.k) - order.indexOf(b.k)); };
+const taskForms = t => DB.ins.filter(i => (i.tasks || []).includes(t.id));
+const taskLabel = t => { const d = tdef(t); return `${TYPES[d.type].code}${d.tag ? ' ' + d.tag : ''}`; };
+function lineMatch(f, l) { if (!f) return true; const v = String(l[f.f] ?? ''); return f.op === 'has' ? v.includes(f.v) : v === f.v; }
+const filterText = f => !f ? 'Tất cả PO Line' : `${{ desc: 'PO Line có mô tả', part: 'PO Line có chi tiết' }[f.f] || f.f} ${f.op === 'has' ? 'chứa' : 'bằng'} “${f.v}”`;
+function genTasks(p, tplKey) {
+  return TEMPLATES[tplKey].tasks.map(d => ({ id: `TK-${p.id}-${d.k}`, plan: `KH-${p.id}`, po: p.id, tpl: tplKey, k: d.k, codes: p.lines.filter(l => lineMatch(d.lines, l)).map(l => l.code), assignee: null, due: null, reuse: null }));
+}
+
+/* ---------- trạng thái Task ---------- */
+const TK_UI = { na: ['Không áp dụng', 'gray'], reused: ['Dùng lại', 'teal'], unassigned: ['Chưa giao', 'violet'], blocked: ['Chờ task trước', 'gray'], assigned: ['Đã giao', 'info'], progress: ['Đang kiểm', 'info'], review: ['Chờ duyệt', 'warn'], partial: ['Đạt một phần', 'warn'], done: ['Đã duyệt', 'ok'] };
+function wwCovered(t, forms) { const cov = new Set(); forms.filter(i => i.status === 'approved' && i.data).forEach(i => i.data.items.forEach(it => { if (it.po === t.po && ['P', 'F'].includes(wwKL(it))) cov.add(it.code); })); return t.codes.filter(c => !cov.has(c)); }
+function taskState(t) {
+  if (!t.codes.length) return 'na';
+  if (t.reuse) return 'reused';
+  const fs = taskForms(t); if (!fs.length) return 'unassigned';
+  const ap = fs.filter(i => i.status === 'approved'); const open = fs.filter(i => i.status !== 'approved');
+  if (fs.some(i => ['submitted', 'offline'].includes(i.status))) return 'review';
+  if (open.length) return open.some(i => ['draft', 'returned'].includes(i.status)) ? 'progress' : open.every(i => blockedBy(i)) ? 'blocked' : 'assigned';
+  if (tdef(t).type === 'WW' && wwCovered(t, ap).length) return 'partial';
+  return 'done';
+}
+const taskOK = t => ['done', 'reused', 'na'].includes(taskState(t));
+/* giao được = chưa giao, hoặc đã duyệt nhưng còn PO Line chưa có kết quả (kiểm bù) */
+const taskAssignable = t => !PO(t.po).closed && ['unassigned', 'partial'].includes(taskState(t));
+const tkPill = t => { const s = TK_UI[taskState(t)]; return pill(s[0], s[1]); };
+
+/* ---------- thứ tự chờ giữa các đầu mục (trong cùng kế hoạch) ---------- */
+function blockedBy(i) {
+  if (i.kind !== 'qc' || !['todo', 'draft'].includes(i.status) || !(i.tasks || []).length) return null;
+  const miss = []; const seen = new Set();
+  i.tasks.map(TASK).filter(Boolean).forEach(t => (tdef(t).after || []).forEach(k => { const pt = DB.tasks.find(x => x.po === t.po && x.k === k); if (pt && !taskOK(pt) && !seen.has(pt.id)) { seen.add(pt.id); const d = tdef(pt); miss.push({ id: pt.id, po: t.po, type: d.type, name: d.name }); } }));
+  return miss.length ? miss : null;
+}
+
+/* ---------- tổng hợp theo loại phiếu (tương thích báo cáo cũ) ---------- */
+const planTypes = p => [...new Set(tasksOf(p).filter(t => taskState(t) !== 'na').map(t => tdef(t).type))];
+function typeState(p, ty) {
+  const ts = tasksOf(p).filter(t => tdef(t).type === ty && taskState(t) !== 'na');
+  if (!ts.length) return { state: 'na', list: [] };
+  const list = [...new Set(ts.flatMap(taskForms))]; const st = ts.map(taskState);
+  const r = ts.find(t => t.reuse);
+  if (st.every(s => s === 'reused')) return { state: 'reused', list, from: INS(r.reuse) };
+  if (st.every(s => ['done', 'reused'].includes(s))) return { state: 'done', list };
+  for (const [a, b] of [['review', 'review'], ['progress', 'progress'], ['assigned', 'progress'], ['blocked', 'waiting'], ['partial', 'partial']]) if (st.includes(a)) return { state: b, list };
+  return { state: 'none', list };
+}
+
+/* ---------- tạo kế hoạch: 1 PO ↔ 1 kế hoạch ---------- */
+function createPlan(pid, tplKey) {
+  const p = PO(pid); if (!p || p.closed) return toast('PO không tồn tại hoặc đã chốt', 'bad');
+  if (!TEMPLATES[tplKey]) return toast('Chọn template kế hoạch', 'bad');
+  const old = planOf(pid);
+  if (old) {
+    if (tasksOf(p).some(t => taskForms(t).length || t.reuse)) return toast('PO đã có kế hoạch và đã giao việc — không thể tạo kế hoạch khác', 'bad');
+    DB.tasks = DB.tasks.filter(t => t.po !== pid); DB.plans = DB.plans.filter(x => x.po !== pid); // đổi template khi chưa giao gì: vẫn chỉ 1 kế hoạch
+  }
+  const ts = genTasks(p, tplKey);
+  DB.plans.push({ id: `KH-${pid}`, po: pid, tpl: tplKey, at: nowISO(), by: ME.id }); DB.tasks.push(...ts);
+  addLog('plan', `${old ? 'Đổi' : 'Lập'} kế hoạch đánh giá ${TEMPLATES[tplKey].code} cho PO ${pid} — ${ts.length} task (${ts.filter(t => !t.codes.length).length} không áp dụng)`, pid);
+  save(); closeModal(); render(); toast(`Đã lập kế hoạch ${TEMPLATES[tplKey].code} · ${ts.length} task`, 'ok');
+}
+/* gợi ý template: template dùng nhiều nhất cho các PO cùng xưởng, cùng khách hàng */
+function suggestTpl(p) { const c = {}; DB.plans.forEach(x => { const q = PO(x.po); if (q && q.factory === p.factory && q.customer === p.customer) c[x.tpl] = (c[x.tpl] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || Object.keys(TEMPLATES)[0]; }
+function planCreateModal(pid) {
+  const p = PO(pid); const cur = planOf(p); const sug = suggestTpl(p); UI.tplPick = cur ? cur.tpl : sug;
+  const card = k => { const T = TEMPLATES[k]; const ts = genTasks(p, k); const na = ts.filter(t => !t.codes.length).length;
+    return `<label class="tpl-opt ${UI.tplPick === k ? 'on' : ''}"><input type="radio" name="tpl" value="${k}" ${UI.tplPick === k ? 'checked' : ''} onchange="UI.tplPick='${k}';document.querySelectorAll('.tpl-opt').forEach(x=>x.classList.toggle('on',x.querySelector('input').checked))">
+      <div class="body"><div class="row between"><b>${T.code} · ${esc(T.name)}${!cur && k === sug ? ' <span class="pill teal nodot">Gợi ý</span>' : ''}</b><span class="t-xs muted">${ts.length} task${na ? ` · ${na} không áp dụng` : ''}</span></div><p class="t-xs muted mt4">${esc(T.desc)}</p>
+      <ol class="tpl-tasks">${T.tasks.map((d, j) => { const n = ts[j].codes.length; return `<li><span>${TYPES[d.type].code} · ${esc(d.name)}</span><span class="${n ? 'muted' : 'na'}">${n ? `${n}/${p.lines.length} PO Line` : 'Không áp dụng — không có PO Line phù hợp'}</span></li>`; }).join('')}</ol></div></label>`; };
+  openModal({ title: cur ? 'Đổi template kế hoạch' : 'Lập kế hoạch đánh giá', sub: `PO ${pid} · ${p.customer} · ${p.series} · ${p.lines.length} PO Line`, size: 'lg',
+    body: `<div class="stack">${banner('info', 'info', 'Mỗi PO chỉ có 01 kế hoạch đánh giá', 'Hệ thống sinh đủ task theo template đã chọn. Task không có PO Line phù hợp vẫn được giữ, đánh dấu “Không áp dụng”.')}<div class="stack-8">${Object.keys(TEMPLATES).map(card).join('')}</div></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="createPlan('${pid}',UI.tplPick)">${ic('check')} ${cur ? 'Đổi template' : 'Tạo kế hoạch'}</button>` });
+}
+
+/* ---------- giao việc: dùng chung cho giao đơn lẻ và giao hàng loạt ---------- */
+function placeFor(t) { const p = PO(t.po); return ['PLY', 'WW'].includes(tdef(t).type) ? p.factory : (p.finisher || p.factory); }
+/* 11C là báo cáo theo ngày: mỗi task (PO × đầu mục) chỉ một phiếu 11C cho mỗi ngày kiểm */
+function dupDaily(taskIds, dueISO) { const ts = taskIds.map(TASK); if (!dueISO || !ts.some(t => tdef(t).type === 'DIR')) return null; const k = fd(dueISO); return DB.ins.find(i => i.type === 'DIR' && i.kind === 'qc' && (i.tasks || []).some(x => taskIds.includes(x)) && fd(i.due) === k) || null; }
+/* nhóm task thành phiếu: cùng đầu mục template + cùng nơi kiểm → 1 phiếu */
+function groupTasks(ids) {
+  const g = new Map(); ids.map(TASK).forEach(t => { const key = t.tpl + '|' + t.k + '|' + placeFor(t); if (!g.has(key)) g.set(key, []); g.get(key).push(t); });
+  return [...g.values()];
+}
+function assignTasks(ids, assignee, dueISO, note, opts = {}) {
+  ids = [...new Set(ids)]; const ok = [], skip = [], forms = [];
+  ids.forEach(id => { const t = TASK(id); (t && (opts.extra ? !PO(t.po).closed && taskState(t) !== 'na' : taskAssignable(t)) ? ok : skip).push(id); });
+  groupTasks(ok).forEach(ts => {
+    const d = tdef(ts[0]); const pos = [...new Set(ts.map(t => t.po))];
+    const dup = dupDaily(ts.map(t => t.id), dueISO); if (dup) { ts.forEach(t => skip.push(t.id)); return; }
+    let codes = [...new Set(ts.flatMap(t => taskState(t) === 'partial' ? wwCovered(t, taskForms(t)) : t.codes))];
+    if (ts.every(t => taskState(t) !== 'partial' && t.codes.length === PO(t.po).lines.length)) codes = undefined;
+    const i = { id: `${d.type}-${++DB.seq.ins}`, type: d.type, kind: 'qc', tasks: ts.map(t => t.id), title: `${d.name} · PO ${pos.join(' + ')}`, pos, codes, factory: placeFor(ts[0]), assignee, team: [], due: dueISO, status: 'todo', priority: 'normal', note: note || '', createdBy: ME.id, createdAt: nowISO(), batch: opts.batch || null, data: null };
+    if (d.type === 'PIG' && INS('PIG-DOVE')) { const p = PO(pos[0]); i.color = p.color; i.data = JSON.parse(JSON.stringify(INS('PIG-DOVE').data)); Object.assign(i.data, { steps: PIG_STEPS.map(() => ({ ok: false, date: '' })), xr: {}, sec: {}, kcma: KCMA.map(() => ({ r: '', note: '' })), approval: { qty: 7, signed: false }, conclusion: '', note: '' }); i.data.header = { ...i.data.header, color: p.color.toUpperCase(), start: fd(nowISO()), completion: '' }; }
+    DB.ins.push(i); forms.push(i);
+    ts.forEach(t => Object.assign(t, { assignee, due: dueISO, assignedAt: nowISO(), assignedBy: ME.id }));
+  });
+  if (forms.length) addLog('task', `${opts.batch ? `Giao việc hàng loạt ${opts.batch}` : 'Giao việc'}: ${forms.map(i => `${i.id} (${i.tasks.length} task · PO ${i.pos.join(', ')})`).join('; ')} → ${U(assignee).name}, hạn ${fd(dueISO)}`, forms[0].pos[0]);
+  save(); return { forms, skip };
+}
+const dueVal = () => { const v = document.getElementById('as-d').value; return v ? new Date(v + 'T09:00:00').toISOString() : ''; };
+const qcOptions = sel => activeQC().map(u => `<option value="${u.id}" ${u.id === sel ? 'selected' : ''}>${u.name} — ${u.title}</option>`).join('');
+const tomorrow = () => new Date(Date.now() + DAY).toISOString().slice(0, 10);
+
+/* giao 1 hoặc vài task của cùng PO (từ màn chi tiết PO); extra = thêm phiên kiểm mới cho task đã giao (11C theo ngày, kiểm lại) */
+function assignModal(ids, extra) {
+  ids = typeof ids === 'string' ? [ids] : ids; const ts = ids.map(TASK); const p = PO(ts[0].po);
+  openModal({ title: extra ? 'Thêm phiên kiểm cho task' : 'Giao việc', sub: `PO ${p.id} · ${TEMPLATES[ts[0].tpl].code}`, body: `<div class="stack">
+    <div class="card"><div class="list">${ts.map(t => { const d = tdef(t); return `<div class="li"><span class="ico sm tone-teal">${ic(TYPES[d.type].icon, '', 'width:14px;height:14px')}</span><div class="body"><div class="title t-sm">${esc(d.name)}</div><div class="meta"><span>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)}</span><span>${t.codes.length} PO Line</span><span>Nơi kiểm ${placeFor(t)}</span></div></div>${tkPill(t)}</div>`; }).join('')}</div></div>
+    <div class="grid g2"><label class="field"><span>Nhân viên QC thực hiện</span><select class="sel" id="as-a">${qcOptions(ts[0].assignee)}</select></label>
+      <label class="field"><span>Thời hạn hoàn thành</span><input class="inp" type="date" id="as-d" value="${tomorrow()}" onchange="asHint()"></label></div>
+    <label class="field"><span>Ghi chú cho QC</span><input class="inp" id="as-n" placeholder="VD: Kiểm bù các mã chưa kiểm do chất hàng trước"></label><div id="as-hint"></div></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" id="as-ok" onclick="doAssign(${JSON.stringify(ids).replace(/"/g, '&quot;')},${extra ? 1 : 0})">${ic('send')} Giao việc</button>` });
+  UI.asIds = ids; asHint();
+}
+function asHint() {
+  const el = document.getElementById('as-hint'); if (!el) return; const ts = UI.asIds.map(TASK); let h = '';
+  const dup = dupDaily(UI.asIds, dueVal()); const b = document.getElementById('as-ok'); if (b) b.disabled = !!dup;
+  if (dup) h += banner('bad', 'alert', `Đã có phiếu ${dup.id} ngày ${fd(dup.due)}`, '11C là báo cáo theo ngày — mỗi task chỉ một phiếu cho mỗi ngày kiểm. Chọn ngày khác.');
+  const blk = ts.flatMap(t => (tdef(t).after || []).map(k => DB.tasks.find(x => x.po === t.po && x.k === k)).filter(x => x && !taskOK(x)));
+  h += blk.length ? banner('warn', 'hourglass', 'Có task phải chờ', `Phiếu ở trạng thái “Chờ task trước” cho tới khi ${[...new Set(blk.map(x => tdef(x).name))].join(', ')} có kết quả.`) : '';
+  el.innerHTML = h;
+}
+function doAssign(ids, extra) {
+  const a = document.getElementById('as-a').value, due = dueVal(); if (!a || !due) return toast('Chọn nhân viên QC và thời hạn', 'bad');
+  const r = assignTasks(ids, a, due, document.getElementById('as-n').value.trim(), { extra });
+  closeModal(); render();
+  if (!r.forms.length) return toast('Không có task nào được giao — task đã được giao trước đó hoặc trùng ngày kiểm', 'bad');
+  toast(`Đã giao ${r.forms.map(i => i.id).join(', ')} cho ${U(a).name}${r.skip.length ? ` · bỏ qua ${r.skip.length} task đã giao` : ''}`, 'ok');
+}
+/* đổi người / hạn: chỉ khi phiếu chưa bắt đầu; phiếu dùng chung cho nhiều task thì đổi cho cả phiếu */
+function reassignModal(tid) {
+  const t = TASK(tid); const f = taskForms(t).find(i => i.status === 'todo' && !i.data); if (!f) return toast('Phiếu đã bắt đầu kiểm — không đổi người được', 'bad');
+  openModal({ title: 'Đổi người / thời hạn', sub: `${f.id} · ${esc(f.title)}`, body: `<div class="stack">${f.tasks.length > 1 ? banner('info', 'layers', `Phiếu ${f.id} dùng chung cho ${f.tasks.length} task`, `Thay đổi áp dụng cho cả phiếu: ${f.tasks.map(x => 'PO ' + TASK(x).po).join(', ')}.`) : ''}
+    <div class="grid g2"><label class="field"><span>Nhân viên QC thực hiện</span><select class="sel" id="as-a">${qcOptions(f.assignee)}</select></label><label class="field"><span>Thời hạn hoàn thành</span><input class="inp" type="date" id="as-d" value="${f.due.slice(0, 10)}"></label></div></div>`,
+    foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="doReassign('${f.id}')">${ic('check')} Lưu</button>` });
+}
+function doReassign(fid) {
+  const f = INS(fid); const a = document.getElementById('as-a').value, due = dueVal(); if (!due) return toast('Chọn thời hạn', 'bad');
+  f.assignee = a; f.due = due; f.tasks.map(TASK).forEach(t => Object.assign(t, { assignee: a, due, assignedAt: nowISO(), assignedBy: ME.id }));
+  addLog('task', `Đổi người/hạn ${f.id} → ${U(a).name}, hạn ${fd(due)}`, f.pos[0]); save(); closeModal(); render(); toast(`Đã cập nhật ${f.id}`, 'ok');
+}
+/* dùng lại kết quả đã duyệt (plywood cùng lô, mẫu màu đã ký) cho task */
+function reuseCands(t) {
+  const d = tdef(t); if (!d.reuse || taskState(t) !== 'unassigned') return [];
+  const p = PO(t.po);
+  return DB.ins.filter(i => i.type === d.type && i.status === 'approved' && !i.pos.includes(p.id) && (d.type !== 'PIG' || i.color === p.color));
+}
+function useResult(tid, iid) { const t = TASK(tid); t.reuse = iid; addLog('reuse', `Dùng lại ${iid} cho task “${tdef(t).name}”`, t.po); save(); render(); toast(`Đã liên kết kết quả ${iid}`, 'ok'); }
+
+/* =====================================================================
+   GIAO VIỆC HÀNG LOẠT — thay cho “Đề xuất gộp phiếu”
+   Chọn nhiều PO cùng template → danh sách task chung (theo mã đầu mục template, không theo tên)
+   → chọn task → 1 QC + 1 hạn → mỗi đầu mục tạo 1 phiếu chung cho các PO đã chọn.
+   ===================================================================== */
+function bulkModal(pre) {
+  UI.bulk = { pos: pre ? [pre] : [], sel: {}, open: {}, qc: activeQC()[0] && activeQC()[0].id, due: tomorrow(), note: '' };
+  if (pre) tasksOf(pre).filter(taskAssignable).forEach(t => UI.bulk.sel[t.id] = 1);
+  openModal({ title: 'Giao việc hàng loạt', sub: 'Chọn nhiều PO cùng template kế hoạch, chọn task rồi giao cho một nhân viên QC', size: 'xl', body: '<div id="bulk"></div>', foot: '<div id="bulk-f" class="row" style="width:100%;gap:8px"></div>' });
+  bulkDraw();
+}
+function bulkTpl() { const p0 = UI.bulk.pos[0]; return p0 ? planOf(p0).tpl : null; }
+function bulkTogglePO(id) {
+  const B = UI.bulk; const i = B.pos.indexOf(id);
+  if (i >= 0) { B.pos.splice(i, 1); tasksOf(id).forEach(t => delete B.sel[t.id]); }
+  else { if (bulkTpl() && planOf(id).tpl !== bulkTpl()) return toast('Chỉ chọn được các PO cùng template kế hoạch', 'bad'); B.pos.push(id); tasksOf(id).filter(taskAssignable).forEach(t => B.sel[t.id] = 1); }
+  bulkDraw();
+}
+const bulkInst = k => UI.bulk.pos.map(pid => tasksOf(pid).find(t => t.k === k)).filter(Boolean);
+function bulkToggleK(k, on) { bulkInst(k).filter(taskAssignable).forEach(t => on ? UI.bulk.sel[t.id] = 1 : delete UI.bulk.sel[t.id]); bulkDraw(); }
+function bulkToggleT(id, on) { on ? UI.bulk.sel[id] = 1 : delete UI.bulk.sel[id]; bulkDraw(); }
+function bulkAll(on) { const T = TEMPLATES[bulkTpl()]; T.tasks.forEach(d => bulkInst(d.k).filter(taskAssignable).forEach(t => on ? UI.bulk.sel[t.id] = 1 : delete UI.bulk.sel[t.id])); bulkDraw(); }
+function instReason(t) { const s = taskState(t); if (s === 'na') return 'Không áp dụng — không có PO Line phù hợp'; if (s === 'reused') return 'Dùng lại kết quả'; if (taskAssignable(t)) return s === 'partial' ? 'Kiểm bù PO Line chưa có kết quả' : 'Chưa giao'; return `Đã giao ${U(t.assignee).name}${t.due ? ' · hạn ' + fd(t.due) : ''} · ${TK_UI[s][0]}`; }
+function bulkDraw() {
+  const B = UI.bulk; const el = document.getElementById('bulk'); if (!el) return; const tk = bulkTpl();
+  const cand = DB.pos.filter(p => !p.closed);
+  const groups = Object.keys(TEMPLATES).map(k => ({ k, ps: cand.filter(p => planOf(p) && planOf(p).tpl === k) }));
+  const noPlan = cand.filter(p => !planOf(p));
+  const poRow = p => { const on = B.pos.includes(p.id); const n = tasksOf(p).filter(taskAssignable).length; const other = tk && planOf(p).tpl !== tk;
+    return `<label class="bk-po ${on ? 'on' : ''} ${other ? 'dis' : ''}" title="${other ? 'Khác template — không chọn chung được' : ''}"><input type="checkbox" ${on ? 'checked' : ''} ${other ? 'disabled' : ''} onchange="bulkTogglePO('${p.id}')"><span class="body"><b>PO ${p.id}</b><small>${esc(p.series)} · ${p.factory}</small></span><span class="n ${n ? '' : 'z'}">${n ? n + ' task chưa giao' : 'Đã giao đủ'}</span></label>`; };
+  const sec1 = `<div class="bk-sec"><div class="bk-h"><b>1 · Chọn PO</b><span class="t-xs muted">Chỉ chọn chung được các PO cùng template — mỗi template có danh sách task khác nhau.</span></div>
+    ${groups.filter(g => g.ps.length).map(g => `<div class="bk-grp ${tk && tk !== g.k ? 'dim' : ''}"><div class="bk-gh">${TEMPLATES[g.k].code} · ${esc(TEMPLATES[g.k].name)} <span class="muted">· ${TEMPLATES[g.k].tasks.length} task</span>${tk && tk !== g.k ? '<span class="pill gray nodot" style="margin-left:auto">Khác template</span>' : ''}</div><div class="bk-pos">${g.ps.map(poRow).join('')}</div></div>`).join('')}
+    ${noPlan.length ? `<p class="t-xs muted">Chưa lập kế hoạch nên chưa giao được: ${noPlan.map(p => 'PO ' + p.id).join(', ')}.</p>` : ''}</div>`;
+  let sec2 = `<div class="bk-sec"><div class="bk-h"><b>2 · Chọn task</b></div><div class="t-sm muted">Chọn ít nhất một PO để xem danh sách task chung.</div></div>`;
+  if (tk) { const T = TEMPLATES[tk]; const allA = T.tasks.flatMap(d => bulkInst(d.k).filter(taskAssignable)); const allOn = allA.length && allA.every(t => B.sel[t.id]);
+    sec2 = `<div class="bk-sec"><div class="bk-h"><b>2 · Chọn task</b><label class="chk-in"><input type="checkbox" ${allOn ? 'checked' : ''} ${allA.length ? '' : 'disabled'} onchange="bulkAll(this.checked)"> Chọn tất cả (${allA.length})</label></div><div class="bk-tasks">
+      ${T.tasks.map(d => { const inst = bulkInst(d.k); const av = inst.filter(taskAssignable); const on = av.filter(t => B.sel[t.id]).length; const open = B.open[d.k];
+        return `<div class="bk-task ${av.length ? '' : 'dis'}"><div class="bk-tr"><input type="checkbox" ${av.length && on === av.length ? 'checked' : ''} ${av.length ? '' : 'disabled'} onchange="bulkToggleK('${d.k}',this.checked)" ${on && on < av.length ? 'data-ind="1"' : ''}>
+          <button type="button" class="bk-tt" onclick="UI.bulk.open['${d.k}']=!UI.bulk.open['${d.k}'];bulkDraw()"><span class="ico sm tone-teal">${ic(TYPES[d.type].icon, '', 'width:14px;height:14px')}</span><span class="body"><b>${esc(d.name)}</b><small>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)} · ${filterText(d.lines)}${d.after ? ' · phải chờ ' + d.after.map(k => T.tasks.find(x => x.k === k).name).join(', ') : ''}</small></span>
+          <span class="n ${av.length ? '' : 'z'}">${on}/${av.length} có thể giao</span>${ic(open ? 'up' : 'down', 'muted', 'width:16px;height:16px')}</button></div>
+          ${open ? `<div class="bk-inst">${inst.map(t => { const ok = taskAssignable(t); return `<label class="${ok ? '' : 'dis'}"><input type="checkbox" ${B.sel[t.id] ? 'checked' : ''} ${ok ? '' : 'disabled'} onchange="bulkToggleT('${t.id}',this.checked)"><b>PO ${t.po}</b><span class="muted">${t.codes.length ? t.codes.length + ' PO Line: ' + esc(t.codes.slice(0, 4).join(', ')) + (t.codes.length > 4 ? '…' : '') : '—'}</span><span class="r">${instReason(t)}</span></label>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div></div>`; }
+  const picked = Object.keys(B.sel).filter(id => TASK(id) && B.pos.includes(TASK(id).po));
+  const prev = groupTasks(picked);
+  const sec3 = `<div class="bk-sec"><div class="bk-h"><b>3 · Giao việc</b><span class="t-xs muted">${picked.length} task · ${new Set(picked.map(id => TASK(id).po)).size} PO đã chọn</span></div>
+    ${prev.length ? `<div class="bk-prev">${prev.map(ts => `<div>${ic('clipboard', 'muted', 'width:14px;height:14px')}<span>Tạo 1 phiếu <b>${esc(tdef(ts[0]).name)}</b> · PO ${ts.map(t => t.po).join(' + ')} · ${placeFor(ts[0])}</span></div>`).join('')}</div>` : ''}
+    <div class="grid g3"><label class="field"><span>Nhân viên QC thực hiện</span><select class="sel" id="as-a" onchange="UI.bulk.qc=this.value">${qcOptions(B.qc)}</select></label>
+      <label class="field"><span>Thời hạn hoàn thành</span><input class="inp" type="date" id="as-d" value="${B.due}" onchange="UI.bulk.due=this.value"></label>
+      <label class="field"><span>Ghi chú</span><input class="inp" id="as-n" value="${esc(B.note)}" oninput="UI.bulk.note=this.value" placeholder="Không bắt buộc"></label></div></div>`;
+  el.innerHTML = `<div class="stack">${sec1}${sec2}${sec3}</div>`;
+  el.querySelectorAll('[data-ind]').forEach(x => x.indeterminate = true);
+  document.getElementById('bulk-f').innerHTML = `<button class="btn" onclick="closeModal()">Hủy</button><span class="grow"></span><button class="btn btn-primary" ${picked.length ? '' : 'disabled'} onclick="doBulk()">${ic('send')} Giao ${picked.length} task</button>`;
+}
+function doBulk() {
+  const B = UI.bulk; const ids = Object.keys(B.sel).filter(id => TASK(id) && B.pos.includes(TASK(id).po));
+  if (!ids.length) return toast('Chọn ít nhất một task', 'bad');
+  if (!B.qc || !B.due) return toast('Chọn nhân viên QC và thời hạn', 'bad');
+  const gv = `GV-${String(++DB.seq.gv).padStart(3, '0')}`;
+  const r = assignTasks(ids, B.qc, new Date(B.due + 'T09:00:00').toISOString(), B.note, { batch: gv });
+  closeModal(); render();
+  if (!r.forms.length) return toast('Không có task nào được giao — đã được giao trước đó hoặc trùng ngày kiểm', 'bad');
+  toast(`${gv}: đã tạo ${r.forms.length} phiếu cho ${ids.length - r.skip.length} task · ${U(B.qc).name}${r.skip.length ? ` · bỏ qua ${r.skip.length} task` : ''}`, 'ok');
+}
+
+/* ---------- hiển thị ---------- */
+const taskChip = t => { const s = TK_UI[taskState(t)]; return `<span class="pill ${s[1]}" title="${esc(tdef(t).name)}: ${s[0]}">${taskLabel(t)} ${s[0]}</span>`; };
+function planSummary(p) { const ts = tasksOf(p).filter(t => taskState(t) !== 'na'); const asg = ts.filter(t => !taskAssignable(t) || taskState(t) === 'partial').length; return { total: ts.length, assigned: ts.filter(t => taskState(t) !== 'unassigned').length, done: ts.filter(taskOK).length, na: tasksOf(p).length - ts.length, asg }; }
+function planCard(p) {
+  const pl = planOf(p);
+  if (!pl) return `<div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá</h2><p>Mỗi PO có 01 kế hoạch, sinh từ template.</p></div></div><div class="card-b">${empty('PO chưa có kế hoạch đánh giá', `Chọn template phù hợp — hệ thống sinh đủ danh sách task theo template.${p.closed ? '' : `<div class="mt12"><button class="btn btn-primary" onclick="planCreateModal('${p.id}')">${ic('plus')} Lập kế hoạch đánh giá</button></div>`}`, 'calendar')}</div></div>`;
+  const T = TEMPLATES[pl.tpl]; const ts = tasksOf(p); const sm = planSummary(p); const touched = ts.some(t => taskForms(t).length || t.reuse); const canA = ts.filter(taskAssignable);
+  const row = t => { const d = tdef(t); const s = taskState(t); const fs = taskForms(t); const blk = fs.map(blockedBy).filter(Boolean).flat(); const rc = reuseCands(t); const tone = { ok: 'green', warn: 'amber', info: 'blue', teal: 'teal', gray: 'gray', violet: 'violet' }[TK_UI[s][1]];
+    const lines = p.lines.filter(l => t.codes.includes(l.code));
+    const open = fs.find(i => i.status === 'todo' && !i.data);
+    return `<div class="li tk-row ${s === 'na' ? 'locked' : ''}" style="align-items:flex-start"><span class="ico tone-${tone}">${ic(TYPES[d.type].icon)}</span><div class="body">
+      <div class="title"><span class="trunc">${esc(d.name)}</span>${tkPill(t)}</div>
+      <div class="meta"><span>${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)}</span><span>${s === 'na' ? 'Không có PO Line phù hợp' : `${lines.length}/${p.lines.length} PO Line`}</span>${t.assignee ? `<span>${ic('users', '', 'width:12px;height:12px;vertical-align:-2px')} ${U(t.assignee).name}</span><span>${ic('clock', '', 'width:12px;height:12px;vertical-align:-2px')} hạn ${fd(t.due)}</span>` : ''}</div>
+      ${lines.length && lines.length < p.lines.length || d.lines ? `<details class="tk-lines"><summary>${filterText(d.lines)} · ${lines.length} PO Line</summary>${lines.length ? `<div class="row wrap mt4">${lines.map(l => `<span class="tag">${esc(l.code)} · ${esc(l.part)} · ${num(l.qty)}</span>`).join('')}</div>` : '<span class="t-xs muted">Không có</span>'}</details>` : ''}
+      ${t.reuse ? `<div class="meta"><span>${ic('link', '', 'width:12px;height:12px;vertical-align:-2px')} Dùng lại <a class="link" href="#/report/ins/${t.reuse}">${esc(INS(t.reuse).title)}</a> (${t.reuse})</span></div>` : ''}
+      ${fs.length ? `<div class="row wrap mt8">${fs.map(i => `<a class="tag" href="#/${i.status === 'submitted' ? 'review' : i.status === 'approved' ? 'report/ins' : 'task'}/${i.id}">${i.id}${i.type === 'DIR' ? ' · ' + fd(i.due).slice(0, 5) : ''} · ${U(i.assignee).name} · ${IS[insState(i)][0]}${i.tasks.length > 1 ? ` · ${i.tasks.length} PO chung phiếu` : ''}</a>`).join('')}</div>` : ''}
+      ${blk.length ? `<div class="meta mt4"><span>${ic('hourglass', '', 'width:12px;height:12px;vertical-align:-2px')} Chờ ${[...new Set(blk.map(b => b.name))].join(', ')} có kết quả</span></div>` : ''}
+      ${s === 'partial' ? `<div class="meta mt4" style="color:var(--amber)"><span>Còn ${wwCovered(t, fs).length} PO Line chưa có kết quả — giao kiểm bù.</span></div>` : ''}
+      ${rc.length ? `<div class="mt8">${banner('teal', 'repeat', 'Có kết quả đã duyệt để dùng lại', `${esc(rc[0].title)} · ${rc[0].id} · duyệt ${fd(rc[0].review.at)}`, `<button class="btn btn-sm btn-primary" onclick="useResult('${t.id}','${rc[0].id}')">Dùng lại</button>`)}</div>` : ''}</div>
+      ${p.closed ? '' : `<div class="tk-acts">${taskAssignable(t) ? `<button class="btn btn-sm btn-primary" onclick="assignModal('${t.id}')">${ic('send')} ${s === 'partial' ? 'Giao kiểm bù' : 'Giao việc'}</button>` : ''}${open ? `<button class="btn btn-sm" onclick="reassignModal('${t.id}')">${ic('edit')} Đổi người / hạn</button>` : ''}${d.daily && fs.length && s !== 'na' ? `<button class="btn btn-sm" onclick="assignModal('${t.id}',1)">${ic('plus')} Phiên ngày mới</button>` : ''}</div>`}</div>`; };
+  return `<div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá · ${pl.id}</h2><p>Template ${T.code} · ${esc(T.name)} · ${sm.assigned}/${sm.total} task đã giao · ${sm.done - 0}/${sm.total} có kết quả${sm.na ? ` · ${sm.na} không áp dụng` : ''}</p></div>
+    ${p.closed ? '' : `<div class="acts">${touched ? '' : `<button class="btn btn-sm" onclick="planCreateModal('${p.id}')">${ic('repeat')} Đổi template</button>`}${canA.length > 1 ? `<button class="btn btn-sm btn-primary" onclick="bulkModal('${p.id}')">${ic('send')} Giao ${canA.length} task</button>` : ''}</div>`}</div>
+    <div class="list">${ts.map(row).join('')}</div></div>`;
+}
+
+/* =====================================================================
    NHÂN VIÊN QC — việc của tôi · quét mã · phiếu kiểm theo từng loại
    ===================================================================== */
 const tmeta = i => i.kind === 'prod' ? { code: 'P1', short: 'Production', name: 'Cập nhật tiến độ', icon: 'activity' } : TYPES[i.type];
@@ -1318,7 +1643,7 @@ function strip(id, path, keys, cat, caps = []) {
 /* ---------------- WORK QUEUE ---------------- */
 function insHint(i) {
   const s = insState(i);
-  if (s === 'blocked') return 'Chờ ' + blockedBy(i).map(b => `${TYPES[b.type].short} (PO ${b.po})`).join(', ');
+  if (s === 'blocked') return 'Chờ ' + blockedBy(i).map(b => `${b.name} (PO ${b.po})`).join(', ');
   if (s === 'returned') return i.returnNote;
   if (s === 'offline') return 'Lưu offline — tự gửi khi có mạng';
   if (s === 'submitted') return `Đã gửi ${fdt(i.submittedAt)} · chờ duyệt`;
@@ -1359,20 +1684,20 @@ function pageWork() {
   if (UI.workFilter !== 'approved') list.sort((a, b) => (ord[insState(a)] - ord[insState(b)]) || ((b.priority === 'high') - (a.priority === 'high')) || a.due.localeCompare(b.due));
   const CT = { all: 'pri', today: 'pri', overdue: 'red', upcoming: 'blue', sent: 'amber', submitted: 'amber', returned: 'red', approved: 'green' };
   const chip = (k, l) => `<button class="chip c-${CT[k] || 'pri'} ${UI.workFilter === k ? 'on' : ''}" onclick="UI.workFilter='${k}';render()">${l} <b class="${cnt[k] ? '' : 'z'}">${cnt[k]}</b></button>`;
-  return `${pageHead(lead ? 'Lịch kiểm QC' : 'Việc của tôi', lead ? 'Toàn bộ phiếu kiểm của các PO — theo người kiểm, hạn và trạng thái duyệt (bước 19).' : 'Phiếu kiểm được giao và cập nhật tiến độ.', lead ? `<button class="btn btn-primary" onclick="pickPO()">${ic('plus')} Lập phiếu kiểm</button>` : '')}
+  return `${pageHead(lead ? 'Lịch kiểm QC' : 'Việc của tôi', lead ? 'Toàn bộ phiếu kiểm của các PO — theo người kiểm, hạn và trạng thái duyệt (bước 19).' : 'Phiếu kiểm được giao và cập nhật tiến độ.', lead ? `<button class="btn btn-primary" onclick="bulkModal()">${ic('send')} Giao việc hàng loạt</button>` : '')}
   <div class="card">
     <div class="card-b tight row wrap between" style="border-bottom:1px solid var(--line)"><div class="filters">${chip('all', 'Tất cả')}${chip('today', 'Hôm nay')}${chip('overdue', 'Quá hạn')}${chip('upcoming', 'Sắp tới')}${lead ? chip('submitted', 'Chờ duyệt') + chip('returned', 'Trả bổ sung') + chip('approved', 'Đã duyệt') : chip('sent', 'Đã gửi')}</div>
       <div class="search" style="width:280px">${ic('search')}<input placeholder="Lọc theo PO, xưởng, phiếu…" value="${esc(UI.workQ)}" oninput="UI.workQ=this.value;clearTimeout(window.__wq);window.__wq=setTimeout(()=>{render();const s=document.querySelector('.content .card .search input');s.focus();s.setSelectionRange(s.value.length,s.value.length)},250)"></div></div>
     <div class="list">${list.length ? list.map(insRow).join('') : empty('Không có việc', 'Hàng đợi trống với bộ lọc hiện tại.', 'checkc')}</div></div>`;
 }
-function pickPO() { openModal({ title: 'Chọn PO để lập phiếu kiểm', body: `<div class="card"><div class="list">${DB.pos.filter(p => !p.closed).map(p => `<button class="li" onclick="closeModal();planModal('${p.id}')"><div class="body"><div class="title">PO ${p.id} ${psPill(p)}</div><div class="meta"><span>${p.customer}</span><span>${p.series}</span><span>${p.factory}</span></div></div>${ic('right', 'muted')}</button>`).join('')}</div></div>` }); }
+
 
 /* ---------------- START (10–12) ---------------- */
 const banner = (c, icn, t, p, acts = '') => `<div class="banner ${c}">${ic(icn)}<div class="bt"><b>${t}</b>${p ? `<p>${p}</p>` : ''}</div>${acts ? `<div class="acts">${acts}</div>` : ''}</div>`;
 function ctxCard(i) {
   const ps = insPOs(i);
   return `<div class="card"><div class="card-h"><div class="ttl"><h2>${esc(i.title)}</h2><p>${tmeta(i).code} · ${tmeta(i).name} · ${tmeta(i).doc || ''}</p></div>${isPill(i)}</div>
-    <div class="card-b"><div class="kv-grid">${kv('PO', ps.map(p => p.id).join(', '))}${kv('Khách hàng', [...new Set(ps.map(p => p.customer))].join(', '))}${kv('Nơi kiểm', i.factory)}${kv('Người kiểm', [i.assignee, ...(i.team || []).filter(x => x !== i.assignee)].map(x => U(x).name).join(', '))}${kv('Hạn', fd(i.due))}</div></div></div>`;
+    <div class="card-b"><div class="kv-grid">${kv('PO', ps.map(p => p.id).join(', '))}${kv('Khách hàng', [...new Set(ps.map(p => p.customer))].join(', '))}${kv('Nơi kiểm', i.factory)}${kv('Người kiểm', [i.assignee, ...(i.team || []).filter(x => x !== i.assignee)].map(x => U(x).name).join(', '))}${kv('Hạn', fd(i.due))}${(i.tasks || []).length ? kv('Task', [...new Set(i.tasks.map(x => tdef(TASK(x)).name))].join(', ')) : ''}</div></div></div>`;
 }
 function pageTask(id) {
   const i = INS(id); if (!i || !(i.assignee === ME.id || (i.team || []).includes(ME.id))) throw 0;
@@ -1383,7 +1708,7 @@ function pageTask(id) {
   const N = lines.reduce((a, x) => a + x.l.qty, 0);
   const sample = i.type === 'WW' || i.type === 'FIN' ? lines.reduce((a, x) => a + aql(x.l.qty).n, 0) : i.type === 'DIR' ? lines.reduce((a, x) => a + Math.min(12, x.l.qty), 0) : i.type === 'PLY' ? aql(N).n : 7;
   return `${pageHead('Xác nhận phiên kiểm', `${i.id} · hạn ${fd(i.due)}`, '', 'work')}<div class="stack">
-  ${s === 'blocked' ? banner('warn', 'hourglass', 'Chưa thể kiểm — chờ phiếu tiên quyết được duyệt (bước 08)', blockedBy(i).map(b => `${TYPES[b.type].code} ${TYPES[b.type].name} của PO ${b.po}: ${TS_UI[typeState(PO(b.po), b.type).state][0].toLowerCase()}`).join('<br>')) : ''}
+  ${s === 'blocked' ? banner('warn', 'hourglass', 'Chưa thể kiểm — chờ task trước có kết quả', blockedBy(i).map(b => `${TYPES[b.type].code} ${esc(b.name)} của PO ${b.po}: ${TK_UI[taskState(TASK(b.id))][0].toLowerCase()}`).join('<br>')) : ''}
   ${s === 'returned' ? banner('bad', 'undo', `Lead trả bổ sung — ${fdt(i.review.at)}`, esc(i.returnNote)) : ''}
   ${i.note ? banner('info', 'info', 'Ghi chú từ Lead', esc(i.note)) : ''}
   ${ctxCard(i)}
@@ -1632,7 +1957,7 @@ function saveProd(id) {
 /* =====================================================================
    LEAD QC — Dashboard · Đồng bộ · PO & kế hoạch đánh giá · Duyệt
    ===================================================================== */
-const typeChip = (p, t) => { const s = typeState(p, t); const u = TS_UI[s.state]; return `<span class="pill ${u[1]}" title="${TYPES[t].name}: ${u[0]}">${TYPES[t].code} ${u[0]}</span>`; };
+const planChips = p => planOf(p) ? tasksOf(p).filter(t => taskState(t) !== 'na').map(taskChip).join('') : pill('Chưa lập kế hoạch', 'violet');
 
 /* ---------------- DASHBOARD (P2) ---------------- */
 function actionItems() {
@@ -1640,10 +1965,10 @@ function actionItems() {
   DB.alerts.filter(a => a.status === 'new').forEach(a => out.push({ lv: 'Cao', c: 'bad', alert: a }));
   DB.syncLog.filter(s => !s.ok && !s.resolved).forEach(s => out.push({ lv: 'Cao', c: 'bad', i: 'refresh', t: `Lỗi đồng bộ PO ${s.po}`, s: s.issues.join(' · '), go: 'sync' }));
   DB.ins.filter(i => i.status === 'submitted').forEach(i => out.push({ lv: 'Trung bình', c: 'warn', i: 'inbox', t: `${i.title} chờ duyệt`, s: `${TYPES[i.type].code} · ${U(i.assignee).name} gửi ${fdt(i.submittedAt)}`, go: 'review/' + i.id }));
-  DB.pos.filter(p => poState(p) === 'ready').forEach(p => out.push({ lv: 'Trung bình', c: 'teal', i: 'flag', t: `PO ${p.id} đủ điều kiện chốt`, s: 'Đủ kết quả các loại đánh giá', go: 'po/' + p.id }));
+  DB.pos.filter(p => poState(p) === 'ready').forEach(p => out.push({ lv: 'Trung bình', c: 'teal', i: 'flag', t: `PO ${p.id} đủ điều kiện chốt`, s: 'Tất cả task trong kế hoạch có kết quả', go: 'po/' + p.id }));
   DB.ins.filter(i => ['todo', 'draft', 'returned'].includes(i.status) && dayDiff(i.due) < 0).forEach(i => out.push({ lv: 'Thấp', c: 'gray', i: 'clock', t: `${i.title} quá hạn`, s: `${U(i.assignee).name} · hạn ${fd(i.due)}`, go: 'task/' + i.id }));
-  mergeSuggestions().forEach(({ i, mc }) => out.push({ lv: 'Thấp', c: 'warn', i: 'layers', t: `Đề xuất gộp ${TYPES[i.type].code} · ${fd(i.due)} · ${i.factory}`, s: `${i.id} + ${[...mc.forms.map(j => j.id), ...mc.pos.map(x => 'PO ' + x.id)].join(', ')}`, go: 'merge/' + i.id }));
-  DB.pos.filter(p => poState(p) === 'planning').forEach(p => out.push({ lv: 'Thấp', c: 'violet', i: 'calendar', t: `PO ${p.id} chưa lập kế hoạch kiểm`, s: `${p.lines.length} PO Line · đồng bộ ${fdt(p.syncedAt)}`, go: 'po/' + p.id }));
+  DB.pos.filter(p => poState(p) === 'assign').forEach(p => { const ts = tasksOf(p).filter(t => taskState(t) === 'unassigned'); out.push({ lv: 'Thấp', c: 'warn', i: 'send', t: `PO ${p.id}: ${ts.length} task chưa giao`, s: ts.map(t => tdef(t).name).join(' · '), go: 'po/' + p.id }); });
+  DB.pos.filter(p => poState(p) === 'planning').forEach(p => out.push({ lv: 'Thấp', c: 'violet', i: 'calendar', t: `PO ${p.id} chưa lập kế hoạch đánh giá`, s: `${p.lines.length} PO Line · chọn template để sinh task`, go: 'po/' + p.id }));
   return out;
 }
 function alertRow(a) {
@@ -1665,10 +1990,10 @@ function pageDashboard() {
     <div class="card stat"><div class="lbl">${ic('zap')} Cảnh báo Critical</div><div class="val" style="color:${c.alerts ? 'var(--red)' : 'inherit'}">${c.alerts}</div><div class="sub">chưa ghi nhận · ${DB.alerts.length} cảnh báo tổng</div></div>
   </div>
   <div class="grid g-side mt16">
-    <div class="card"><div class="card-h"><div class="ttl"><h2>Tiến độ PO và trạng thái QC</h2><p>Thanh: sản lượng theo nhóm công đoạn (P1). Dòng dưới: kết quả từng loại đánh giá trong kế hoạch.</p></div></div>
+    <div class="card"><div class="card-h"><div class="ttl"><h2>Tiến độ PO và trạng thái QC</h2><p>Thanh: sản lượng theo nhóm công đoạn (P1). Dòng dưới: trạng thái từng task trong kế hoạch đánh giá.</p></div></div>
       <div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>PO</th>${STAGES.map(s => `<th>${s.name}</th>`).join('')}<th>ETD</th><th>Rủi ro</th><th><span class="sr">Thao tác</span></th></tr></thead><tbody>
       ${all.map(p => { const r = risk(p); return `<tr class="click" onclick="go('po/${p.id}')"><td class="nw"><b>${p.id}</b><div class="t-xs muted">${p.cust} · ${p.factory}</div></td>${STAGES.map(s => `<td style="min-width:96px">${bar(stagePct(p, s.k), p.bottleneck && p.bottleneck.g === s.k ? 'var(--red-fill)' : stagePct(p, s.k) >= 100 ? 'var(--green-fill)' : null)}</td>`).join('')}<td class="nw num">${fd(p.etd)}</td><td>${pill(r[0], r[1])}</td><td><button class="icon-btn sm" aria-label="Xem nhanh" onclick="event.stopPropagation();poDrawer('${p.id}')">${ic('eye')}</button></td></tr>
-        <tr class="click" onclick="go('po/${p.id}')"><td colspan="${STAGES.length + 4}" style="padding-top:0"><div class="row wrap">${p.plan.map(t => typeChip(p, t)).join('')}${p.bottleneck ? `<span class="t-xs" style="color:var(--red)">${ic('alert', '', 'width:12px;height:12px;vertical-align:-2px')} ${esc(p.bottleneck.note)}</span>` : ''}</div></td></tr>`; }).join('')}
+        <tr class="click" onclick="go('po/${p.id}')"><td colspan="${STAGES.length + 4}" style="padding-top:0"><div class="row wrap">${planChips(p)}${p.bottleneck ? `<span class="t-xs" style="color:var(--red)">${ic('alert', '', 'width:12px;height:12px;vertical-align:-2px')} ${esc(p.bottleneck.note)}</span>` : ''}</div></td></tr>`; }).join('')}
       </tbody></table></div></div>
     <div class="card"><div class="card-h"><div class="ttl"><h2>Cần hành động</h2><p>${acts.length} việc tồn đọng</p></div></div><div class="list">${acts.length ? acts.slice(0, 9).map(a => a.alert ? alertRow(a.alert) : `<a class="li" href="#/${a.go}"><span class="ico sm tone-${{ bad: 'red', warn: 'amber', teal: 'teal', violet: 'violet', gray: 'gray' }[a.c]}">${ic(a.i, '', 'width:14px;height:14px')}</span><div class="body"><div class="title t-sm"><span class="trunc">${esc(a.t)}</span></div><div class="meta"><span class="trunc" style="max-width:260px">${esc(a.s)}</span></div></div></a>`).join('') : empty('Không có việc tồn đọng', '', 'checkc')}</div></div>
   </div>`;
@@ -1677,7 +2002,7 @@ function poDrawer(id) {
   const p = PO(id);
   openModal({ drawer: true, title: `PO ${p.id}`, sub: `${p.customer} · ${p.series} · ${p.color}`,
     body: `<div class="stack"><div class="kv-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">${kv('Số lượng', num(poQty(p)) + ' pcs')}${kv('Giá trị', money(p.value))}${kv('ETD', fd(p.etd))}${kv('Xưởng', p.factory + (p.finisher && p.finisher !== p.factory ? ' → ' + p.finisher : ''))}</div>
-    <div class="sep" style="margin:0"></div><b>Kế hoạch đánh giá</b><div class="stack-8">${p.plan.map(t => `<div class="row between"><span class="t-sm">${TYPES[t].code} · ${TYPES[t].name}</span>${pill(TS_UI[typeState(p, t).state][0], TS_UI[typeState(p, t).state][1])}</div>`).join('')}</div>
+    <div class="sep" style="margin:0"></div><b>Kế hoạch đánh giá${planOf(p) ? ' · ' + TEMPLATES[planOf(p).tpl].code : ''}</b><div class="stack-8">${planOf(p) ? tasksOf(p).map(t => `<div class="row between"><span class="t-sm">${TYPES[tdef(t).type].code} · ${esc(tdef(t).name)}${t.assignee ? ` <span class="muted">· ${U(t.assignee).name}</span>` : ''}</span>${tkPill(t)}</div>`).join('') : '<span class="t-sm muted">Chưa lập kế hoạch</span>'}</div>
     <div class="sep" style="margin:0"></div><b>Sản lượng theo công đoạn</b>${STAGES.map(s => `<div><div class="row between t-sm mt4"><span>${s.name}</span></div>${bar(stagePct(p, s.k), p.bottleneck && p.bottleneck.g === s.k ? 'var(--red-fill)' : null)}</div>`).join('')}</div>`,
     foot: `<button class="btn" onclick="closeModal()">Đóng</button><a class="btn btn-primary" href="#/po/${p.id}">Mở chi tiết PO</a>` });
 }
@@ -1715,38 +2040,17 @@ function resync(id) {
 
 /* ---------------- PO LIST ---------------- */
 function pagePOs() {
-  const tabs = [['planning', 'Chờ lập kế hoạch', p => poState(p) === 'planning'], ['active', 'Đang chạy', p => !p.closed], ['ready', 'Sẵn sàng chốt', p => poState(p) === 'ready'], ['closed', 'Đã chốt', p => p.closed]];
-  const sg = mergeSuggestions(); tabs.push(['merge', 'Đề xuất gộp phiếu', null]);
-  const cur = tabs.find(t => t[0] === UI.poTab) || tabs[0]; const list = cur[2] ? DB.pos.filter(cur[2]) : [];
-  return `${pageHead('Purchase Orders', 'PO đồng bộ từ Base. Mỗi PO có kế hoạch gồm nhiều loại đánh giá theo mẫu phiếu của VHG.', `<a class="btn" href="#/sync">${ic('refresh')} Đồng bộ Base</a>`)}
-  <div class="card"><div class="tabs" style="padding:0 20px">${tabs.map(t => `<button class="${t[0] === cur[0] ? 'on' : ''}" onclick="UI.poTab='${t[0]}';render()">${t[1]} <span class="n"${t[0] === 'merge' && sg.length ? ' style="background:var(--amber-soft,var(--surface-3));color:var(--amber)"' : ''}>${t[2] ? DB.pos.filter(t[2]).length : sg.length}</span></button>`).join('')}</div>
-  ${cur[0] === 'merge' ? mergeList(sg) : `<div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>PO</th><th>Khách hàng · dòng hàng</th><th>Xưởng</th><th class="r">Số lượng</th><th>ETD</th><th>Kế hoạch đánh giá</th><th>Trạng thái</th></tr></thead><tbody>
-  ${list.length ? list.map(p => `<tr class="click" onclick="go('po/${p.id}')"><td class="nw"><b>${p.id}</b><div class="t-xs muted">${p.lines.length} PO Line</div></td><td>${p.customer}<div class="t-xs muted">${p.series} · ${p.color}</div></td><td class="nw">${p.factory}</td><td class="r nw">${num(poQty(p))}</td><td class="nw num">${fd(p.etd)}</td><td><div class="row wrap">${p.plan.map(t => typeChip(p, t)).join('')}</div></td><td>${psPill(p)}</td></tr>`).join('') : `<tr><td colspan="7">${empty('Không có PO', '', 'box')}</td></tr>`}</tbody></table></div>`}</div>`;
-}
-/* các nhóm phiếu có thể gộp (cùng loại · cùng ngày · cùng nơi kiểm) — kể cả khi Lead đã bấm "Bỏ qua" */
-function mergeSuggestions() {
-  const g = new Map();
-  DB.ins.filter(i => i.kind === 'qc' && i.status === 'todo' && !i.codes).forEach(i => {
-    const mc = mergeCands(i); if (!mc.forms.length && !mc.pos.length) return;
-    const k = i.type + '|' + fd(i.due) + '|' + i.factory; const o = g.get(k); if (!o || (i.createdAt || '') > (o.i.createdAt || '')) g.set(k, { i, mc });
-  });
-  return [...g.values()].sort((a, b) => a.i.due.localeCompare(b.i.due));
-}
-function mergeList(sg) {
-  if (!sg.length) return empty('Không có đề xuất gộp', 'Không có phiếu cùng loại, cùng ngày, cùng nơi kiểm cần gộp.', 'checkc');
-  return `<div class="list">${sg.map(({ i, mc }) => { const T = TYPES[i.type]; const ids = [i.id, ...mc.forms.map(j => j.id)]; const pos = [...new Set([...i.pos, ...mc.forms.flatMap(j => j.pos), ...mc.pos.map(x => x.id)])];
-    return `<a class="li" href="#/merge/${i.id}"><span class="ico tone-amber">${ic('layers')}</span><div class="body"><div class="title"><span class="trunc">${T.code} · ${T.name} · ${fd(i.due)} · ${i.factory}</span></div>
-    <div class="meta"><span>Phiếu ${ids.join(', ')}</span><span>PO ${pos.join(', ')}</span>${mc.pos.length ? `<span>${mc.pos.length} PO chưa có phiếu</span>` : ''}</div></div>
-    <div class="side">${pill(pos.length + ' PO → 1 phiếu', 'warn')}<small>${relDay(i.due).t}</small></div></a>`; }).join('')}</div>`;
+  const tabs = [['planning', 'Chờ lập kế hoạch'], ['assign', 'Chờ giao việc'], ['in_qc', 'Đang kiểm'], ['ready', 'Sẵn sàng chốt'], ['closed', 'Đã chốt']];
+  if (!tabs.some(t => t[0] === UI.poTab)) UI.poTab = 'assign';
+  const cur = tabs.find(t => t[0] === UI.poTab); const list = DB.pos.filter(p => poState(p) === cur[0]);
+  const prog = p => { if (!planOf(p)) return '<span class="t-xs muted">Chưa có kế hoạch</span>'; const m = planSummary(p); return `<div class="t-xs muted">${TEMPLATES[planOf(p).tpl].code} · đã giao ${m.assigned}/${m.total} task${m.na ? ` · ${m.na} không áp dụng` : ''}</div>`; };
+  return `${pageHead('Purchase Orders', 'PO đồng bộ từ Base. Mỗi PO có 01 kế hoạch đánh giá, sinh danh sách task từ template.', `<a class="btn" href="#/sync">${ic('refresh')} Đồng bộ Base</a><button class="btn btn-primary" onclick="bulkModal()">${ic('send')} Giao việc hàng loạt</button>`)}
+  <div class="card"><div class="tabs" style="padding:0 20px">${tabs.map(t => `<button class="${t[0] === cur[0] ? 'on' : ''}" onclick="UI.poTab='${t[0]}';render()">${t[1]} <span class="n">${DB.pos.filter(p => poState(p) === t[0]).length}</span></button>`).join('')}</div>
+  <div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>PO</th><th>Khách hàng · dòng hàng</th><th>Xưởng</th><th class="r">Số lượng</th><th>ETD</th><th>Kế hoạch đánh giá</th><th>Trạng thái</th></tr></thead><tbody>
+  ${list.length ? list.map(p => `<tr class="click" onclick="go('po/${p.id}')"><td class="nw"><b>${p.id}</b><div class="t-xs muted">${p.lines.length} PO Line</div></td><td>${p.customer}<div class="t-xs muted">${p.series} · ${p.color}</div></td><td class="nw">${p.factory}</td><td class="r nw">${num(poQty(p))}</td><td class="nw num">${fd(p.etd)}</td><td><div class="row wrap">${planChips(p)}</div>${prog(p)}</td><td>${psPill(p)}</td></tr>`).join('') : `<tr><td colspan="7">${empty('Không có PO', '', 'box')}</td></tr>`}</tbody></table></div></div>`;
 }
 
 /* ---------------- PO DETAIL (04–07, 23–26) ---------------- */
-function reuseCandidate(p, t) {
-  if ((p.reuse || {})[t] || DB.ins.some(i => i.type === t && i.kind === 'qc' && i.pos.includes(p.id))) return null;
-  if (t === 'PLY' && p.plyPO) return DB.ins.find(i => i.type === 'PLY' && i.status === 'approved' && i.pos.includes(p.plyPO));
-  if (t === 'PIG') return DB.ins.find(i => i.type === 'PIG' && i.status === 'approved' && i.color === p.color);
-  return null;
-}
 function poStepper(p) {
   return `<div class="stepper">${STAGES.map(s => { const pct = stagePct(p, s.k); const bn = p.bottleneck && p.bottleneck.g === s.k; const cls = bn ? 'blk' : pct >= 100 ? 'done' : pct > 0 ? 'cur' : '';
     return `<div class="step ${cls}"><span class="dot">${ic(bn ? 'alert' : pct >= 100 ? 'check' : s.icon, '', 'width:14px;height:14px')}</span><b>${s.name}</b><small>${pct}%</small></div>`; }).join('')}</div>`;
@@ -1754,16 +2058,18 @@ function poStepper(p) {
 function pagePO(id) {
   const p = PO(id); if (!p) throw 0; const chk = poCheck(p); const st = poState(p); UI.wide = true;
   const reps = DB.reports.filter(r => r.po === p.id);
-  const acts = st === 'closed' ? `<button class="btn btn-primary" onclick="exportPOModal('${p.id}')">${ic('file')} Xuất phiên bản mới</button>` : `<button class="btn ${st === 'ready' ? '' : 'btn-primary'}" onclick="planModal('${p.id}')">${ic('plus')} Lập phiếu kiểm</button>${st === 'ready' ? `<button class="btn btn-primary" onclick="closePO('${p.id}')">${ic('flag')} Chốt PO</button>` : ''}`;
+  const canA = tasksOf(p).filter(taskAssignable);
+  const acts = st === 'closed' ? `<button class="btn btn-primary" onclick="exportPOModal('${p.id}')">${ic('file')} Xuất phiên bản mới</button>` : st === 'planning' ? `<button class="btn btn-primary" onclick="planCreateModal('${p.id}')">${ic('plus')} Lập kế hoạch đánh giá</button>` : `${canA.length ? `<button class="btn ${st === 'ready' ? '' : 'btn-primary'}" onclick="bulkModal('${p.id}')">${ic('send')} Giao việc</button>` : ''}${st === 'ready' ? `<button class="btn btn-primary" onclick="closePO('${p.id}')">${ic('flag')} Chốt PO</button>` : ''}`;
   return `${pageHead(`PO ${p.id} ${psPill(p)}`, `${p.customer} · ${p.series} · màu ${p.color} · ${p.factory}${p.finisher && p.finisher !== p.factory ? ' → ' + p.finisher : ''} · ${p.cont}`, acts, 'pos')}<div class="stack">
   ${st === 'ready' ? banner('teal', 'checkc', 'PO đã đủ kết quả và không còn điều kiện chặn (bước 24)', 'Kiểm tra tổng hợp rồi chốt trạng thái PO để xuất báo cáo.', `<button class="btn btn-primary btn-sm" onclick="closePO('${p.id}')">Chốt PO</button>`) : ''}
-  ${st === 'planning' ? banner('info', 'info', 'PO mới đồng bộ — chưa có phiếu kiểm', 'Lập phiếu cho từng loại đánh giá trong kế hoạch, hoặc dùng lại kết quả đã có (plywood cùng lô, mẫu màu đã ký).') : ''}
+  ${st === 'planning' ? banner('info', 'info', 'PO mới đồng bộ — chưa có kế hoạch đánh giá', 'Chọn template kế hoạch: hệ thống sinh đủ danh sách task, sau đó giao từng task cho QC kèm thời hạn.', p.closed ? '' : `<button class="btn btn-primary btn-sm" onclick="planCreateModal('${p.id}')">Lập kế hoạch</button>`) : ''}
+  ${st === 'assign' ? banner('warn', 'send', `Còn ${tasksOf(p).filter(t => taskState(t) === 'unassigned').length} task chưa giao`, 'Giao từng task bên dưới, hoặc giao hàng loạt cùng các PO khác chung template.', `<button class="btn btn-sm" onclick="bulkModal('${p.id}')">Giao việc</button>`) : ''}
   ${st === 'closed' ? banner('ok', 'flag', `PO đã chốt ${fdt(p.closed.at)}`, 'Báo cáo PO được lưu theo phiên bản.') : ''}
-  <div class="card"><div class="card-b"><div class="kv-grid">${kv('Số lượng', num(poQty(p)) + ' pcs')}${kv('Giá trị', money(p.value))}${kv('ETD', fd(p.etd))}${kv('Tiến độ', poPct(p) + '%')}${kv('Plywood từ PO', p.plyPO || '—')}${kv('Đồng bộ Base', fdt(p.syncedAt))}</div><div class="sep"></div>${poStepper(p)}</div></div>
+  <div class="card"><div class="card-b"><div class="kv-grid">${kv('Số lượng', num(poQty(p)) + ' pcs')}${kv('Giá trị', money(p.value))}${kv('ETD', fd(p.etd))}${kv('Tiến độ', poPct(p) + '%')}${kv('Kế hoạch', planOf(p) ? TEMPLATES[planOf(p).tpl].code : 'Chưa lập')}</div><div class="sep"></div>${poStepper(p)}</div></div>
   <div class="grid g-main"><div class="stack">
-    <div class="card"><div class="card-h"><div class="ttl"><h2>Kế hoạch đánh giá</h2><p>Bước 05–08 · mỗi loại có thể có nhiều phiên kiểm, một phiên có thể gộp nhiều PO.</p></div></div>${ZONES.map(z => `<div class="sec-h">${ic(z.k === 'raw' ? 'box' : 'droplet', '', 'width:14px;height:14px')}<span>${z.name}</span><span class="muted t-xs" style="margin-left:auto;font-weight:500">${z.types.map(t => TYPES[t].code).join(' → ')}</span></div><div class="list">${z.types.map(t => planRow(p, t)).join('')}</div>`).join('')}</div>
-    <div class="card"><div class="card-h"><div class="ttl"><h2>PO Line và kết quả hàng trắng</h2><p>Bước 23 · kết quả đã duyệt tự liên kết với PO Line cùng mã hàng.</p></div></div><div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>#</th><th>Mã hàng</th><th>Chi tiết</th><th class="r">SL</th>${p.plan.includes('WW') ? '<th>11A Hàng trắng</th>' : ''}${p.plan.includes('DIR') ? '<th>11C Daily</th>' : ''}</tr></thead><tbody>
-      ${p.lines.map(l => `<tr><td class="muted">${l.ln}</td><td class="nw fw6">${l.code}</td><td>${l.part}</td><td class="r">${num(l.qty)}</td>${p.plan.includes('WW') ? `<td>${lineWW(p, l)}</td>` : ''}${p.plan.includes('DIR') ? `<td>${lineDIR(p, l)}</td>` : ''}</tr>`).join('')}</tbody></table></div></div>
+    ${planCard(p)}
+    <div class="card"><div class="card-h"><div class="ttl"><h2>PO Line</h2><p>Nguồn chọn của task: mỗi PO Line thuộc các task có bộ lọc phù hợp trong template. Kết quả đã duyệt tự liên kết theo mã hàng.</p></div></div><div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>#</th><th>Mã hàng</th><th>Chi tiết</th><th class="r">SL</th><th>Thuộc task</th>${planTypes(p).includes('WW') ? '<th>11A Hàng trắng</th>' : ''}${planTypes(p).includes('DIR') ? '<th>11C Daily</th>' : ''}</tr></thead><tbody>
+      ${p.lines.map(l => `<tr><td class="muted">${l.ln}</td><td class="nw fw6">${l.code}</td><td>${l.part}</td><td class="r">${num(l.qty)}</td><td><div class="row" style="gap:4px;flex-wrap:nowrap">${tasksOf(p).filter(t => t.codes.includes(l.code)).map(t => `<span class="tag" title="${esc(tdef(t).name)}">${taskLabel(t)}</span>`).join('') || '<span class="muted">—</span>'}</div></td>${planTypes(p).includes('WW') ? `<td>${lineWW(p, l)}</td>` : ''}${planTypes(p).includes('DIR') ? `<td>${lineDIR(p, l)}</td>` : ''}</tr>`).join('')}</tbody></table></div></div>
   </div><div class="stack">
     <div class="card"><div class="card-h"><div class="ttl"><h2>Điều kiện chốt PO</h2><p>Bước 24</p></div></div><div class="card-b stack-8">${chk.conds.map(c => `<div class="row" style="align-items:flex-start">${ic(c.ok ? 'checkc' : 'xc', '', `color:var(--${c.ok ? 'green' : 'red'});margin-top:2px`)}<div><div class="t-sm fw5">${c.t}</div>${!c.ok && c.sub ? `<div class="t-xs muted">${c.sub}</div>` : ''}</div></div>`).join('')}${st === 'closed' ? '' : `<button class="btn ${chk.ready ? 'btn-primary' : ''} btn-block mt8" ${chk.ready ? '' : 'disabled'} onclick="closePO('${p.id}')">${ic('flag')} Chốt PO & xuất báo cáo</button>`}</div></div>
     <div class="card"><div class="card-h"><div class="ttl"><h2>Báo cáo PO</h2><p>Bước 26 · lưu phiên bản</p></div></div><div class="list">${reps.length ? reps.slice().reverse().map(r => `<a class="li" href="#/report/po/${r.id}">${ic('file', '', 'color:var(--primary)')}<div class="body"><div class="title t-sm">${r.ver} <span class="muted fw5">${fdt(r.at)}</span></div><div class="meta"><span>${esc(r.note)}</span></div></div></a>`).join('') : `<div class="card-b t-sm muted">Chưa có. Báo cáo được tạo khi chốt PO.</div>`}</div></div>
@@ -1776,98 +2082,10 @@ function lineWW(p, l) {
   return open ? pill(IS[insState(open)][0] + ' · ' + open.id, IS[insState(open)][1]) : '<span class="muted">—</span>';
 }
 function lineDIR(p, l) { const ss = DB.ins.filter(i => i.type === 'DIR' && i.data && i.data.rows.some(r => r.po === p.id && r.code === l.code)); if (!ss.length) return '<span class="muted">—</span>'; const r = ss.at(-1).data.rows.find(r => r.po === p.id && r.code === l.code); return `<span class="t-sm">${ss.length} phiên · lần cuối ${r.qi} kiểm / ${+r.rj ? `<b style="color:var(--red)">${r.rj} reject</b>` : '0 reject'}</span>`; }
-function planRow(p, t) {
-  const T = TYPES[t];
-  if (!p.plan.includes(t)) return `<div class="li locked"><span class="ico tone-gray">${ic(T.icon)}</span><div class="body"><div class="title"><span class="trunc">${T.code} · ${T.name}</span></div><div class="meta"><span>Không nằm trong kế hoạch của PO này</span></div></div>${p.closed ? '' : `<button class="btn btn-sm btn-ghost" onclick="PO('${p.id}').plan.push('${t}');PO('${p.id}').plan.sort((a,b)=>TYPE_ORDER.indexOf(a)-TYPE_ORDER.indexOf(b));save();render()">${ic('plus')} Thêm</button>`}</div>`;
-  const s = typeState(p, t); const u = TS_UI[s.state]; const cand = reuseCandidate(p, t);
-  const tone = { ok: 'green', warn: 'amber', info: 'blue', teal: 'teal', gray: 'gray' }[u[1]];
-  const blk = s.list.filter(i => blockedBy(i)).map(i => blockedBy(i)).flat();
-  return `<div class="li" style="align-items:flex-start"><span class="ico tone-${tone}">${ic(T.icon)}</span><div class="body"><div class="title"><span class="trunc">${T.code} · ${T.name}</span>${pill(u[0], u[1])}</div>${T.nodoc ? '' : `<div class="meta"><span>${T.doc}</span></div>`}
-    ${s.state === 'reused' ? `<div class="meta"><span>${ic('link', '', 'width:12px;height:12px;vertical-align:-2px')} Dùng lại <a class="link" href="#/report/ins/${s.from.id}">${s.from.title}</a> (${s.from.id})</span></div>` : ''}
-    ${s.list.length ? `<div class="row wrap mt8">${s.list.map(i => `<a class="tag" href="#/${i.status === 'submitted' ? 'review' : i.status === 'approved' ? 'report/ins' : 'task'}/${i.id}">${i.id}${i.type === 'DIR' ? ' · ' + fd(i.due).slice(0, 5) : ''} · ${U(i.assignee).name} · ${IS[insState(i)][0]}</a>`).join('')}</div>` : ''}
-    ${blk.length ? `<div class="meta mt4"><span>${ic('hourglass', '', 'width:12px;height:12px;vertical-align:-2px')} Chờ ${[...new Set(blk.map(b => TYPES[b.type].short))].join(', ')} được duyệt (bước 08)</span></div>` : ''}
-    ${s.state === 'partial' ? `<div class="meta mt4" style="color:var(--amber)"><span>Còn mã hàng chưa có kết quả — lập phiên kiểm bù.</span></div>` : ''}
-    ${cand ? `<div class="mt8">${banner('teal', 'repeat', 'Có kết quả hợp lệ để dùng lại (bước 06)', `${cand.title} · ${cand.id} · duyệt ${fd(cand.review.at)}`, `<button class="btn btn-sm btn-primary" onclick="useResult('${p.id}','${t}','${cand.id}')">Dùng lại</button>`)}</div>` : ''}</div>
-    ${p.closed || s.state === 'reused' ? '' : `<button class="btn btn-sm" onclick="planModal('${p.id}','${t}')">${ic('plus')} Phiếu</button>`}</div>`;
-}
-function useResult(pid, t, iid) { const p = PO(pid); p.reuse = p.reuse || {}; p.reuse[t] = iid; addLog('reuse', `Dùng lại ${iid} cho ${TYPES[t].name}`, pid); save(); render(); toast(`Đã liên kết kết quả ${iid} với PO ${pid}`, 'ok'); }
-
-/* lập phiếu kiểm (A7) */
-function planModal(pid, t) {
-  const p = PO(pid); t = t || p.plan.find(x => ['none', 'partial'].includes(typeState(p, x).state)) || p.plan[0];
-  const places = [...new Set([p.factory, p.finisher, ...DB.cat.places.filter(x => x.active).map(x => x.name)].filter(Boolean))];
-  openModal({ title: 'Lập phiếu kiểm', sub: `Bước 07 · PO ${pid} · ${p.customer}`, size: 'lg', body: `<div class="stack">
-    <div class="grid g2"><label class="field"><span>Loại đánh giá / mẫu phiếu</span><select class="sel" id="pm-t" onchange="planHint('${pid}')">${p.plan.map(x => `<option value="${x}" ${x === t ? 'selected' : ''}>${TYPES[x].code} · ${TYPES[x].name} — ${TYPES[x].doc}</option>`).join('')}</select></label>
-      <label class="field"><span>Nơi kiểm</span><select class="sel" id="pm-f">${places.map(x => `<option>${x}</option>`).join('')}</select></label>
-      <label class="field"><span>Người kiểm chính</span><select class="sel" id="pm-a">${activeQC().map(u => `<option value="${u.id}">${u.name} — ${u.title}</option>`).join('')}</select></label>
-      <label class="field"><span>Ngày kiểm</span><input class="inp" type="date" id="pm-d" onchange="planHint('${pid}')" value="${new Date(Date.now() + DAY).toISOString().slice(0, 10)}"></label></div>
-    <label class="field"><span>Ghi chú cho QC</span><input class="inp" id="pm-n" placeholder="VD: Kiểm bù các mã chưa kiểm do chất hàng trước"></label>
-    <div id="pm-hint"></div></div>`,
-    foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" id="pm-ok" onclick="createIns('${pid}')">${ic('plus')} Tạo phiếu & giao việc</button>` });
-  planHint(pid);
-}
-/* 11C là báo cáo theo ngày: mỗi PO chỉ 1 phiếu cho mỗi ngày kiểm */
-function dupDaily(pos, t, day) { if (t !== 'DIR' || !day) return null; const k = fd(day + 'T09:00:00'); return DB.ins.find(i => i.type === 'DIR' && i.kind === 'qc' && i.pos.some(x => pos.includes(x)) && fd(i.due) === k) || null; }
-const pmPOs = pid => [pid, ...[...document.querySelectorAll('.pm-po:checked')].map(x => x.value)];
-function planHint(pid) {
-  const p = PO(pid); const t = document.getElementById('pm-t').value; const cand = reuseCandidate(p, t); let h = '';
-  const dup = dupDaily(pmPOs(pid), t, document.getElementById('pm-d').value); const cb = document.getElementById('pm-ok'); if (cb) cb.disabled = !!dup;
-  if (dup) h += banner('bad', 'alert', `Đã có phiếu ${dup.id} ngày ${fd(dup.due)}`, `11C là báo cáo theo ngày — mỗi PO chỉ một phiếu cho mỗi ngày kiểm (${dup.pos.map(x => 'PO ' + x).join(', ')} · ${U(dup.assignee).name}). Chọn ngày khác hoặc mở phiếu đã có.`, `<a class="btn btn-sm" href="#/${isLead() && dup.status === 'approved' ? 'report/ins' : 'task'}/${dup.id}" onclick="closeModal()">Mở ${dup.id}</a>`);
-  if (cand) h += banner('teal', 'repeat', `Có thể dùng lại ${cand.id}`, `${cand.title} — đã duyệt ${fd(cand.review.at)}. Không cần tạo phiên kiểm mới.`, `<button class="btn btn-sm btn-primary" onclick="closeModal();useResult('${pid}','${t}','${cand.id}')">Dùng lại</button>`);
-  const miss = (PREREQ[t] || []).filter(x => p.plan.includes(x) && !['done', 'reused'].includes(typeState(p, x).state));
-  h += `<div class="mt8">${miss.length ? banner('warn', 'hourglass', `Phiếu tiên quyết chưa duyệt: ${miss.map(x => TYPES[x].code + ' ' + TYPES[x].short).join(', ')}`, 'Phiếu sẽ ở trạng thái “Chờ phiếu trước” và tự mở khi các phiếu này được duyệt (bước 08).') : banner('ok', 'checkc', 'Đủ điều kiện kiểm', 'QC nhận việc ngay sau khi tạo.')}</div>`;
-  document.getElementById('pm-hint').innerHTML = h;
-}
-function createIns(pid) {
-  const t = document.getElementById('pm-t').value; const pos = pmPOs(pid);
-  const dup = dupDaily(pos, t, document.getElementById('pm-d').value); if (dup) { toast(`Đã có phiếu ${dup.id} ngày ${fd(dup.due)} cho PO này`, 'bad'); return; }
-  const i = { id: `${t}-${++DB.seq.ins}`, type: t, kind: 'qc', title: `${TYPES[t].name} · PO ${pos.join(' + ')}`, pos, factory: document.getElementById('pm-f').value, assignee: document.getElementById('pm-a').value, team: [],
-    due: new Date(document.getElementById('pm-d').value + 'T09:00:00').toISOString(), status: 'todo', priority: 'normal', note: document.getElementById('pm-n').value.trim(), createdBy: ME.id, createdAt: nowISO(), data: null };
-  if (t === 'PIG') { i.color = PO(pid).color; i.data = JSON.parse(JSON.stringify(INS('PIG-DOVE').data)); Object.assign(i.data, { steps: PIG_STEPS.map(() => ({ ok: false, date: '' })), xr: {}, sec: {}, kcma: KCMA.map(() => ({ r: '', note: '' })), conclusion: '', note: '' }); i.data.header = { ...i.data.header, color: PO(pid).color.toUpperCase(), start: fd(nowISO()) }; }
-  DB.ins.push(i); addLog('task', `Lập ${i.id} (${TYPES[t].code} ${TYPES[t].short}) giao ${U(i.assignee).name}`, pid); save(); closeModal();
-  const mc = mergeCands(i); if (mc.forms.length || mc.pos.length) { go('merge/' + i.id); toast(`Đã lập ${i.id} — ${mc.forms.length + mc.pos.length} đề xuất gộp PO`, 'info'); return; }
-  render();
-  toast(blockedBy(i) ? `Đã lập ${i.id} — chờ phiếu tiên quyết được duyệt` : `Đã lập ${i.id} và giao ${U(i.assignee).name}`, blockedBy(i) ? 'warn' : 'ok');
-}
-/* ---------------- ĐỀ XUẤT GỘP PO (sau khi lập phiếu) ----------------
-   Gộp các phiếu cùng loại, cùng ngày kiểm, cùng nơi kiểm (chưa bắt đầu) và PO cùng loại chưa có phiếu
-   vào một phiên kiểm — đúng như mẫu khách đang dùng (Daily #96: PO 48150/48151/48153; hàng trắng Cont 2: 2 PO). */
-function mergeCands(i) {
-  const day = fd(i.due); const p0 = PO(i.pos[0]);
-  const forms = DB.ins.filter(j => j.id !== i.id && j.kind === 'qc' && j.type === i.type && j.status === 'todo' && !j.codes && fd(j.due) === day && j.factory === i.factory && j.pos.some(x => !i.pos.includes(x)));
-  const taken = new Set([...i.pos, ...forms.flatMap(j => j.pos)]);
-  const pos = DB.pos.filter(x => !x.closed && !taken.has(x.id) && x.plan.includes(i.type) && ['none', 'partial'].includes(typeState(x, i.type).state)
-    && (i.type === 'PIG' ? x.color === p0.color : [x.factory, x.finisher].includes(i.factory) || x.factory === p0.factory));
-  return { forms, pos };
-}
-function pageMerge(id) {
-  const i = INS(id); if (!i) throw 0; const T = TYPES[i.type]; const mc = mergeCands(i);
-  const row = (kind, key, title, meta, side) => `<label class="li" style="cursor:pointer"><input type="checkbox" class="mg-${kind}" value="${key}" checked style="width:18px;height:18px;margin-top:2px;accent-color:var(--primary)"><div class="body"><div class="title t-sm"><span class="trunc">${title}</span></div><div class="meta">${meta}</div></div><div class="side">${side}</div></label>`;
-  const forms = mc.forms.map(j => row('f', j.id, `${esc(j.title)}`, `<span>${j.id}</span><span>PO ${j.pos.join(', ')}</span><span>${U(j.assignee).name}</span><span>${j.pos.reduce((a, x) => a + (PO(x) ? PO(x).lines.length : 0), 0)} mã</span>`, pill(IS[insState(j)][0], IS[insState(j)][1]))).join('');
-  const pos = mc.pos.map(x => row('p', x.id, `PO ${x.id} · ${esc(x.customer)}`, `<span>${esc(x.series)} · ${esc(x.color)}</span><span>${x.factory}</span><span>${x.lines.length} mã · ${num(poQty(x))} pcs</span><span>ETD ${fd(x.etd)}</span>`, pill(TS_UI[typeState(x, i.type).state][0], TS_UI[typeState(x, i.type).state][1]))).join('');
-  const none = !mc.forms.length && !mc.pos.length;
-  return `${pageHead('Đề xuất gộp PO', `${i.id} · ${T.code} ${T.name} · ngày ${fd(i.due)} · ${i.factory}`, '', 'po/' + i.pos[0])}<div class="stack">
-  ${banner('ok', 'checkc', `Đã lập ${i.id} cho PO ${i.pos.join(', ')}`, `Giao ${U(i.assignee).name} · hạn ${fd(i.due)}`)}
-  ${none ? `<div class="card">${empty('Không có PO nào để gộp', 'Không có phiếu hoặc PO cùng loại, cùng ngày, cùng nơi kiểm.', 'checkc')}</div>`
-    : banner('info', 'layers', 'Gộp để QC kiểm một lần trong ngày', `Các phiếu / PO dưới đây cùng loại ${T.code}, cùng ngày ${fd(i.due)} và cùng nơi kiểm ${i.factory} — gộp vào ${i.id} thành một phiên kiểm, một báo cáo (như Daily #96 gộp PO 48150 · 48151 · 48153).`)}
-  ${mc.forms.length ? `<div class="card"><div class="card-h"><div class="ttl"><h2>Phiếu cùng loại trong ngày</h2><p>Phiếu được chọn sẽ gộp vào ${i.id} và không còn tồn tại riêng.</p></div></div><div class="list">${forms}</div></div>` : ''}
-  ${mc.pos.length ? `<div class="card"><div class="card-h"><div class="ttl"><h2>PO cùng loại chưa có phiếu</h2><p>Thêm PO vào phiên kiểm ${i.id}.</p></div></div><div class="list">${pos}</div></div>` : ''}
-  <div class="sticky-actions"><a class="btn btn-lg" href="#/po/${i.pos[0]}">${none ? 'Về PO' : 'Bỏ qua'}</a>${none ? '' : `<button class="btn btn-primary btn-lg grow" onclick="doMerge('${i.id}')">${ic('layers')} Gộp vào ${i.id}</button>`}</div></div>`;
-}
-function doMerge(id) {
-  const i = INS(id); const fs = [...document.querySelectorAll('.mg-f:checked')].map(x => x.value); const ps = [...document.querySelectorAll('.mg-p:checked')].map(x => x.value);
-  if (!fs.length && !ps.length) { toast('Chọn ít nhất một phiếu hoặc PO để gộp', 'bad'); return; }
-  const auto = i.title === `${TYPES[i.type].name} · PO ${i.pos.join(' + ')}`;
-  fs.forEach(fid => { const j = INS(fid); j.pos.forEach(x => { if (!i.pos.includes(x)) i.pos.push(x); }); if (j.note && !i.note.includes(j.note)) i.note = [i.note, j.note].filter(Boolean).join(' · '); DB.ins = DB.ins.filter(x => x.id !== fid); });
-  ps.forEach(x => { if (!i.pos.includes(x)) i.pos.push(x); });
-  if (auto) i.title = `${TYPES[i.type].name} · PO ${i.pos.join(' + ')}`;
-  addLog('task', `Gộp ${[...fs, ...ps.map(x => 'PO ' + x)].join(', ')} vào ${i.id} (${TYPES[i.type].code} · ${fd(i.due)})`, i.pos[0]); save();
-  go('po/' + i.pos[0]); toast(`Đã gộp vào ${i.id} · PO ${i.pos.join(', ')}`, 'ok');
-}
 function closePO(id) {
   const p = PO(id); if (!poCheck(p).ready) { toast('PO chưa đủ điều kiện chốt', 'bad'); return; }
-  openModal({ title: `Chốt PO ${id}`, sub: 'Bước 25 — kiểm tra tổng hợp và chốt trạng thái PO', body: `<div class="stack"><div class="card"><div class="list">${p.plan.map(t => { const s = typeState(p, t); const i = s.state === 'reused' ? s.from : s.list.filter(x => x.status === 'approved').at(-1); const e = i && evalInsp(i); return `<div class="li"><span class="ico sm tone-green">${ic('check', '', 'width:14px;height:14px')}</span><div class="body"><div class="title t-sm">${TYPES[t].code} · ${TYPES[t].name}</div><div class="meta"><span>${i ? i.id + ' · ' + U(i.assignee).name : ''}${s.state === 'reused' ? ' · dùng lại' : ''}</span></div></div>${e ? pill(VERDICT[e.verdict][0], VERDICT[e.verdict][1]) : ''}</div>`; }).join('')}</div></div>
-    <label class="field"><span>Ghi chú phiên bản báo cáo</span><input class="inp" id="cp-note" value="Chốt PO — ${p.plan.length}/${p.plan.length} loại đánh giá đạt"></label></div>`,
+  openModal({ title: `Chốt PO ${id}`, sub: 'Bước 25 — kiểm tra tổng hợp và chốt trạng thái PO', body: `<div class="stack"><div class="card"><div class="list">${poLinked(p).map(x => { const e = x.i && evalInsp(x.i); return `<div class="li"><span class="ico sm tone-${x.s === 'na' ? 'gray' : 'green'}">${ic(x.s === 'na' ? 'info' : 'check', '', 'width:14px;height:14px')}</span><div class="body"><div class="title t-sm">${TYPES[x.d.type].code} · ${esc(x.d.name)}</div><div class="meta"><span>${x.s === 'na' ? 'Không áp dụng — không có PO Line phù hợp' : x.i ? x.i.id + ' · ' + U(x.i.assignee).name + (x.s === 'reused' ? ' · dùng lại' : '') : ''}</span></div></div>${e ? pill(VERDICT[e.verdict][0], VERDICT[e.verdict][1]) : ''}</div>`; }).join('')}</div></div>
+    <label class="field"><span>Ghi chú phiên bản báo cáo</span><input class="inp" id="cp-note" value="Chốt PO — ${planSummary(p).done}/${planSummary(p).total} task có kết quả (${TEMPLATES[planOf(p).tpl].code})"></label></div>`,
     foot: `<button class="btn" onclick="closeModal()">Hủy</button><button class="btn btn-primary" onclick="doClosePO('${id}')">${ic('flag')} Chốt PO & lưu báo cáo v1.0</button>` });
 }
 function doClosePO(id) { const p = PO(id); p.closed = { at: nowISO(), by: ME.id }; addLog('close', `Chốt PO ${id}`, id); const r = mkReport(id, document.getElementById('cp-note').value); save(); closeModal(); go('report/po/' + r.id); toast(`Đã chốt PO ${id} và lưu báo cáo ${r.ver}`, 'ok'); }
@@ -1919,7 +2137,7 @@ function pageInsView(id) {
   if (i.kind === 'prod') return `${pageHead(esc(i.title), `${U(i.assignee).name} · hạn ${fd(i.due)}`, isPill(i), 'work')}<div class="card">${prodSteps(insPOs(i)[0], false)}</div>`;
   if (i.data && ['submitted', 'approved', 'returned'].includes(i.status)) return pageReviewDetail(id);
   const b = blockedBy(i);
-  return `${pageHead(esc(i.title), `${i.id} · ${U(i.assignee).name} · hạn ${fd(i.due)}`, isPill(i), 'work')}<div class="stack">${b ? banner('warn', 'hourglass', 'Chờ phiếu tiên quyết được duyệt', b.map(x => `${TYPES[x.type].name} — PO ${x.po}`).join('<br>')) : banner('info', 'info', i.status === 'draft' ? 'QC đang thực hiện phiếu' : 'QC chưa bắt đầu kiểm', `Hạn ${fd(i.due)} · ${relDay(i.due).t}`)}${ctxCard(i)}${i.data && i.type === 'PIG' ? insSummary(i) : ''}</div>`;
+  return `${pageHead(esc(i.title), `${i.id} · ${U(i.assignee).name} · hạn ${fd(i.due)}`, isPill(i), 'work')}<div class="stack">${b ? banner('warn', 'hourglass', 'Chờ phiếu tiên quyết được duyệt', b.map(x => `${esc(x.name)} — PO ${x.po}`).join('<br>')) : banner('info', 'info', i.status === 'draft' ? 'QC đang thực hiện phiếu' : 'QC chưa bắt đầu kiểm', `Hạn ${fd(i.due)} · ${relDay(i.due).t}`)}${ctxCard(i)}${i.data && i.type === 'PIG' ? insSummary(i) : ''}</div>`;
 }
 function approveIns(id) {
   const i = INS(id); const e = evalInsp(i); i.status = 'approved'; i.review = { by: ME.id, at: nowISO(), decision: 'approve' };
@@ -1929,7 +2147,7 @@ function approveIns(id) {
 }
 function linkDone(id) {
   const i = INS(id); render(); toast(`Đã duyệt ${i.id} · liên kết kết quả với PO ${i.pos.join(', ')}`, 'ok');
-  const unl = DB.ins.filter(x => x.status === 'todo' && x.kind === 'qc' && !blockedBy(x) && x.pos.some(p => i.pos.includes(p)) && x.id !== id && (PREREQ[x.type] || []).includes(i.type));
+  const unl = DB.ins.filter(x => x.status === 'todo' && x.kind === 'qc' && x.id !== id && (x.tasks || []).some(tid => (tdef(TASK(tid)).after || []).some(k => (i.tasks || []).some(it => TASK(it).k === k && TASK(it).po === TASK(tid).po))) && !blockedBy(x));
   if (unl.length) setTimeout(() => toast(`Đã mở khóa ${unl.map(x => x.id).join(', ')} (bước 08)`, 'info'), 400);
   insPOs(i).filter(p => poState(p) === 'ready').forEach(p => setTimeout(() => toast(`PO ${p.id} đủ kết quả — sẵn sàng chốt`, 'info'), 800));
 }
@@ -2112,7 +2330,9 @@ function paperPIG(i) {
 }
 
 /* ---- Báo cáo PO ---- */
-function poLinked(p) { return p.plan.map(t => { const s = typeState(p, t); return { t, s, i: s.state === 'reused' ? s.from : s.list.filter(x => x.status === 'approved').at(-1) }; }); }
+/* dữ liệu báo cáo PO tổng hợp theo đúng cấu trúc template: mỗi đầu mục 1 dòng (kể cả "Không áp dụng") */
+function poLinked(p) { return tasksOf(p).map(t => { const s = taskState(t); const fs = taskForms(t); return { t, d: tdef(t), s, i: s === 'reused' ? INS(t.reuse) : fs.filter(x => x.status === 'approved').at(-1) }; }); }
+const poForms = p => [...new Map(poLinked(p).filter(x => x.i).map(x => [x.i.id, x])).values()];
 function paperPO(r) {
   const p = PO(r.po); const L = poLinked(p);
   return `<div class="paper"><table>${colg(Array(12).fill(100 / 12))}
@@ -2120,11 +2340,12 @@ function paperPO(r) {
   <tr><td colspan="2" class="hd">PO</td><td colspan="4">${p.id}</td><td colspan="2" class="hd">Khách hàng</td><td colspan="4">${p.customer}</td></tr>
   <tr><td colspan="2" class="hd">Dòng hàng / màu</td><td colspan="4">${p.series} · ${p.color}</td><td colspan="2" class="hd">Xưởng</td><td colspan="4">${p.factory}${p.finisher && p.finisher !== p.factory ? ' → ' + p.finisher : ''}</td></tr>
   <tr><td colspan="2" class="hd">Số lượng</td><td colspan="4">${num(poQty(p))} pcs · ${p.lines.length} PO Line</td><td colspan="2" class="hd">Trạng thái</td><td colspan="4">${p.closed ? 'Đã chốt ' + fdt(p.closed.at) : 'Đang chạy'}</td></tr>
-  <tr><td colspan="12" class="sec">KẾT QUẢ THEO LOẠI ĐÁNH GIÁ</td></tr><tr><th colspan="3">Loại / mẫu phiếu</th><th colspan="3">Phiên kiểm</th><th colspan="2">QC</th><th>Ngày duyệt</th><th>Kiểm / SL</th><th>Lỗi C/M/m</th><th>Kết luận</th></tr>
-  ${L.map(x => { const e = x.i && evalInsp(x.i); return `<tr><td colspan="3">${TYPES[x.t].code} · ${TYPES[x.t].name}<br><span style="color:#666">${TYPES[x.t].doc}</span></td><td colspan="3">${x.i ? x.i.title + ' (' + x.i.id + ')' + (x.s.state === 'reused' ? ' — dùng lại' : '') : '—'}</td><td colspan="2">${x.i ? U(x.i.assignee).name : ''}</td><td class="c">${x.i ? fd(x.i.review.at) : ''}</td><td class="c">${e ? `${num(e.insp)} / ${num(e.N)}` : ''}</td><td class="c">${e ? `${e.crit}/${e.maj}/${e.min}` : ''}</td><td class="c ${e && e.verdict === 'FAIL' ? 'ng' : 'ok'}">${e ? VERDICT[e.verdict][0] : ''}</td></tr>`; }).join('')}
+  <tr><td colspan="2" class="hd">Kế hoạch</td><td colspan="10">${planOf(p) ? `${planOf(p).id} · ${TEMPLATES[planOf(p).tpl].code} ${TEMPLATES[planOf(p).tpl].name}` : 'Chưa lập'}</td></tr>
+  <tr><td colspan="12" class="sec">KẾT QUẢ THEO TASK CỦA KẾ HOẠCH ĐÁNH GIÁ</td></tr><tr><th colspan="3">Task / mẫu phiếu</th><th colspan="3">Phiên kiểm</th><th colspan="2">QC</th><th>Ngày duyệt</th><th>Kiểm / SL</th><th>Lỗi C/M/m</th><th>Kết luận</th></tr>
+  ${L.map(x => { const e = x.i && evalInsp(x.i); return `<tr><td colspan="3">${esc(x.d.name)}<br><span style="color:#666">${TYPES[x.d.type].code} · ${TYPES[x.d.type].doc} · ${x.t.codes.length} PO Line</span></td><td colspan="3">${x.s === 'na' ? 'Không áp dụng — không có PO Line phù hợp' : x.i ? x.i.title + ' (' + x.i.id + ')' + (x.s === 'reused' ? ' — dùng lại' : '') : TK_UI[x.s][0]}</td><td colspan="2">${x.i ? U(x.i.assignee).name : ''}</td><td class="c">${x.i ? fd(x.i.review.at) : ''}</td><td class="c">${e ? `${num(e.insp)} / ${num(e.N)}` : ''}</td><td class="c">${e ? `${e.crit}/${e.maj}/${e.min}` : ''}</td><td class="c ${e && e.verdict === 'FAIL' ? 'ng' : 'ok'}">${e ? VERDICT[e.verdict][0] : ''}</td></tr>`; }).join('')}
   <tr><td colspan="12" class="sec">LỊCH SỬ PHIÊN BẢN</td></tr><tr><th colspan="2">Phiên bản</th><th colspan="3">Thời gian</th><th colspan="2">Người xuất</th><th colspan="5">Ghi chú</th></tr>${DB.reports.filter(x => x.po === p.id).map(x => `<tr><td colspan="2">${x.ver}</td><td colspan="3">${fdt(x.at)}</td><td colspan="2">${U(x.by).name}</td><td colspan="5">${esc(x.note)}</td></tr>`).join('')}
   <tr class="noborder"><td colspan="4" class="c" style="padding-top:24px">QA/QC Lead<br><br><br><b>${U(r.by).name}</b></td><td colspan="4" class="c" style="padding-top:24px">QA Manager</td><td colspan="4" class="c" style="padding-top:24px">Customer / Inspector</td></tr></table></div>
-  ${L.filter(x => x.i).map(x => `<div class="pg" data-p="${TYPES[x.t].code} · ${x.i.id}"></div>${paperIns(x.i)}`).join('')}`;
+  ${poForms(p).map(x => `<div class="pg" data-p="${TYPES[x.i.type].code} · ${x.i.id}"></div>${paperIns(x.i)}`).join('')}`;
 }
 
 /* =====================================================================
@@ -2255,8 +2476,8 @@ function xlsPOSummary(wb, rp) {
   const p = PO(rp.po); const ws = wb.addWorksheet('Tổng hợp PO'); sheetSetup(ws, [26, 34, 16, 14, 14, 14, 18]);
   X(ws, 'A1:A2', ''); img(wb, ws, 'logo_vhg', 0, 1, 120, 50); X(ws, 'B1:G1', 'BÁO CÁO CHẤT LƯỢNG PURCHASE ORDER', { b: 1, size: 14, h: 'center' }); X(ws, 'B2:G2', `PO ${p.id} · ${rp.ver} · ${fdt(rp.at)}`, { h: 'center' }); ws.getRow(1).height = 28; ws.getRow(2).height = 24;
   [['PO', p.id, 'Khách hàng', p.customer], ['Dòng hàng / màu', `${p.series} · ${p.color}`, 'Xưởng', p.factory], ['Số lượng', `${num(poQty(p))} pcs · ${p.lines.length} PO Line`, 'Trạng thái', p.closed ? 'Đã chốt ' + fdt(p.closed.at) : 'Đang chạy']].forEach((x, k) => { const r = 4 + k; X(ws, `A${r}`, x[0], { b: 1, fill: BLUE }); X(ws, `B${r}:C${r}`, x[1]); X(ws, `D${r}`, x[2], { b: 1, fill: BLUE }); X(ws, `E${r}:G${r}`, x[3]); });
-  let r = 8; ['Loại đánh giá / mẫu', 'Phiên kiểm', 'QC', 'Ngày duyệt', 'Kiểm / SL', 'Lỗi C/M/m', 'Kết luận'].forEach((t, k) => X(ws, `${colL(k)}${r}`, t, { b: 1, fill: GREY, h: 'center' })); r++;
-  poLinked(p).forEach(x => { const e = x.i && evalInsp(x.i); [`${TYPES[x.t].code} · ${TYPES[x.t].name}\n${TYPES[x.t].doc}`, x.i ? `${x.i.title} (${x.i.id})${x.s.state === 'reused' ? ' — dùng lại' : ''}` : '—', x.i ? U(x.i.assignee).name : '', x.i ? fd(x.i.review.at) : '', e ? `${e.insp} / ${e.N}` : '', e ? `${e.crit}/${e.maj}/${e.min}` : '', e ? VERDICT[e.verdict][0] : ''].forEach((v, k) => X(ws, `${colL(k)}${r}`, v, { h: k > 1 ? 'center' : 'left' })); ws.getRow(r).height = 32; r++; });
+  let r = 8; ['Task / mẫu phiếu', 'Phiên kiểm', 'QC', 'Ngày duyệt', 'Kiểm / SL', 'Lỗi C/M/m', 'Kết luận'].forEach((t, k) => X(ws, `${colL(k)}${r}`, t, { b: 1, fill: GREY, h: 'center' })); r++;
+  poLinked(p).forEach(x => { const e = x.i && evalInsp(x.i); [`${x.d.name}\n${TYPES[x.d.type].code} · ${TYPES[x.d.type].doc}`, x.s === 'na' ? 'Không áp dụng' : x.i ? `${x.i.title} (${x.i.id})${x.s === 'reused' ? ' — dùng lại' : ''}` : TK_UI[x.s][0], x.i ? U(x.i.assignee).name : '', x.i ? fd(x.i.review.at) : '', e ? `${e.insp} / ${e.N}` : '', e ? `${e.crit}/${e.maj}/${e.min}` : '', e ? VERDICT[e.verdict][0] : ''].forEach((v, k) => X(ws, `${colL(k)}${r}`, v, { h: k > 1 ? 'center' : 'left' })); ws.getRow(r).height = 32; r++; });
   r++; X(ws, `A${r}:G${r}`, 'LỊCH SỬ PHIÊN BẢN', { b: 1, border: false }); r++; DB.reports.filter(x => x.po === p.id).forEach(x => { X(ws, `A${r}`, x.ver); X(ws, `B${r}`, fdt(x.at)); X(ws, `C${r}`, U(x.by).name); X(ws, `D${r}:G${r}`, x.note); r++; });
 }
 
@@ -2276,8 +2497,8 @@ async function exportPO(rid) {
   const rp = DB.reports.find(x => x.id === rid); const p = PO(rp.po);
   return withBusy('Đang tạo báo cáo PO', async () => {
     await loadLib('ExcelJS'); const wb = new ExcelJS.Workbook(); wb.creator = 'VHG QC'; xlsPOSummary(wb, rp);
-    poLinked(p).filter(x => x.i && x.i.type !== 'PLY').forEach(x => ({ WW: xlsWW, DIR: xlsDIR, FIN: xlsDIR, PIG: xlsPIG }[x.t])(wb, x.i, `${TYPES[x.t].code} ${x.i.id}`.slice(0, 31)));
-    poLinked(p).filter(x => x.i && x.i.type === 'PLY').forEach(x => xlsPLYlite(wb, x.i));
+    poForms(p).filter(x => x.i.type !== 'PLY').forEach(x => ({ WW: xlsWW, DIR: xlsDIR, FIN: xlsDIR, PIG: xlsPIG }[x.i.type])(wb, x.i, `${TYPES[x.i.type].code} ${x.i.id}`.slice(0, 31)));
+    poForms(p).filter(x => x.i.type === 'PLY').forEach(x => xlsPLYlite(wb, x.i));
     const buf = await wb.xlsx.writeBuffer(); saveBlob(new Blob([buf]), fileSafe(`QC REPORT PO ${p.id} ${rp.ver}`) + '.xlsx'); toast('Đã xuất báo cáo PO ' + rp.ver, 'ok');
   });
 }
@@ -2352,9 +2573,9 @@ function catSave(log) { if (log) addLog('admin', log); applyCat(); save(); rende
 /* ----- trang ----- */
 function pageAdmin() {
   const C = DB.cat;
-  const tabs = [['users', 'Người dùng & phân quyền', 'users', C.users.length], ['places', 'Nơi kiểm / Xưởng', 'factory', C.places.length], ['types', 'Loại đánh giá & mẫu phiếu', 'clipboard', TYPE_ORDER.length], ['defects', 'Danh mục lỗi', 'alert', C.defects.length]];
+  const tabs = [['users', 'Người dùng & phân quyền', 'users', C.users.length], ['places', 'Nơi kiểm / Xưởng', 'factory', C.places.length], ['tpls', 'Template kế hoạch', 'layers', Object.keys(TEMPLATES).length], ['types', 'Loại đánh giá & mẫu phiếu', 'clipboard', TYPE_ORDER.length], ['defects', 'Danh mục lỗi', 'alert', C.defects.length]];
   const cur = tabs.find(t => t[0] === UI.adminTab) || tabs[0];
-  const body = { users: adminUsers, places: adminPlaces, types: adminTypes, defects: adminDefects }[cur[0]]();
+  const body = { users: adminUsers, places: adminPlaces, tpls: adminTpls, types: adminTypes, defects: adminDefects }[cur[0]]();
   return `${pageHead('Danh mục & phân quyền', 'Chỉ Admin thấy trang này. Thay đổi áp dụng ngay cho toàn bộ người dùng.')}
   <div class="tabs" style="margin:-8px 0 16px">${tabs.map(t => `<button class="${t[0] === cur[0] ? 'on' : ''}" onclick="UI.adminTab='${t[0]}';render()">${ic(t[2], '', 'width:16px;height:16px')} ${t[1]} <span class="n">${t[3]}</span></button>`).join('')}</div>${body}`;
 }
@@ -2426,13 +2647,19 @@ function savePlace(k) {
 }
 function togglePlace(k) { const p = DB.cat.places[k]; p.active = !p.active; catSave(`${p.active ? 'Bật' : 'Tắt'} nơi kiểm ${p.name}`); }
 
-/* 3. Loại đánh giá */
+/* 3. Template kế hoạch đánh giá (xem) — nguồn sinh task khi lập kế hoạch cho PO */
+function adminTpls() {
+  return `<div class="stack">${Object.entries(TEMPLATES).map(([k, T]) => { const ps = DB.plans.filter(x => x.tpl === k).map(x => x.po);
+    return `<div class="card">${cardH(`${T.code} · ${esc(T.name)}`, `${esc(T.desc)} · ${T.tasks.length} task · dùng cho ${ps.length} PO${ps.length ? ': ' + ps.join(', ') : ''}`)}
+    <div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>#</th><th>Task (đầu mục)</th><th>Mã đầu mục</th><th>Mẫu phiếu</th><th>PO Line áp dụng</th><th>Phải chờ</th></tr></thead><tbody>
+    ${T.tasks.map((d, j) => `<tr><td class="muted">${j + 1}</td><td><b>${esc(d.name)}</b>${d.daily ? ' <span class="pill gray nodot">theo ngày</span>' : ''}${d.reuse ? ' <span class="pill teal nodot">dùng lại được</span>' : ''}</td><td class="nw muted">${d.k}</td><td class="nw">${TYPES[d.type].code} · ${esc(TYPES[d.type].doc)}</td><td>${filterText(d.lines)}</td><td>${(d.after || []).map(x => esc(T.tasks.find(y => y.k === x).name)).join(', ') || '<span class="muted">—</span>'}</td></tr>`).join('')}</tbody></table></div></div>`; }).join('')}</div>`;
+}
+/* 4. Loại đánh giá */
 function adminTypes() {
-  return `<div class="card">${cardH('Loại đánh giá & mẫu phiếu', 'Tên hiển thị và mẫu phiếu của 5 loại đánh giá. Thứ tự chờ giữa các loại cố định theo quy trình.')}
-    <div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>Mã</th><th>Tên phiếu</th><th>Mẫu phiếu</th><th>Vùng</th><th>Phải chờ</th><th class="r">Phiếu đã lập</th><th></th></tr></thead><tbody>
-    ${TYPE_ORDER.map(k => { const T = TYPES[k]; const z = ZONES.find(x => x.types.includes(k));
-      return `<tr><td class="nw"><div class="row" style="gap:8px;flex-wrap:nowrap"><span class="ico sm tone-teal">${ic(T.icon, '', 'width:14px;height:14px')}</span><b>${T.code}</b></div></td><td><b>${esc(T.name)}</b><div class="t-xs muted">${esc(T.desc)}</div></td><td>${esc(T.doc)}</td><td class="nw">${z.name.split('·')[0].trim()}</td>
-      <td class="nw">${PREREQ[k].length ? PREREQ[k].map(x => TYPES[x].code).join(', ') : '<span class="muted">—</span>'}</td><td class="r">${DB.ins.filter(i => i.type === k).length}</td><td class="r"><button class="btn btn-sm" onclick="typeModal('${k}')">${ic('edit')} Sửa</button></td></tr>`; }).join('')}</tbody></table></div></div>`;
+  return `<div class="card">${cardH('Loại đánh giá & mẫu phiếu', 'Tên hiển thị và mẫu phiếu của 5 loại đánh giá. Thứ tự chờ giữa các task do template kế hoạch quy định.')}
+    <div class="tbl-wrap" tabindex="0"><table class="tbl"><thead><tr><th>Mã</th><th>Tên phiếu</th><th>Mẫu phiếu</th><th>Dùng trong template</th><th class="r">Phiếu đã lập</th><th></th></tr></thead><tbody>
+    ${TYPE_ORDER.map(k => { const T = TYPES[k]; const used = Object.values(TEMPLATES).filter(x => x.tasks.some(d => d.type === k)).map(x => x.code);
+      return `<tr><td class="nw"><div class="row" style="gap:8px;flex-wrap:nowrap"><span class="ico sm tone-teal">${ic(T.icon, '', 'width:14px;height:14px')}</span><b>${T.code}</b></div></td><td><b>${esc(T.name)}</b><div class="t-xs muted">${esc(T.desc)}</div></td><td>${esc(T.doc)}</td><td class="nw">${used.join(', ') || '<span class="muted">—</span>'}</td><td class="r">${DB.ins.filter(i => i.type === k).length}</td><td class="r"><button class="btn btn-sm" onclick="typeModal('${k}')">${ic('edit')} Sửa</button></td></tr>`; }).join('')}</tbody></table></div></div>`;
 }
 function typeModal(k) {
   const T = TYPES[k];
@@ -2547,6 +2774,123 @@ const I18N_EN = {
   "Random check mỗi chi tiết chính": "Random check of each main part",
   "Hàng trắng": "White wood",
   "Báo cáo kiểm trên Chuyền": "During Inline Report",
+  "Gợi ý": "Suggested",
+  "Cánh & mặt hộc sơn hoàn thiện": "Painted doors & drawer fronts",
+  "Hàng trắng gia công ở xưởng ngoài → lót AC / topcoat tại VHGI → final đóng gói. Dùng cho dòng Galaxy (DS GD).": "White wood made at subcontractors → AC primer / topcoat at VHGI → final packing. For the Galaxy (DS GD) line.",
+  "Plywood nguyên liệu đầu vào": "Incoming plywood material",
+  "Theo dõi & ký mẫu màu": "Color sample tracking & sign-off",
+  "Kiểm trên chuyền lót AC → topcoat": "Inline check AC primer → topcoat",
+  "Frame & Door sơn tại Xưởng #96": "Frame & Door painted at Factory #96",
+  "Sơn và hoàn thiện ngay tại Xưởng #96, kiểm trên chuyền riêng cho Frame và Door, rồi final đóng gói.": "Painted and finished at Factory #96, with separate inline checks for Frame and Door, then final packing.",
+  "Kiểm trên chuyền – Frame": "Inline check – Frame",
+  "Kiểm trên chuyền – Door": "Inline check – Door",
+  "Final – Đóng gói": "Final – Packing",
+  "Plywood nhập từ nhà cung cấp": "Plywood from suppliers",
+  "Kiểm plywood tại NCC theo BM-VHGLF-02; tấm cán UV kiểm thêm sau cán.": "Plywood inspected at the supplier per BM-VHGLF-02; UV-coated sheets get an extra check after coating.",
+  "Kiểm plywood tại NCC": "Plywood inspection at supplier",
+  "Kiểm sau cán UV 2 mặt": "Check after 2-side UV coating",
+  "Chưa giao": "Not assigned",
+  "Chờ task trước": "Waiting for previous task",
+  "Đã giao": "Assigned",
+  "Chờ giao việc": "Awaiting assignment",
+  "Tất cả PO Line": "All PO Lines",
+  "PO Line có mô tả": "PO Lines whose description",
+  "PO Line có chi tiết": "PO Lines whose part",
+  "chứa": "contains",
+  "bằng": "is",
+  "PO không tồn tại hoặc đã chốt": "PO not found or already closed",
+  "Chọn template kế hoạch": "Choose a plan template",
+  "PO đã có kế hoạch và đã giao việc — không thể tạo kế hoạch khác": "This PO already has a plan with assignments — another plan cannot be created",
+  "Đã lập kế hoạch": "Plan created",
+  "Đổi template kế hoạch": "Change plan template",
+  "Lập kế hoạch đánh giá": "Create evaluation plan",
+  "Mỗi PO chỉ có 01 kế hoạch đánh giá": "Each PO has exactly one evaluation plan",
+  "Hệ thống sinh đủ task theo template đã chọn. Task không có PO Line phù hợp vẫn được giữ, đánh dấu “Không áp dụng”.": "All tasks of the selected template are generated. Tasks without matching PO Lines are kept and marked “Not applicable”.",
+  "Đổi template": "Change template",
+  "Tạo kế hoạch": "Create plan",
+  "không áp dụng": "not applicable",
+  "Không áp dụng — không có PO Line phù hợp": "Not applicable — no matching PO Lines",
+  "Không có PO Line phù hợp": "No matching PO Lines",
+  "Giao việc": "Assign",
+  "Giao việc hàng loạt": "Bulk assign",
+  "Giao kiểm bù": "Assign re-check",
+  "Nhân viên QC thực hiện": "Assigned QC inspector",
+  "Thời hạn hoàn thành": "Deadline",
+  "Thêm phiên kiểm cho task": "Add an inspection session to the task",
+  "Có task phải chờ": "Some tasks must wait",
+  "Phiếu ở trạng thái “Chờ task trước” cho tới khi": "The form stays “Waiting for previous task” until",
+  "có kết quả": "has results",
+  "Chọn nhân viên QC và thời hạn": "Choose a QC inspector and a deadline",
+  "Không có task nào được giao — task đã được giao trước đó hoặc trùng ngày kiểm": "No task assigned — tasks were already assigned or the inspection date is taken",
+  "Không có task nào được giao — đã được giao trước đó hoặc trùng ngày kiểm": "No task assigned — already assigned or the inspection date is taken",
+  "Phiếu đã bắt đầu kiểm — không đổi người được": "Inspection already started — cannot reassign",
+  "Đổi người / thời hạn": "Change assignee / deadline",
+  "Đổi người / hạn": "Reassign",
+  "dùng chung cho": "shared by",
+  "Thay đổi áp dụng cho cả phiếu": "The change applies to the whole form",
+  "Chọn thời hạn": "Choose a deadline",
+  "Đã cập nhật": "Updated",
+  "Có kết quả đã duyệt để dùng lại": "An approved result can be reused",
+  "Phiên ngày mới": "New day session",
+  "PO chung phiếu": "POs on this form",
+  "11C là báo cáo theo ngày — mỗi task chỉ một phiếu cho mỗi ngày kiểm. Chọn ngày khác.": "11C is a daily report — one form per task per inspection day. Pick another date.",
+  "Chọn nhiều PO cùng template kế hoạch, chọn task rồi giao cho một nhân viên QC": "Select POs with the same plan template, pick tasks and assign them to one QC inspector",
+  "Chỉ chọn được các PO cùng template kế hoạch": "Only POs with the same plan template can be selected",
+  "Khác template — không chọn chung được": "Different template — cannot be selected together",
+  "task chưa giao": "unassigned tasks",
+  "Đã giao đủ": "All assigned",
+  "1 · Chọn PO": "1 · Select POs",
+  "Chỉ chọn chung được các PO cùng template — mỗi template có danh sách task khác nhau.": "Only POs with the same template can be combined — each template has its own task list.",
+  "Khác template": "Different template",
+  "Chưa lập kế hoạch nên chưa giao được": "No plan yet, cannot assign",
+  "2 · Chọn task": "2 · Select tasks",
+  "Chọn ít nhất một PO để xem danh sách task chung.": "Select at least one PO to see the shared task list.",
+  "Chọn tất cả": "Select all",
+  "có thể giao": "assignable",
+  "Kiểm bù PO Line chưa có kết quả": "Re-check PO Lines without results",
+  "Dùng lại kết quả": "Reused result",
+  "3 · Giao việc": "3 · Assign",
+  "PO đã chọn": "POs selected",
+  "Tạo 1 phiếu": "Create 1 form",
+  "Không bắt buộc": "Optional",
+  "Chọn ít nhất một task": "Select at least one task",
+  "đã tạo": "created",
+  "phiếu cho": "forms for",
+  "Mỗi PO có 01 kế hoạch, sinh từ template.": "Each PO has one plan, generated from a template.",
+  "PO chưa có kế hoạch đánh giá": "This PO has no evaluation plan",
+  "Chọn template phù hợp — hệ thống sinh đủ danh sách task theo template.": "Pick a template — the full task list is generated from it.",
+  "PO Line chưa có kết quả — giao kiểm bù.": "PO Lines without results — assign a re-check.",
+  "task đã giao": "tasks assigned",
+  "Đã lập kế hoạch đánh giá": "Evaluation plan created",
+  "Chọn template để sinh danh sách task": "Pick a template to generate the task list",
+  "Tất cả task trong kế hoạch có kết quả": "All plan tasks have results",
+  "Chưa lập kế hoạch": "No plan yet",
+  "chưa lập kế hoạch đánh giá": "has no evaluation plan",
+  "chọn template để sinh task": "pick a template to generate tasks",
+  "Thanh: sản lượng theo nhóm công đoạn (P1). Dòng dưới: trạng thái từng task trong kế hoạch đánh giá.": "Bars: output by stage group (P1). Below: status of each task in the evaluation plan.",
+  "PO đồng bộ từ Base. Mỗi PO có 01 kế hoạch đánh giá, sinh danh sách task từ template.": "POs synced from Base. Each PO has one evaluation plan with tasks generated from a template.",
+  "Chưa có kế hoạch": "No plan",
+  "đã giao": "assigned",
+  "Lập kế hoạch": "Create plan",
+  "PO mới đồng bộ — chưa có kế hoạch đánh giá": "Newly synced PO — no evaluation plan yet",
+  "Chọn template kế hoạch: hệ thống sinh đủ danh sách task, sau đó giao từng task cho QC kèm thời hạn.": "Pick a plan template: the full task list is generated, then assign each task to QC with a deadline.",
+  "Giao từng task bên dưới, hoặc giao hàng loạt cùng các PO khác chung template.": "Assign each task below, or bulk-assign together with other POs on the same template.",
+  "Kế hoạch": "Plan",
+  "Nguồn chọn của task: mỗi PO Line thuộc các task có bộ lọc phù hợp trong template. Kết quả đã duyệt tự liên kết theo mã hàng.": "Task source: each PO Line belongs to the tasks whose template filter matches it. Approved results link by item code.",
+  "Thuộc task": "Tasks",
+  "task có kết quả": "tasks with results",
+  "KẾT QUẢ THEO TASK CỦA KẾ HOẠCH ĐÁNH GIÁ": "RESULTS BY EVALUATION PLAN TASK",
+  "Task / mẫu phiếu": "Task / form template",
+  "Template kế hoạch": "Plan templates",
+  "Dùng trong template": "Used in templates",
+  "dùng cho": "used by",
+  "Task (đầu mục)": "Task (item)",
+  "Mã đầu mục": "Item code",
+  "PO Line áp dụng": "Applicable PO Lines",
+  "theo ngày": "daily",
+  "dùng lại được": "reusable",
+  "Tên hiển thị và mẫu phiếu của 5 loại đánh giá. Thứ tự chờ giữa các task do template kế hoạch quy định.": "Display names and form templates of the 5 evaluation types. The waiting order between tasks is defined by the plan template.",
+  "Chưa thể kiểm — chờ task trước có kết quả": "Cannot inspect yet — waiting for the previous task’s result",
   "phiếu chờ duyệt": "forms awaiting review",
   "Không có cảnh báo mới": "No new alerts",
   "việc chưa xong": "open tasks",
@@ -2648,7 +2992,7 @@ const I18N_EN = {
   "Gộp vào": "Merge into",
   "Chọn ít nhất một phiếu hoặc PO để gộp": "Select at least one form or PO to merge",
   "Đã gộp vào": "Merged into",
-  "Giao": "Assigned to",
+  "Giao": "Assign",
   "cho PO": "for PO",
   "Gộp": "Merged",
   "Toàn bộ phiếu kiểm của các PO — theo người kiểm, hạn và trạng thái duyệt (bước 19).": "All PO inspection forms — by inspector, due date and review status (step 19).",
