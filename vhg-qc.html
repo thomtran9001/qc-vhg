@@ -885,9 +885,13 @@ POS.forEach(p=>{p.lines=(PO_LINES[p.id]||[]).map(([code,name,qty,unit],i)=>({no:
 // Một danh mục điều hướng duy nhất; mỗi mục khai báo vai trò được thấy.
 const NAV_ALL = [
   {id:'dashboard',    label:'Tổng quan',        roles:['admin','lead','qc','mer']},
+  {id:'reports',      label:'Báo cáo',          roles:['admin','lead']},
   {id:'pos',          label:'Purchase Orders',  roles:['admin','lead','qc','mer']},
   {id:'review',       label:'Phiếu chờ duyệt',  roles:['admin','lead'], badge:'submitted'},
   {id:'inspections',  label:'Phiếu kiểm tra',   roles:['qc']},
+  {id:'po-progress',  label:'Tiến độ PO',       roles:['mer']},
+  {id:'container',    label:'Đóng container',   roles:['admin','lead','qc']},
+  {id:'photos',       label:'Hình ảnh QC',      roles:['admin','lead','mer']},
   {id:'ncr',          label:'Vấn đề / NCR',     roles:['admin','lead','qc','mer'], badge:'ncr-open'},
   {id:'capa',         label:'CAPA',             roles:['admin','lead']},
   {id:'staff',        label:'Nhân sự QC',       roles:['admin','lead']},
@@ -1107,6 +1111,8 @@ function navigate(page){
     ncr: renderNCR,
     capa: renderCAPAList,
     container: renderLoading,
+    photos: ()=>window.renderPhotos(),
+    'po-progress': renderPOProgress,
     staff: renderStaff,
     reports: renderReports,
     work: renderWork,
@@ -2933,11 +2939,12 @@ window.submitShipException=function(poId){
 const _renderPhotos0=renderPhotos;
 window.renderPhotos=function(poFilter){
   const all=[];
-  DB.inspections.filter(i=>['submitted','approved'].includes(i.status)).forEach(ins=>
+  const vis=new Set(visInspections().map(i=>i.id)), vpo=new Set(visPOs().map(p=>p.id));
+  DB.inspections.filter(i=>vis.has(i.id)&&['submitted','approved'].includes(i.status)).forEach(ins=>
     collectPhotos(ins).forEach(p=>all.push({...p,poId:ins.poId,src:`${typeChipText(ins.type)} · ${ins.id}`})));
-  DB.ncrs.forEach(n=>(n.photos||[]).forEach(p=>all.push({...p,poId:n.poId,label:'NCR · '+n.checkpointLabel,src:n.id})));
-  (DB.loads||[]).forEach(l=>l.checklistItems.forEach(it=>(it.photos||[]).forEach(p=>all.push({...p,poId:l.poId,label:it.label,src:l.id}))));
-  if(!all.length) return _renderPhotos0();
+  visNCRs().forEach(n=>(n.photos||[]).forEach(p=>all.push({...p,poId:n.poId,label:'NCR · '+n.checkpointLabel,src:n.id})));
+  (DB.loads||[]).filter(l=>vpo.has(l.poId)).forEach(l=>l.checklistItems.forEach(it=>(it.photos||[]).forEach(p=>all.push({...p,poId:l.poId,label:it.label,src:l.id}))));
+  if(!all.length) return setPage('Hình ảnh QC','<div class="empty-state"><div class="es-icon">📷</div><p>Chưa có ảnh nào</p><p style="font-size:13px;color:var(--muted)">Ảnh QC chụp trong phiếu đã nộp, NCR và phiếu đóng container của các PO bạn theo dõi sẽ hiện ở đây.</p></div>');
   const f=poFilter||'', list=f?all.filter(p=>p.poId===f):all, pos=[...new Set(all.map(p=>p.poId))];
   setPage('Hình ảnh QC',`<div class="filter-bar"><select class="form-select" style="width:auto" onchange="renderPhotos(this.value)">
       <option value="">Tất cả PO (${all.length} ảnh)</option>${pos.map(p=>`<option ${p===f?'selected':''}>${p}</option>`).join('')}</select></div>
@@ -3657,9 +3664,56 @@ const _renderSidebarM=renderSidebar;window.renderSidebar=renderSidebar=function(
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 
+
+// ═══════════════ ROUTER (hash) ═══════════════
+// #/<trang> cho từng trang trong menu, #/insp/<mã phiếu> cho phiếu đang mở.
+// Giữ phiên đăng nhập demo trong sessionStorage để tải lại / mở link không văng ra màn đăng nhập.
+// Giao diện mobile của QC dùng #m/... (không đi qua router này).
+(function(){
+  const KEY='vhg-route-role';
+  const allowed=()=>ME?(NAV[ME.role]||[]).map(n=>n.id).concat(['work']):[];
+  const parse=h=>{const m=(h||'').match(/^#\/([\w-]+)(?:\/([\w-]+))?/);return m?{page:m[1],id:m[2]}:null};
+  let applying=false;
+  function setHash(h,replace){if(document.body.classList.contains('m-on')||location.hash===h)return;history[replace?'replaceState':'pushState'](null,'',h)}
+  const _nav=navigate;
+  window.navigate=navigate=function(page){
+    if(ME&&!allowed().includes(page)){if(page&&page!=='dashboard')toast('Bạn không có quyền mở trang này','error');page='dashboard';}
+    _nav(page);
+    if(ME&&!applying)setHash('#/'+page);
+  };
+  const _start=window.startInspection;
+  window.startInspection=startInspection=function(id){const r=_start(id);if(ME&&!applying&&gi(id))setHash('#/insp/'+id);return r};
+  function apply(){
+    const r=parse(location.hash);if(!ME||!r||document.body.classList.contains('m-on'))return;
+    applying=true;
+    try{
+      if(r.page==='insp'&&r.id){if(gi(r.id))openTask(r.id);else{toast('Không tìm thấy phiếu '+r.id,'error');navigate('dashboard');setHash('#/dashboard',true)}}
+      else if(r.page!==CURRENT_PAGE||document.getElementById('page-title').textContent==='')navigate(r.page);
+      else navigate(r.page);
+      const now=parse(location.hash);if(now&&now.page!=='insp'&&now.page!==CURRENT_PAGE)setHash('#/'+CURRENT_PAGE,true);
+    }finally{applying=false}
+  }
+  addEventListener('popstate',apply);
+  addEventListener('hashchange',apply);
+  const _login=window.doLogin;
+  window.doLogin=doLogin=function(){
+    const target=parse(location.hash);
+    _login();
+    if(!ME)return;
+    try{sessionStorage.setItem(KEY,ME.role)}catch(e){}
+    if(document.body.classList.contains('m-on'))return;
+    if(target){history.replaceState(null,'',target.id?`#/${target.page}/${target.id}`:'#/'+target.page);apply()}
+    else setHash('#/'+CURRENT_PAGE,true);
+  };
+  const _logout=window.doLogout;
+  window.doLogout=doLogout=function(){try{sessionStorage.removeItem(KEY)}catch(e){}_logout();history.replaceState(null,'',location.pathname+location.search)};
+  window.__routerResume=function(){let r=null;try{r=sessionStorage.getItem(KEY)}catch(e){}if(r&&document.querySelector(`.role-card[data-role="${r}"]`)){selectRole(r);doLogin()}};
+})();
+
 // ── INIT ──
 loadDB();
 saveDB();
+window.__routerResume&&window.__routerResume();
 </script>
 </body>
 </html>
