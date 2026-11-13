@@ -504,7 +504,8 @@ tr:hover td{background:var(--hover)}
   table.rt td.rt-act .btn{flex:1}
   table.rt td:empty{display:none}
   .staff-grid2{grid-template-columns:1fr}
-  .page-content .card[style*="flex"]{flex-wrap:wrap}
+  .page-content .card[style*="flex"]{flex-wrap:wrap;row-gap:8px}
+  .page-content .card[style*="flex"]>div[style*="flex:1"]{flex:1 1 100% !important;min-width:0}
   .page-content .card[style*="flex"] .btn{flex:1 1 auto}
   .sp-body{padding:16px}
 }
@@ -885,13 +886,11 @@ POS.forEach(p=>{p.lines=(PO_LINES[p.id]||[]).map(([code,name,qty,unit],i)=>({no:
 // Một danh mục điều hướng duy nhất; mỗi mục khai báo vai trò được thấy.
 const NAV_ALL = [
   {id:'dashboard',    label:'Tổng quan',        roles:['admin','lead','qc','mer']},
-  {id:'reports',      label:'Báo cáo',          roles:['admin','lead']},
   {id:'pos',          label:'Purchase Orders',  roles:['admin','lead','qc','mer']},
   {id:'review',       label:'Phiếu chờ duyệt',  roles:['admin','lead'], badge:'submitted'},
   {id:'inspections',  label:'Phiếu kiểm tra',   roles:['qc']},
   {id:'po-progress',  label:'Tiến độ PO',       roles:['mer']},
   {id:'container',    label:'Đóng container',   roles:['admin','lead','qc']},
-  {id:'photos',       label:'Hình ảnh QC',      roles:['admin','lead','mer']},
   {id:'ncr',          label:'Vấn đề / NCR',     roles:['admin','lead','qc','mer'], badge:'ncr-open'},
   {id:'capa',         label:'CAPA',             roles:['admin','lead']},
   {id:'staff',        label:'Nhân sự QC',       roles:['admin','lead']},
@@ -3642,7 +3641,7 @@ function mSilence(){/* startInspection vẽ form web phía sau; giữ mobile ở
 addEventListener('hashchange',()=>{if(!document.body.classList.contains('m-on'))return;if(!location.hash.startsWith('#m/'))return;mRender();if(!location.hash.includes('/defect/')){const s=document.querySelector('#m-view .m-scr');if(s)s.scrollTop=0}});
 addEventListener('online',mRender);addEventListener('offline',mRender);
 
-const wantMobile=()=>ME&&ME.role==='qc'&&matchMedia('(max-width:640px)').matches&&sessionStorage.getItem('vhg-m-off')!=='1';
+const wantMobile=()=>false; // QC dùng chung giao diện responsive với các vai khác (13/11/2026)
 function mEnter(){document.body.classList.add('m-on');document.body.classList.remove('m-full');if(!location.hash.startsWith('#m/'))history.replaceState(null,'','#m/work');mRender()}
 function mFull(keepBack){document.body.classList.remove('m-on');if(keepBack)document.body.classList.add('m-full')}
 window.mOpenFull=id=>{mFull(true);startInspection(id)};
@@ -3659,7 +3658,7 @@ matchMedia('(max-width:640px)').addEventListener('change',()=>{if(!ME)return;if(
 // Bản web có nút "Giao diện mobile" ở thanh trên cho QC khi màn hẹp đã thoát ra
 const _renderSidebarM=renderSidebar;window.renderSidebar=renderSidebar=function(){_renderSidebarM.apply(this,arguments);
  const tr=document.querySelector('.top-right');if(!tr)return;let b=document.getElementById('m-enter');
- if(ME&&ME.role==='qc'){if(!b){b=document.createElement('button');b.id='m-enter';b.className='icon-btn';b.title='Giao diện mobile';b.setAttribute('aria-label','Giao diện mobile');b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg>';b.onclick=()=>{try{sessionStorage.removeItem('vhg-m-off')}catch(e){}mEnter()};tr.insertBefore(b,tr.firstChild)}}else if(b)b.remove()};
+ if(false){if(!b){b=document.createElement('button');b.id='m-enter';b.className='icon-btn';b.title='Giao diện mobile';b.setAttribute('aria-label','Giao diện mobile');b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg>';b.onclick=()=>{try{sessionStorage.removeItem('vhg-m-off')}catch(e){}mEnter()};tr.insertBefore(b,tr.firstChild)}}else if(b)b.remove()};
 
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
@@ -3690,7 +3689,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
       if(r.page==='insp'&&r.id){if(gi(r.id))openTask(r.id);else{toast('Không tìm thấy phiếu '+r.id,'error');navigate('dashboard');setHash('#/dashboard',true)}}
       else if(r.page!==CURRENT_PAGE||document.getElementById('page-title').textContent==='')navigate(r.page);
       else navigate(r.page);
-      const now=parse(location.hash);if(now&&now.page!=='insp'&&now.page!==CURRENT_PAGE)setHash('#/'+CURRENT_PAGE,true);
+      const now=parse(location.hash);if(now&&now.page!=='insp'&&now.page!==CURRENT_PAGE&&!(now.page==='reports'&&CURRENT_PAGE==='dashboard'))setHash('#/'+CURRENT_PAGE,true);
     }finally{applying=false}
   }
   addEventListener('popstate',apply);
@@ -3708,6 +3707,46 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
   const _logout=window.doLogout;
   window.doLogout=doLogout=function(){try{sessionStorage.removeItem(KEY)}catch(e){}_logout();history.replaceState(null,'',location.pathname+location.search)};
   window.__routerResume=function(){let r=null;try{r=sessionStorage.getItem(KEY)}catch(e){}if(r&&document.querySelector(`.role-card[data-role="${r}"]`)){selectRole(r);doLogin()}};
+})();
+
+
+// ═══════════════ TỔNG QUAN + BÁO CÁO (Lead, Admin) ═══════════════
+// Báo cáo gộp vào trang Tổng quan dưới dạng tab. #/reports vẫn mở được, vào thẳng tab Báo cáo.
+(function(){
+  let tab='overview', keep=false, popping=false, switched=false;
+  const applyingHash=()=>popping?location.hash:'';
+  addEventListener('popstate',()=>{popping=true;setTimeout(()=>popping=false,0)},true);
+  const isMgr=()=>ME&&['lead','admin'].includes(ME.role);
+  const _nav=navigate;
+  window.navigate=navigate=function(page){
+    if(page==='reports'&&isMgr()){tab='reports';keep=true;page='dashboard';}
+    if(page==='dashboard'&&!keep)tab=(applyingHash()==='#/reports')?'reports':'overview';
+    keep=false;
+    _nav(page);
+    if(CURRENT_PAGE==='dashboard'&&isMgr())decorate();
+  };
+  function decorate(){
+    if(tab==='reports'){renderReports();CURRENT_PAGE='dashboard';document.getElementById('page-title').textContent='Tổng quan';document.getElementById('page-sub').textContent='Tổng hợp kết quả kiểm tra và xu hướng lỗi.';}
+    const pc=document.getElementById('page-content');
+    pc.insertAdjacentHTML('afterbegin',`<div class="tabs" role="tablist" style="margin-bottom:20px"><div class="tab ${tab==='overview'?'active':''}" role="tab" aria-selected="${tab==='overview'}" onclick="dashTab('overview')">Tổng quan</div><div class="tab ${tab==='reports'?'active':''}" role="tab" aria-selected="${tab==='reports'}" onclick="dashTab('reports')">Báo cáo</div></div>`);
+    document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page==='dashboard'));
+    if(!document.body.classList.contains('m-on')){const h=tab==='reports'?'#/reports':'#/dashboard';if(location.hash!==h)history[switched?'pushState':'replaceState'](null,'',h);}
+  }
+  window.dashTab=t=>{if(t===tab)return;tab=t;keep=true;switched=true;navigate('dashboard');switched=false;};
+})();
+
+
+// Lead / Admin tạo phiếu xong thì mở luôn phiếu vừa tạo
+(function(){
+  const _create=window.submitCreateInsp;
+  window.submitCreateInsp=submitCreateInsp=function(...a){
+    const n0=DB.inspections.length;
+    const r=_create.apply(this,a);
+    if(DB.inspections.length>n0){const id=DB.inspections[DB.inspections.length-1].id;
+      if(!document.body.classList.contains('m-on'))history.pushState(null,'','#/insp/'+id);
+      showInspDetail(id);}
+    return r;
+  };
 })();
 
 // ── INIT ──
