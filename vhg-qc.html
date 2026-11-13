@@ -3690,7 +3690,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
     const r=parse(location.hash);if(!ME||!r||document.body.classList.contains('m-on'))return;
     applying=true;
     try{
-      if(r.page==='insp'&&r.id){if(gi(r.id))openTask(r.id);else{toast('Không tìm thấy phiếu '+r.id,'error');navigate('dashboard');setHash('#/dashboard',true)}}
+      if(r.page==='insp'&&r.id){if(gi(r.id)){if(ME.role==='qc'&&canEditTask(gi(r.id)))openTask(r.id);else{navigate(CURRENT_PAGE||'dashboard');showInspDetail(r.id);}}else{toast('Không tìm thấy phiếu '+r.id,'error');navigate('dashboard');setHash('#/dashboard',true)}}
       else if(r.page!==CURRENT_PAGE||document.getElementById('page-title').textContent==='')navigate(r.page);
       else navigate(r.page);
       const now=parse(location.hash);if(now&&now.page!=='insp'&&now.page!==CURRENT_PAGE&&!(now.page==='reports'&&CURRENT_PAGE==='dashboard'))setHash('#/'+CURRENT_PAGE,true);
@@ -3749,6 +3749,56 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
     if(DB.inspections.length>n0){const id=DB.inspections[DB.inspections.length-1].id;
       if(!document.body.classList.contains('m-on'))history.pushState(null,'','#/insp/'+id);
       showInspDetail(id);}
+    return r;
+  };
+})();
+
+
+// ═══════════════ ROUTER: chi tiết phiếu / NCR / PO ═══════════════
+// Mở chi tiết thì đổi đường dẫn: #/insp/<mã>, #/ncr/<mã>, #/pos/<mã>; đóng panel thì về #/<trang>.
+(function(){
+  let quiet=false;
+  const off=()=>!ME||document.body.classList.contains('m-on');
+  const push=h=>{if(off()||quiet)return;if(location.hash!==h)history.pushState(null,'',h);};
+  const wrap=(name,after)=>{const o=window[name];const f=function(...a){const r=o.apply(this,a);after(...a);return r;};window[name]=f;return f;};
+  showInspDetail=wrap('showInspDetail',id=>push('#/insp/'+id));
+  showNCRDetail=wrap('showNCRDetail',id=>push('#/ncr/'+id));
+  showPODetail=wrap('showPODetail',id=>push('#/pos/'+id));
+  const _close=window.closePanel;
+  window.closePanel=closePanel=function(...a){
+    const wasOpen=document.getElementById('side-panel')?.classList.contains('open');
+    const r=_close.apply(this,a);
+    if(wasOpen&&!off()&&!quiet&&/^#\/(insp|ncr|pos)\/[\w-]+/.test(location.hash))history.replaceState(null,'','#/'+(CURRENT_PAGE||'dashboard'));
+    return r;};
+  function openFromHash(){
+    if(off())return;const m=location.hash.match(/^#\/(ncr|pos)\/([\w-]+)/);if(!m)return;
+    quiet=true;try{
+      if(CURRENT_PAGE!==m[1])navigate(m[1]);
+      if(m[1]==='ncr'){if(DB.ncrs.some(n=>n.id===m[2]))showNCRDetail(m[2]);else toast('Không tìm thấy '+m[2],'error');}
+      else{if(POS.some(p=>p.id===m[2]))showPODetail(m[2]);else toast('Không tìm thấy '+m[2],'error');}
+      history.replaceState(null,'','#/'+m[1]+'/'+m[2]);
+    }finally{quiet=false}
+  }
+  addEventListener('popstate',()=>setTimeout(openFromHash,0));
+  const _login=window.doLogin;
+  window.doLogin=doLogin=function(...a){const h=location.hash;const r=_login.apply(this,a);if(/^#\/(ncr|pos)\//.test(h)){history.replaceState(null,'',h);openFromHash();}return r;};
+})();
+
+
+// QC mở phiếu được giao (từ thông báo, danh sách…) → nút bắt đầu kiểm tra ngay trong panel
+(function(){
+  const _show=window.showInspDetail;
+  window.showInspDetail=showInspDetail=function(id,...a){
+    const r=_show.call(this,id,...a);
+    const ins=gi(id),body=document.getElementById('sp-body');
+    if(ins&&body&&isAssignee(ins)&&['pending','draft','rejected'].includes(ins.status)){
+      const dl=daysLeft(ins.dueDate);
+      const label=ins.status==='rejected'?'Sửa & nộp lại':ins.status==='draft'?'Tiếp tục kiểm tra':'Bắt đầu kiểm tra';
+      body.insertAdjacentHTML('afterbegin',`<div class="card" style="margin-bottom:14px;border-color:var(--primary-line);background:var(--primary-soft)">
+        ${ins.status==='rejected'&&ins.rejectReason?`<div style="color:var(--red);font-size:13px;margin-bottom:8px"><b>Lead trả lại:</b> ${esc(ins.rejectReason)}</div>`:''}
+        <div style="font-size:13px;color:var(--text-2);margin-bottom:10px">Phiếu được giao cho bạn · Hạn ${fmtDate(ins.dueDate)} · <span style="color:${dl<0?'var(--red)':dl===0?'var(--amber)':'var(--muted)'};font-weight:${dl<=0?600:400}">${dl<0?`quá hạn ${-dl} ngày`:dl===0?'hôm nay':`còn ${dl} ngày`}</span></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;height:44px;font-size:15px" onclick="closePanel();startInspection('${id}')">${label} →</button></div>`);
+    }
     return r;
   };
 })();
