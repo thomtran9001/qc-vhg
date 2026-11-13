@@ -456,7 +456,7 @@ tr:hover td{background:var(--hover)}
   .df-item-h{gap:8px}
   .df-item-r{width:100%}
   .ppf-b{padding:9px 13px}
-  .notif-pop{width:min(340px,calc(100vw - 24px))}
+  .notif-pop{position:fixed;top:calc(var(--header-h) + 6px);left:12px;right:12px;width:auto;max-height:min(420px,calc(100dvh - var(--header-h) - 24px))}
 }
 @media(max-width:480px){
   .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px}
@@ -506,6 +506,10 @@ tr:hover td{background:var(--hover)}
   .staff-grid2{grid-template-columns:1fr}
   .page-content .card[style*="flex"]{flex-wrap:wrap;row-gap:8px}
   .page-content .card[style*="flex"]>div[style*="flex:1"]{flex:1 1 100% !important;min-width:0}
+  .page-content .card[style*="flex"]{column-gap:8px;padding:14px}
+  .page-content .card[style*="flex"]>span{order:0;align-self:center}
+  .page-content .card[style*="flex"]>div[style*="flex:1"]{order:1}
+  .page-content .card[style*="flex"]>.btn{order:2;flex:1 1 0 !important;height:40px}
   .page-content .card[style*="flex"] .btn{flex:1 1 auto}
   .sp-body{padding:16px}
 }
