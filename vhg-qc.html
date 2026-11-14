@@ -451,7 +451,11 @@ tr:hover td{background:var(--hover)}
   .modal{min-width:0;width:calc(100vw - 24px);max-width:none;padding:20px}
   .side-panel,.side-panel.full{width:100vw}
   .tbl-wrap{overflow-x:auto}
-  .insp-footer{padding:12px 16px}
+  .insp-footer{padding:10px 12px;flex-wrap:wrap;gap:8px}
+  .insp-footer>:first-child{flex:1 1 100%;min-width:0}
+  .insp-footer>:first-child .progress-bar{width:100% !important}
+  .insp-footer>:last-child{flex:1 1 100%}
+  .insp-footer>:last-child .btn{flex:1 1 auto;white-space:nowrap;padding-left:10px;padding-right:10px;justify-content:center}
   .check-btn{padding:12px 8px}
   .df-item-h{gap:8px}
   .df-item-r{width:100%}
@@ -459,10 +463,29 @@ tr:hover td{background:var(--hover)}
   .notif-pop{position:fixed;top:calc(var(--header-h) + 6px);left:12px;right:12px;width:auto;max-height:min(420px,calc(100dvh - var(--header-h) - 24px))}
 }
 @media(max-width:480px){
-  .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px}
-  .kpi-card{padding:10px 12px}
-  .kpi-card .kpi-label{font-size:12px;line-height:16px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .kpi-card .kpi-value{font-size:22px;line-height:28px}
+  .page-head .ph-sub:empty{display:none}
+  .page-head h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(16px,5vw,22px)}
+  .insp-filter{display:grid !important;grid-template-columns:1fr 1fr;gap:8px !important;padding:10px !important}
+  .insp-filter .if-q{grid-column:1/-1;width:100% !important;height:38px}
+  .insp-filter select{width:100% !important;height:38px}
+  .insp-filter select:last-of-type{grid-row:2;grid-column:2}
+  .insp-filter #if-presets{grid-column:1/-1;display:grid !important;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px !important}
+  .insp-filter #if-presets .chip{white-space:nowrap;padding:6px 0;font-size:11.5px;letter-spacing:-.2px;text-align:center;justify-content:center;min-width:0}
+  .insp-filter .if-foot{grid-column:1/-1;margin-left:0 !important;justify-content:space-between}
+  .insp-filter .if-foot .btn{flex:none !important;width:auto !important;height:34px !important}
+  #insp-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  #insp-tabs::-webkit-scrollbar{display:none}
+  #insp-tabs .tab{white-space:nowrap;flex:none}
+  .page-head{padding-bottom:0}
+  .page-head+.page-content,.page-content{padding-top:12px}
+  .kpi-row{grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+  .kpi-row:has(> :nth-child(5)){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi-row:has(> :nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi-row:has(> :nth-child(2):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi-card{padding:10px 6px;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column-reverse;align-items:center;text-align:center;min-width:0}
+  .kpi-card+.kpi-card{border-left:1px solid var(--line)}
+  .kpi-card .kpi-label{font-size:11px;line-height:14px;margin:2px 0 0;white-space:normal;overflow-wrap:anywhere}
+  .kpi-card .kpi-value{font-size:20px;line-height:26px}
   .type-chips-grid{grid-template-columns:repeat(2,1fr)}
   .photo-grid{grid-template-columns:repeat(2,1fr)}
   .staff-card{flex-direction:column}
@@ -487,14 +510,57 @@ tr:hover td{background:var(--hover)}
 .sc-bar-l{font-size:11px;color:var(--muted);margin-bottom:4px}
 
 /* ===== Responsive table → cards (mobile) ===== */
+.st-filter{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}
+.st-filter .form-input{width:220px;height:36px;padding:6px 12px;font-size:13px}
+.st-chips{display:flex;gap:6px}
+.st-busy{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-left:auto}
+.st-tag-out{background:#f3e8ff;color:#7c3aed;font-size:10.5px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+@media(max-width:640px){.st-filter .form-input{width:100%}.st-busy{margin-left:0}}
+.staff-tbl td.st-n,.staff-tbl td.st-n span{color:var(--text)}.staff-tbl td.st-n span.st-z{color:var(--muted) !important;opacity:.6}
+.st-gh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.st-gt{font-size:16px;font-weight:700}
+.st-gc{margin-left:8px;font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.st-gs{display:flex;gap:12px;font-size:13px;color:var(--muted)}
+.st-idle{margin-top:10px;font-size:13px;color:var(--muted)}.st-idle span{color:var(--text)}
+.staff-tbl th:first-child{width:32%}
+.staff-tbl th:last-child{width:190px}
+.pi-card{max-width:1180px;margin-bottom:12px;padding:0 !important;overflow:hidden}
+.pi-sum{cursor:pointer;font-weight:700;font-size:14px;padding:12px 16px;list-style:none;display:flex;align-items:center;gap:8px}
+.pi-sum::-webkit-details-marker{display:none}
+.pi-sum::before{content:'';width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:.15s;margin-right:2px}
+details[open]>.pi-sum::before{transform:rotate(45deg)}
+.pi-sum span{font-weight:400;font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:0 8px}
+.pi-body{padding:0 16px 14px}
+.pi-meta{display:flex;flex-wrap:wrap;gap:6px 24px;font-size:13px;margin-bottom:10px}
+.pi-meta i{font-style:normal;color:var(--muted);margin-right:6px}
+.pi-meta em{font-style:normal;font-size:12px}
+.pi-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.pi-tbl th{font-size:11.5px;font-weight:500;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);background:var(--bg)}
+.pi-tbl td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.pi-tbl .pi-code{font-weight:600;white-space:nowrap}
+.pi-tbl .pi-q{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pi-tbl .pi-q span{color:var(--muted);font-size:11.5px}
+.pi-tbl tfoot td{border-bottom:0;font-weight:700;text-align:right}
+@media(max-width:640px){.pi-tbl thead{display:none}.pi-tbl tr{display:grid;grid-template-columns:20px 1fr auto;gap:2px 8px;padding:8px 0;border-bottom:1px solid var(--line)}.pi-tbl td{border:0;padding:0}.pi-tbl td:nth-child(3){grid-column:2/-1;grid-row:2;color:var(--muted);font-size:12px}.pi-tbl tfoot tr{grid-template-columns:1fr auto;border:0}.pi-tbl tfoot td[colspan]{grid-column:auto}}
+.staff-tbl .st-h,.staff-tbl .st-n{text-align:center}
+.staff-tbl tbody tr{cursor:pointer}
+.st-ot{display:inline-flex;align-items:center;gap:8px}.st-ot .progress-bar{display:block;width:80px;margin:0}.st-ot b{font-size:13px;min-width:34px;text-align:right}
+@media(max-width:640px){
+  table.rt.staff-tbl tr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:4px}
+  table.rt.staff-tbl td:first-child{grid-column:1/-1}
+  table.rt.staff-tbl td.st-n{flex-direction:column-reverse;align-items:center;text-align:center;gap:0;padding:4px 0}
+  table.rt.staff-tbl td.st-n::before{margin:0;padding:0;font-size:11px}
+  table.rt.staff-tbl td.st-n>span{font-size:17px;font-weight:600}
+  table.rt.staff-tbl td.st-otc{grid-column:1/-1;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+}
 @media(max-width:640px){
   .tbl-wrap:has(table.rt){overflow:visible;border:none;background:transparent;box-shadow:none;border-radius:0}
   table.rt thead{display:none}
   table.rt,table.rt tbody,table.rt tr,table.rt td{display:block;width:auto}
   table.rt tr{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-1);padding:12px 14px;margin-bottom:10px}
   table.rt tr:hover td{background:transparent}
-  table.rt td{border:none;padding:5px 0;display:flex;justify-content:space-between;align-items:baseline;gap:14px;text-align:right;min-width:0}
-  table.rt td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:500;text-align:left;flex:0 0 auto}
+  table.rt td{border:none;padding:5px 0;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:baseline;gap:2px 4px;text-align:right;min-width:0}
+  table.rt td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:500;text-align:left;flex:0 0 auto;margin-right:auto;padding-right:12px}
   table.rt td:first-child{font-size:16px;font-weight:600;padding:0 0 8px;margin-bottom:6px;border-bottom:1px solid var(--line);display:flex;justify-content:flex-start;align-items:center;gap:8px;text-align:left}
   table.rt td:first-child::before{display:none}
   table.rt td.rt-full{display:block;text-align:left}
@@ -1020,7 +1086,7 @@ const ICONS = {
 };
 const ic=(n,st='')=>`<svg class="i" viewBox="0 0 24 24" style="${st}">${ICONS[n]||''}</svg>`;
 const NAV_ICON={dashboard:'dashboard',pos:'box',review:'clipboard',ncr:'alert',capa:'target',container:'truck',staff:'users',reports:'activity',work:'inbox',inspections:'file','po-progress':'box',photos:'image',catalog:'database',settings:'wrench'};
-const PAGE_SUB={dashboard:'Việc cần xử lý, phiếu chờ duyệt và vấn đề đang mở.',pos:'Đơn hàng đang theo dõi, giao việc kiểm tra cho QC.',review:'Phiếu QC đã nộp, chờ Lead duyệt.',ncr:'Non-Conformance Report — theo dõi lỗi đến khi đóng.',capa:'Nguyên nhân gốc, khắc phục và phòng ngừa tái diễn.',container:'Đóng container, pallet, hút ẩm và ảnh bằng chứng.',staff:'Khối lượng việc và hiệu suất từng nhân viên QC.',reports:'Tổng hợp kết quả kiểm tra và xu hướng lỗi.',work:'Các phiếu được giao cho bạn.',inspections:'Tất cả phiếu kiểm tra của bạn.','po-progress':'Tiến độ QC và trạng thái xuất hàng theo PO.',photos:'Ảnh hiện trường từ các phiếu QC.',catalog:'Loại kiểm tra, nhà máy, người mua.',settings:'Cấu hình mockup và dữ liệu demo.'};
+const PAGE_SUB={};
 function applyIcons(root){(root||document).querySelectorAll('[data-ic]').forEach(e=>{e.innerHTML=ic(e.dataset.ic);});document.querySelectorAll('img[data-logo]').forEach(e=>e.src=LOGO_ICON);}
 function applyTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('vhg-web-theme',t)}catch(e){}const b=document.getElementById('theme-btn');if(b)b.innerHTML=ic(t==='dark'?'sun':'moon');}
 function toggleTheme(){applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');}
@@ -1129,7 +1195,7 @@ function navigate(page){
 
 function setPage(title, html, actions=''){
   document.getElementById('page-title').textContent = title;
-  document.getElementById('page-sub').textContent = PAGE_SUB[CURRENT_PAGE]||'';
+  document.getElementById('page-sub').textContent = PAGE_SUB[CURRENT_PAGE]||'';document.getElementById('page-sub').style.fontStyle='';
   document.getElementById('page-content').innerHTML = html;
   document.getElementById('header-actions').innerHTML = actions;
 }
@@ -1196,8 +1262,10 @@ function canEditTask(ins){
 function canManageNCR(){ return !!ME && (ME.role==='admin'||ME.role==='lead'); }
 function openTask(id){ const ins=DB.inspections.find(i=>i.id===id); if(canEditTask(ins)) startInspection(id); else showInspDetail(id); }
 window.openTask=openTask;
+function dLeft(d){return d===0?'hôm nay':`còn ${d} ngày`}
+window.dLeft=dLeft;
 function scopeTag(){
-  if(!ME||ME.role==='admin'||ME.role==='lead') return '';
+  return '';
   const n=ME.role==='mer'?'Bạn đang theo dõi':'Được giao cho bạn';
   return `<span class="badge na" style="font-weight:500">🔒 ${n}</span>`;
 }
@@ -1269,7 +1337,7 @@ function poTrackTable(pos){
       <td data-label="Sản phẩm">${po.product}<div style="font-size:11px;color:var(--muted)">${po.factory}</div></td>
       <td data-label="Tiến độ" class="rt-full" style="min-width:130px"><div class="progress-bar"><div class="progress-fill" style="width:${t.pct}%;background:${t.pct>=100?'var(--pass)':'var(--accent)'}"></div></div><div style="font-size:11px;color:var(--muted);margin-top:3px">${t.appr.length}/${t.ins.length||0} phiếu đạt</div></td>
       <td data-label="Trạng thái"><span class="badge" style="background:${t.color}1a;color:${t.color}">${t.label}</span></td>
-      <td data-label="ETD" style="white-space:nowrap;color:${t.dl<7?'var(--fail)':'var(--muted)'}">${fmtDate(po.etd)}<span style="font-size:11px"> · ${t.dl>=0?`còn ${t.dl} ngày`:`quá hạn ${Math.abs(t.dl)}`}</span></td>
+      <td data-label="ETD" style="white-space:nowrap;color:${t.dl<7?'var(--fail)':'var(--muted)'}">${fmtDate(po.etd)}<span style="font-size:11px"> · ${t.dl>=0?`${dLeft(t.dl)}`:`quá hạn ${Math.abs(t.dl)}`}</span></td>
     </tr>`;}).join('')||`<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Không có PO trong phạm vi của bạn</td></tr>`;
   return `<div class="tbl-wrap"><table class="rt"><thead><tr><th>PO#</th><th>Sản phẩm / Nhà máy</th><th>Tiến độ</th><th>Trạng thái</th><th>ETD</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -1286,7 +1354,7 @@ function renderDashboardQC(){
     return `<div class="card" style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="${view?`showInspDetail('${ins.id}')`:`startInspection('${ins.id}')`}">
       ${typeChip(ins.type)}
       <div style="flex:1;min-width:0"><div style="font-weight:600">${ins.poId} · ${po.product}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:2px">${po.factory} · ${getUser(ins.assignedTo).name} · Hạn ${fmtDate(ins.dueDate)} ${over&&!view?`<span style="color:var(--fail);font-weight:600">· quá hạn ${Math.abs(dl)} ngày</span>`:`· còn ${dl} ngày`}</div></div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${po.factory} · ${getUser(ins.assignedTo).name} · Hạn ${fmtDate(ins.dueDate)} ${over&&!view?`<span style="color:var(--fail);font-weight:600">· quá hạn ${Math.abs(dl)} ngày</span>`:`· ${dLeft(dl)}`}</div></div>
       ${tag}
       <button class="btn ${view?'btn-outline':'btn-primary'} btn-sm">${view?'Xem':ins.status==='rejected'?'Sửa lại →':ins.status==='draft'?'Tiếp tục →':'Bắt đầu →'}</button>
     </div>`;};
@@ -1324,7 +1392,7 @@ function renderDashboardMer(){
       ${kpi('orange','Đang chờ duyệt',waiting)}
       ${kpi('green','Đã hoàn tất',done)}
     </div>
-    <div class="section-title">PO đang theo dõi <span style="font-weight:400;color:var(--muted);font-size:12px">(cần xử lý xếp trên · bấm để xem chi tiết)</span></div>
+    <div class="section-title">PO đang theo dõi</div>
     ${poTrackTable(pos)}
   `, scopeTag());
 }
@@ -1374,7 +1442,7 @@ function renderDashboardLead(){
     </div>
     <div class="section-title">Cần duyệt ngay</div>
     ${cards}
-    <div class="section-title" style="margin-top:20px">Theo dõi PO <span style="font-weight:400;color:var(--muted);font-size:12px">(cần xử lý xếp trên)</span></div>
+    <div class="section-title" style="margin-top:20px">Theo dõi PO</div>
     ${poTrackTable(visPOs())}
     <div class="section-title" style="margin-top:20px">Vấn đề chưa đóng</div>
     ${ncrCards}
@@ -1395,7 +1463,7 @@ function renderPOs(){
       <td>${po.product}</td>
       <td>${po.factory}</td>
       <td>${po.buyer}</td>
-      <td><span style="color:${etdColor};font-weight:600">${fmtDate(po.etd)}</span><div style="font-size:11px;color:var(--muted)">còn ${dl} ngày</div></td>
+      <td><span style="color:${etdColor};font-weight:600">${fmtDate(po.etd)}</span><div style="font-size:11px;color:var(--muted)">${dLeft(dl)}</div></td>
       <td>${insps.length} phiếu</td>
       ${assign?`<td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openCreateInsp('${po.id}')">+ Tạo kiểm tra</button></td>`:'<td style="color:var(--muted)">—</td>'}
     </tr>`;
@@ -1433,7 +1501,7 @@ function showPODetail(poId){
       <div class="info-row" style="display:block"><div class="info-label">Sản phẩm</div><div class="info-value">${po.product}</div></div>
       <div class="info-row" style="display:block"><div class="info-label">Nhà máy</div><div class="info-value">${po.factory}</div></div>
       <div class="info-row" style="display:block"><div class="info-label">Người mua</div><div class="info-value">${po.buyer}</div></div>
-      <div class="info-row" style="display:block"><div class="info-label">ETD</div><div class="info-value" style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)} (còn ${dl} ngày)</div></div>
+      <div class="info-row" style="display:block"><div class="info-label">ETD</div><div class="info-value" style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)} (${dLeft(dl)})</div></div>
     </div>
     <div class="section-title" style="margin:0 0 12px">PO Lines (${(po.lines||[]).length} dòng · ${po.qty.toLocaleString('vi-VN')} tổng)</div>
     <div class="tbl-wrap" style="margin-bottom:20px">
@@ -1765,39 +1833,49 @@ function updateNCRStatus(id){
 }
 
 // ── STAFF (lưới thẻ, dùng chung Lead/Admin) ──
+let STAFF_SORT={k:'load',dir:-1};
+let STAFF_F={g:'all',q:'',busy:false};
+window.setStaffF=(k,v)=>{STAFF_F[k]=v;STAFF_F._f=k==='q';renderStaff();};
+window.sortStaff=k=>{STAFF_SORT=STAFF_SORT.k===k?{k,dir:-STAFF_SORT.dir}:{k,dir:k==='name'?1:-1};renderStaff();};
 function renderStaff(){
-  const list = USERS.filter(u=>u.role==='qc'||u.role==='lead').sort((a,b)=>a.role===b.role?0:a.role==='lead'?-1:1);
-  const cards = list.map(u=>{
-    const mine = DB.inspections.filter(i=>i.assignedTo===u.id);
-    const active = mine.filter(i=>['pending','draft'].includes(i.status));
-    const overdue = active.filter(i=>new Date(i.dueDate)<new Date());
-    const submitted = mine.filter(i=>i.status==='submitted');
-    const done = mine.filter(i=>i.status==='approved');
-    const rejected = mine.filter(i=>i.status==='rejected');
-    const onTime = done.length?Math.round(done.filter(i=>new Date(i.approvedAt)<=new Date(i.dueDate)).length/done.length*100):0;
-    const otColor = !done.length?'var(--muted)':onTime<70?'var(--fail)':onTime<90?'var(--warn)':'var(--pass)';
-    const stat=(l,v,c)=>`<div class="sc-stat"><div class="sc-n" style="${c?`color:${c}`:''}">${v}</div><div class="sc-l">${l}</div></div>`;
-    return `<div class="staff-card2" data-uid="${u.id}">
-      <div class="sc-head">
-        ${avatarHtml(u.id,44)}
-        <div style="min-width:0;flex:1">
-          <div class="sc-name">${u.name}</div>
-          <div class="sc-sub"><span class="badge role-${u.role}">${roleLabel(u.role)}</span>${u.org?`<span class="sc-org">${u.org}</span>`:''}</div>
-        </div>
-      </div>
-      <div class="sc-grid">
-        ${stat('Đang làm',active.length)}
-        ${stat('Quá hạn',overdue.length,overdue.length?'var(--fail)':'')}
-        ${stat('Chờ duyệt',submitted.length,submitted.length?'var(--warn)':'')}
-        ${stat('Đã duyệt',done.length,done.length?'var(--pass)':'')}
-        ${stat('Bị trả lại',rejected.length,rejected.length?'var(--fail)':'')}
-        ${stat('Đúng hạn',done.length?onTime+'%':'—',otColor)}
-      </div>
-      <div class="sc-bar-l">Tải công việc đúng hạn</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${done.length?onTime:0}%;background:${otColor}"></div></div>
-    </div>`;
-  }).join('');
-  setPage('Nhân sự QC', `<div class="staff-grid2">${cards}</div>`);
+  const now=new Date();
+  const rows=USERS.filter(u=>u.role==='qc'||u.role==='lead').map(u=>{
+    const mine=DB.inspections.filter(i=>i.assignedTo===u.id);
+    const active=mine.filter(i=>['pending','draft'].includes(i.status));
+    const overdue=active.filter(i=>new Date(i.dueDate)<now).length;
+    const submitted=mine.filter(i=>i.status==='submitted').length;
+    const doneL=mine.filter(i=>i.status==='approved');
+    const rejected=mine.filter(i=>i.status==='rejected').length;
+    const onTime=doneL.length?Math.round(doneL.filter(i=>new Date(i.approvedAt)<=new Date(i.dueDate)).length/doneL.length*100):-1;
+    return {u,name:u.name,active:active.length,overdue,submitted,done:doneL.length,rejected,onTime,load:overdue*100+active.length*10+submitted,total:mine.length};
+  });
+  const idle=rows.filter(r=>r.u.role==='lead'&&!r.total);
+  const list=rows.filter(r=>!idle.includes(r));
+  const {k,dir}=STAFF_SORT;
+  list.sort((a,b)=>k==='name'?a.name.localeCompare(b.name,'vi')*dir:((a[k]-b[k])*dir||b.load-a.load||a.name.localeCompare(b.name,'vi')));
+  const th=(key,l,cls='')=>`<th class="${cls}" style="cursor:pointer;user-select:none;white-space:nowrap" onclick="sortStaff('${key}')">${l}${k===key?(dir<0?' ↓':' ↑'):''}</th>`;
+  const num=(lbl,v,c)=>`<td class="st-n" data-label="${lbl}"><span class="${v?'':'st-z'}" style="${v&&c?`color:${c};font-weight:600`:''}">${v}</span></td>`;
+  const ot=r=>{if(r.onTime<0)return `<span style="color:var(--muted)">—</span>`;const c=r.onTime<70?'var(--fail)':r.onTime<90?'var(--warn)':'var(--pass)';
+    return `<span class="st-ot"><span class="progress-bar"><span class="progress-fill" style="width:${r.onTime}%;background:${c}"></span></span><b style="color:${c}">${r.onTime}%</b></span>`;};
+  const rowHtml=r=>{const u=r.u;const org=u.org&&!/outsourc|qc lead/i.test(u.org)&&u.org!==roleLabel(u.role)?` · ${u.org}`:'';
+    return `<tr data-uid="${u.id}">
+      <td><span style="display:flex;align-items:center;gap:10px;min-width:0">${avatarHtml(u.id,32)}<span style="min-width:0"><span style="display:block;font-weight:600">${u.name}</span><span style="display:block;font-size:12px;color:var(--muted);font-weight:400">${roleLabel(u.role)}${org}${/outsourc/i.test(u.org||'')?'<span class="badge st-tag-out">Outsource</span>':''}</span></span></span></td>
+      ${num('Đang làm',r.active)}${num('Quá hạn',r.overdue,'var(--fail)')}${num('Chờ duyệt',r.submitted,'var(--warn)')}${num('Đã duyệt',r.done,'var(--pass)')}${num('Trả lại',r.rejected,'var(--fail)')}
+      <td class="st-otc" data-label="Đúng hạn">${ot(r)}</td></tr>`;};
+  const isOut=r=>/outsourc/i.test(r.u.org||'');
+  const nrm=x=>x.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase();
+  const nIn=list.filter(r=>!isOut(r)).length,nOut=list.length-nIn;
+  const shown=list.filter(r=>(STAFF_F.g==='all'||(STAFF_F.g==='out')===isOut(r))&&(!STAFF_F.q||nrm(r.name).includes(nrm(STAFF_F.q)))&&(!STAFF_F.busy||r.active||r.overdue||r.submitted));
+  const chip=(g,l,n)=>`<button class="chip ${STAFF_F.g===g?'active':''}" onclick="setStaffF('g','${g}')">${l}<span style="opacity:.6;margin-left:6px">${n}</span></button>`;
+  const filt=`<div class="st-filter">
+    <input class="form-input" id="st-q" placeholder="Tìm nhân viên…" value="${esc(STAFF_F.q)}" oninput="setStaffF('q',this.value)">
+    <div class="st-chips">${chip('all','Tất cả',list.length)}${chip('in','Nội bộ',nIn)}${chip('out','Outsourcing',nOut)}</div>
+    <label class="st-busy"><input type="checkbox" ${STAFF_F.busy?'checked':''} onchange="setStaffF('busy',this.checked)"> Đang có việc</label></div>`;
+  const head=`<thead><tr>${th('name','Nhân viên')}${th('active','Đang làm','st-h')}${th('overdue','Quá hạn','st-h')}${th('submitted','Chờ duyệt','st-h')}${th('done','Đã duyệt','st-h')}${th('rejected','Trả lại','st-h')}${th('onTime','Đúng hạn')}</tr></thead>`;
+  const tbl=shown.length?`<div class="tbl-wrap"><table class="rt staff-tbl">${head}<tbody>${shown.map(rowHtml).join('')}</tbody></table></div>`:`<div class="card" style="padding:24px;text-align:center;color:var(--muted);font-size:13px">Không có nhân viên phù hợp.</div>`;
+  const foot=idle.length&&STAFF_F.g!=='out'?`<div class="st-idle">Lead QC: ${idle.map(r=>`<span>${r.name}</span>`).join(' · ')}</div>`:'';
+  setPage('Nhân sự QC',filt+tbl+foot);
+  const q=document.getElementById('st-q');if(q&&STAFF_F.q&&STAFF_F._f){q.focus();q.setSelectionRange(q.value.length,q.value.length);}
 }
 
 // ── REPORTS ──
@@ -1874,7 +1952,7 @@ function renderWork(){
         <div style="font-size:12px;color:var(--muted);margin-top:2px">Nhà máy: ${po.factory}</div>
         <div style="font-size:12px;margin-top:4px">
           ${overdue?`<span style="color:var(--fail);font-weight:600">⚠ Quá hạn ${Math.abs(dl)} ngày</span>`:
-          `<span style="color:var(--muted)">Hạn: ${fmtDate(ins.dueDate)} · còn ${dl} ngày</span>`}
+          `<span style="color:var(--muted)">Hạn: ${fmtDate(ins.dueDate)} · ${dLeft(dl)}</span>`}
         </div>
         ${ins.status==='draft'&&ins.checklistItems?`<div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:${pc.pass/pc.total*100}%"></div></div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${pc.pass}/${pc.total} đã đánh giá</div>`:''}
@@ -2067,8 +2145,8 @@ function renderInspections(){
   const presets=[['','Mọi lúc'],['today','Hôm nay'],['7d','7 ngày'],['month','Tháng này'],['overdue','Quá hạn']];
   setPage('Phiếu kiểm tra',`
     <div class="tabs" id="insp-tabs"></div>
-    <div class="card" style="padding:12px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-      <input class="form-input" style="width:200px;padding:7px 10px;font-size:13px" placeholder="Tìm mã phiếu, PO…" value="${esc(F.q)}" oninput="setInspF('q',this.value)">
+    <div class="card insp-filter" style="padding:12px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <input class="form-input if-q" style="width:200px;padding:7px 10px;font-size:13px" placeholder="Tìm mã phiếu, PO…" value="${esc(F.q)}" oninput="setInspF('q',this.value)">
       <select ${ctl} onchange="setInspF('type',this.value)"><option value="">Tất cả loại phiếu</option>${typeOpts}</select>
       <span id="if-presets" style="display:flex;gap:6px;flex-wrap:wrap">${presets.map(([p,l])=>`<button class="chip" data-p="${p}" onclick="setInspF('preset','${p}')">${l}</button>`).join('')}</span>
       <select ${ctl} onchange="setInspF('sort',this.value)">
@@ -2076,7 +2154,7 @@ function renderInspections(){
         <option value="created-asc" ${F.sort==='created-asc'?'selected':''}>Cũ nhất trước</option>
         <option value="due-asc" ${F.sort==='due-asc'?'selected':''}>Hạn gần nhất</option>
         <option value="due-desc" ${F.sort==='due-desc'?'selected':''}>Hạn xa nhất</option></select>
-      <span style="margin-left:auto;display:flex;gap:10px;align-items:center"><span id="if-count" style="color:var(--muted);font-size:13px"></span>
+      <span class="if-foot" style="margin-left:auto;display:flex;gap:10px;align-items:center"><span id="if-count" style="color:var(--muted);font-size:13px"></span>
       <button class="btn btn-outline btn-sm" onclick="resetInspF()">Xoá lọc</button></span>
     </div>
     <div class="tbl-wrap"><table id="insp-table" class="rt">
@@ -2109,7 +2187,7 @@ function renderPOProgress(){
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${pct>=80?'var(--pass)':pct>=50?'var(--warn)':'var(--accent)'}"></div></div>
       <div style="font-size:12px;margin-top:8px;color:${dl<7?'var(--fail)':dl<14?'var(--warn)':'var(--muted)'}">
-        ETD: ${fmtDate(po.etd)} · ${dl>=0?`còn ${dl} ngày`:`quá hạn ${Math.abs(dl)} ngày`}
+        ETD: ${fmtDate(po.etd)} · ${dl>=0?`${dLeft(dl)}`:`quá hạn ${Math.abs(dl)} ngày`}
       </div>
     </div>`;
   }).join('');
@@ -2837,8 +2915,8 @@ const _renderStaff0=renderStaff;
 window.renderStaff=function(){
   _renderStaff0();
   if(!can('assign')) return;
-  document.querySelectorAll('.staff-card2[data-uid]').forEach(c=>{ c.style.cursor='pointer'; c.title='Xem & điều chuyển việc'; c.onclick=()=>showStaffTasks(c.dataset.uid); });
-  document.getElementById('header-actions').innerHTML='<span style="font-size:12px;color:var(--muted)">Bấm vào nhân viên để xem &amp; điều chuyển việc</span>';
+  document.querySelectorAll('.staff-tbl tr[data-uid]').forEach(c=>{ c.style.cursor='pointer'; c.title='Xem & điều chuyển việc'; c.onclick=()=>showStaffTasks(c.dataset.uid); });
+  document.getElementById('header-actions').innerHTML='';
 };
 window.showStaffTasks=function(uid){
   const u=getUser(uid);
@@ -2850,7 +2928,7 @@ window.showStaffTasks=function(uid){
         <div style="display:flex;align-items:center;gap:10px">${typeChip(ins.type)}
           <div style="flex:1"><div style="font-weight:600">${ins.id} · ${ins.poId}</div>
             <div style="font-size:12px;color:var(--muted)">${po.product}</div>
-            <div style="font-size:12px;margin-top:2px;color:${dl<0?'var(--fail)':'var(--muted)'}">${dl<0?`Quá hạn ${-dl} ngày`:`Hạn ${fmtDate(ins.dueDate)} · còn ${dl} ngày`}</div></div>
+            <div style="font-size:12px;margin-top:2px;color:${dl<0?'var(--fail)':'var(--muted)'}">${dl<0?`Quá hạn ${-dl} ngày`:`Hạn ${fmtDate(ins.dueDate)} · ${dLeft(dl)}`}</div></div>
           ${statusBadge(ins.status)}</div>
         ${can?`<div style="margin-top:8px;text-align:right"><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openReassign('${ins.id}')">⇄ Giao lại</button></div>`:''}
       </div>`;
@@ -2878,7 +2956,7 @@ window.renderPOs=function(){
     const etdColor=dl<7?'var(--fail)':dl<14?'var(--warn)':'var(--pass)';
     return `<tr onclick="showPODetail('${po.id}')">
       <td><strong>${po.id}</strong></td><td data-label="Sản phẩm">${po.product}</td><td data-label="Nhà máy">${po.factory}</td><td data-label="Người mua">${po.buyer}</td>
-      <td data-label="ETD"><span style="color:${etdColor};font-weight:600">${fmtDate(po.etd)}</span><span style="font-size:11px;color:var(--muted)"> · còn ${dl} ngày</span></td>
+      <td data-label="ETD"><span style="color:${etdColor};font-weight:600">${fmtDate(po.etd)}</span><span style="font-size:11px;color:var(--muted)"> · ${dLeft(dl)}</span></td>
       <td data-label="Phiếu KT">${insps.length} phiếu</td><td data-label="Xuất hàng">${shipBadge(po.id)}</td>
       ${assign?`<td class="rt-act"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openCreateInsp('${po.id}')">+ Tạo kiểm tra</button></td>`:'<td data-label="Hành động" style="color:var(--muted)">—</td>'}
     </tr>`;
@@ -2907,7 +2985,7 @@ window.showPODetail=function(poId){
       <div class="info-row" style="display:block"><div class="info-label">Sản phẩm</div><div class="info-value">${po.product}</div></div>
       <div class="info-row" style="display:block"><div class="info-label">Nhà máy</div><div class="info-value">${po.factory}</div></div>
       <div class="info-row" style="display:block"><div class="info-label">Người mua</div><div class="info-value">${po.buyer}</div></div>
-      <div class="info-row" style="display:block"><div class="info-label">ETD</div><div class="info-value" style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)} (còn ${dl} ngày)</div></div>
+      <div class="info-row" style="display:block"><div class="info-label">ETD</div><div class="info-value" style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)} (${dLeft(dl)})</div></div>
     </div>
     <div class="section-title" style="margin:0 0 12px">PO Lines (${(po.lines||[]).length} dòng · ${po.qty.toLocaleString('vi-VN')} tổng)</div>
     <div class="tbl-wrap" style="margin-bottom:20px">
@@ -3172,18 +3250,22 @@ function plyHtml(ins,ro){
   h+=`<div class="df-lbl">REQUIREMENT 要求</div>${txt(id,'doc.requirement',D.requirement,ro,'VD: Discuss the actual status of the order with the customer.')}`;
   return h+conclHtml(ins,ro);
 }
+function wwDef(r){return (+r.cr||0)+(+r.mj||0)+(+r.mn||0);}
 function wwHtml(ins,ro){
   const id=ins.id,D=ins.doc,H=D.header,P='doc.header.';
   const N=D.items.reduce((a,r)=>a+(+r.slsx||0),0),K=D.items.reduce((a,r)=>a+(r.kl==='N/A'?0:+r.slkiem||0),0);
   let h=kv([[['Ngày',inp(id,P+'date',H.date,ro)],['Nhà máy',inp(id,P+'factory',H.factory,ro)]],[['PO',inp(id,P+'po',H.po,ro)],['Số lượng đơn hàng',N.toLocaleString('vi-VN')+' pcs']]]);
   h+=secH('I. DỮ LIỆU CHUNG');
-  const head=['Stt','Chi tiết','Tên (mã) sản phẩm / chi tiết','SL Sản xuất','SL Kiểm tra (Level II)',...WW_CRIT.map(c=>`<span class="vt">${c}</span>`),'Kết luận','Diễn giải'];
+  const head=['Stt','Chi tiết','Tên (mã) sản phẩm / chi tiết','SL Sản xuất','SL Kiểm tra (Level II)',...WW_CRIT.map(c=>`<span class="vt">${c}</span>`),'Nghiêm trọng','Lỗi nặng','Lỗi nhẹ','Tổng lỗi','Kết luận'];
   let prev='';
   const rows=D.items.map((r,k)=>{const same=r.code===prev;prev=r.code;const kl=r.kl==='N/A'?'N/A':(r.kl||wwKL(r));
     return `<tr class="${kl==='Failed'?'row-fail':kl==='N/A'?'row-na':''}"><td>${k+1}</td><td>${esc(r.part)}</td><td>${same?'':`<b>${esc(r.code)}</b>`}${ro||kl==='N/A'?'':` <button type="button" class="df-mini" title="Đánh dấu đạt 12 tiêu chí" onclick="wwAllPass('${id}',${k})">✔ all</button>`}</td><td>${inp(id,`doc.items.${k}.slsx`,r.slsx,ro,{w:'64px',re:1})}</td><td>${kl==='N/A'?'N/A':inp(id,`doc.items.${k}.slkiem`,r.slkiem,ro,{w:'56px',re:1})}</td>
       ${r.crit.map((c,j)=>`<td class="cc">${kl==='N/A'?'':ro?`<span class="ww-c ${c}">${c==='P'?'✔':c==='F'?'x':''}</span>`:`<button type="button" class="ww-c ${c}" onclick="wwCrit('${id}',${k},${j})">${c==='P'?'✔':c==='F'?'x':''}</button>`}</td>`).join('')}
-      <td>${ro?`<span class="df-res ${kl==='Passed'?'pass':kl==='Failed'?'fail':kl?'na':'none'}">${kl||'—'}</span>`:sel(id,`doc.items.${k}.kl`,r.kl==='N/A'?'N/A':kl,['Passed','Failed','N/A'])}</td><td>${inp(id,`doc.items.${k}.dg`,r.dg,ro,{w:'180px',re:1})}</td></tr>`;}).join('');
-  h+=tbl(head,rows+`<tr class="row-sum"><td colspan="3"><b>Sum</b></td><td><b>${N}</b></td><td><b>${K}</b></td><td colspan="${WW_CRIT.length}"></td><td><b>${D.items.some(r=>(r.kl||wwKL(r))==='Failed')?'Failed':'Passed'}</b></td><td></td></tr>`,'df-ww');
+      ${['cr','mj','mn'].map(f=>`<td class="cc">${kl==='N/A'?'':inp(id,`doc.items.${k}.${f}`,r[f],ro,{w:'44px',re:1})}</td>`).join('')}
+      <td class="cc ww-tot">${kl==='N/A'?`<span class="df-hint" title="${esc(r.dg||'')}">N/A</span>`:(()=>{const t=wwDef(r);return t?`<b style="color:var(--fail)">${t}</b>`:'<span style="color:var(--muted)">0</span>';})()}</td>
+      <td>${ro?`<span class="df-res ${kl==='Passed'?'pass':kl==='Failed'?'fail':kl?'na':'none'}">${kl||'—'}</span>`:sel(id,`doc.items.${k}.kl`,r.kl==='N/A'?'N/A':kl,['Passed','Failed','N/A'])}</td></tr>`;}).join('');
+  const sd=f=>D.items.reduce((a,r)=>a+(r.kl==='N/A'?0:+r[f]||0),0);
+  h+=tbl(head,rows+`<tr class="row-sum"><td colspan="3"><b>Sum</b></td><td><b>${N}</b></td><td><b>${K}</b></td><td colspan="${WW_CRIT.length}"></td><td class="cc"><b>${sd('cr')}</b></td><td class="cc"><b>${sd('mj')}</b></td><td class="cc"><b>${sd('mn')}</b></td><td class="cc"><b>${sd('cr')+sd('mj')+sd('mn')}</b></td><td><b>${D.items.some(r=>(r.kl||wwKL(r))==='Failed')?'Failed':'Passed'}</b></td></tr>`,'df-ww');
   h+=`<div class="df-hint">* Đánh dấu ✔ nếu ĐẠT và x nếu KHÔNG ĐẠT — bấm ô để đổi ✔ → x → trống. SL kiểm tự gợi ý theo AQL Level II.</div>`;
   h+=secH('II. HÌNH ẢNH THỰC TẾ');
   D.items.forEach((r,k)=>{if(r.kl==='N/A')return;const shots=WW_SHOTS[r.part]||WW_SHOTS['Cánh'];const n=Object.values(r.ph||{}).reduce((a,x)=>a+x.length,0);if(ro&&!n)return;
@@ -3257,38 +3339,35 @@ function finHtml(ins,ro){
 }
 function docHtml(ins,ro){
   const t=TYPES[ins.type];
-  const head=`<div class="df-head"><div><div class="df-title">${t.title}</div><div class="df-hint">${t.code} · ${t.name} · Mẫu: <b>${esc(t.doc)}</b>${ins.type==='PLY'||ins.type==='WW'?' · Lần ban hành 01':''}</div></div></div>`;
+  const head=`<div class="df-head"><div><div class="df-title">${t.title}</div><div class="df-hint" style="font-style:italic">${t.name} · Mẫu: <b>${esc(t.doc)}</b>${ins.type==='PLY'||ins.type==='WW'?' · Lần ban hành 01':''}</div></div></div>`;
   return head+({PLY:plyHtml,WW:wwHtml,DIR:dirHtml,PIG:pigHtml,FIN:finHtml}[ins.type])(ins,ro);
 }
 function poInfoBlock(ins){
   const ids=ins.pos&&ins.pos.length?ins.pos:[ins.poId];
   const open=(()=>{try{return localStorage.getItem('vhg-poinfo-open')!=='0'}catch(e){return true}})();
   const body=ids.map(pid=>{const po=getPO(pid);if(!po)return '';const L=po.lines||[];const dl=daysLeft(po.etd);
-    return `<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:4px 0 12px">
-      <div><div class="info-label">PO</div><div class="info-value"><b>${esc(po.id)}</b></div></div>
-      <div><div class="info-label">Nhà máy</div><div class="info-value">${esc(po.factory)}</div></div>
-      <div><div class="info-label">Người mua</div><div class="info-value">${esc(po.buyer)}</div></div>
-      <div><div class="info-label">ETD</div><div class="info-value" style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)} (còn ${dl} ngày)</div></div></div>
-    <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Item code</th><th>Product name</th><th style="text-align:right">Quantity</th></tr></thead>
-    <tbody>${L.map((l,k)=>`<tr><td>${k+1}</td><td><strong>${esc(l.code)}</strong></td><td>${esc(l.name)}</td><td style="text-align:right">${(+l.qty).toLocaleString('vi-VN')} ${esc(l.unit||'')}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px">Chưa có PO line</td></tr>'}
-    ${L.length?`<tr><td colspan="3" style="text-align:right"><b>Tổng</b></td><td style="text-align:right"><b>${L.reduce((a,l)=>a+(+l.qty||0),0).toLocaleString('vi-VN')}</b></td></tr>`:''}</tbody></table></div>`;}).join('<hr style="border:0;border-top:1px solid var(--border);margin:14px 0">');
+    const meta=`<div class="pi-meta">${ids.length>1?`<span><b>${esc(po.id)}</b></span>`:''}<span><i>Nhà máy</i>${esc(po.factory)}</span><span><i>Người mua</i>${esc(po.buyer)}</span><span><i>ETD</i><b style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)}</b> <em style="color:${dl<7?'var(--fail)':'var(--muted)'}">${dLeft(dl)}</em></span></div>`;
+    const tot=L.reduce((a,l)=>a+(+l.qty||0),0),unit=[...new Set(L.map(l=>l.unit).filter(Boolean))];
+    return meta+`<table class="pi-tbl"><thead><tr><th style="width:28px">#</th><th>Item code</th><th>Product name</th><th style="text-align:right">Quantity</th></tr></thead>
+    <tbody>${L.map((l,k)=>`<tr><td>${k+1}</td><td class="pi-code">${esc(l.code)}</td><td>${esc(l.name)}</td><td class="pi-q">${(+l.qty).toLocaleString('vi-VN')} <span>${esc(l.unit||'')}</span></td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px">Chưa có PO line</td></tr>'}</tbody>
+    ${L.length>1?`<tfoot><tr><td colspan="3">Tổng</td><td class="pi-q">${tot.toLocaleString('vi-VN')} <span>${unit.length===1?esc(unit[0]):''}</span></td></tr></tfoot>`:''}</table>`;}).join('<hr style="border:0;border-top:1px solid var(--line);margin:14px 0">');
   const n=ids.reduce((a,pid)=>a+((getPO(pid)||{}).lines||[]).length,0);
-  return `<details class="card" id="po-info" style="margin-bottom:16px" ${open?'open':''} ontoggle="try{localStorage.setItem('vhg-poinfo-open',this.open?'1':'0')}catch(e){}">
-    <summary style="cursor:pointer;font-weight:700;font-size:14px">Thông tin PO · ${ids.map(esc).join(', ')} <span style="color:var(--muted);font-weight:400">(${n} PO line)</span></summary>
-    <div style="margin-top:12px">${body}</div></details>`;
+  return `<details class="card pi-card" id="po-info" ${open?'open':''} ontoggle="try{localStorage.setItem('vhg-poinfo-open',this.open?'1':'0')}catch(e){}">
+    <summary class="pi-sum">Thông tin PO · ${ids.map(esc).join(', ')} <span>${n} PO line</span></summary>
+    <div class="pi-body">${body}</div></details>`;
 }
 function renderDocForm(id){
   const ins=gi(id);if(!ins)return;
   docSync(ins);
   const I=ins.checklistItems||[],answered=I.filter(i=>i.result).length,total=I.length,pct=total?Math.round(answered/total*100):0;
   document.getElementById('page-title').textContent=`${TYPES[ins.type].name} · ${ins.poId}`;
-  document.getElementById('page-sub').textContent=`${TYPES[ins.type].name} · mẫu ${TYPES[ins.type].doc}`;
+  document.getElementById('page-sub').textContent=`${TYPES[ins.type].name} · mẫu ${TYPES[ins.type].doc}`;document.getElementById('page-sub').style.fontStyle='italic';
   document.getElementById('header-actions').innerHTML=`<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">${answered}/${total}</strong> đã đánh giá</span>`;
   document.getElementById('page-content').innerHTML=`${poInfoBlock(ins)}<div id="df-root" class="df-root">${docHtml(ins,false)}
     <div class="card" style="margin-top:16px"><div class="check-label">📷 Ảnh hiện trường khác</div>${phBlock(id,'photos',ins.photos,false,'📷 Chụp / tải ảnh')}</div></div>
-    <div class="insp-footer"><div><div class="insp-progress"><strong>${answered}/${total}</strong> đã đánh giá · ${pct}% · Kết luận: <b>${CONCL[ins.doc.conclusion]||'chưa chọn'}</b></div>
+    <div class="insp-footer"><div class="if-prog"><div class="insp-progress"><strong>${answered}/${total}</strong> đã đánh giá · ${pct}% · Kết luận: <b>${CONCL[ins.doc.conclusion]||'chưa chọn'}</b></div>
       <div class="progress-bar" style="width:200px;margin-top:4px"><div class="progress-fill" style="width:${pct}%"></div></div></div>
-      <div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="printReport('${id}')">📄 Xem mẫu in</button><button class="btn btn-outline" onclick="saveDraft('${id}')">Lưu nháp</button><button class="btn btn-primary" onclick="submitInsp('${id}')">Nộp phiếu →</button></div></div>`;
+      <div class="if-acts" style="display:flex;gap:8px"><button class="btn btn-outline" onclick="printReport('${id}')">📄 Xem mẫu in</button><button class="btn btn-outline" onclick="saveDraft('${id}')">Lưu nháp</button><button class="btn btn-primary" onclick="submitInsp('${id}')">Nộp phiếu →</button></div></div>`;
 }
 
 // ── overrides ──
@@ -3727,7 +3806,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
     if(CURRENT_PAGE==='dashboard'&&isMgr())decorate();
   };
   function decorate(){
-    if(tab==='reports'){renderReports();CURRENT_PAGE='dashboard';document.getElementById('page-title').textContent='Tổng quan';document.getElementById('page-sub').textContent='Tổng hợp kết quả kiểm tra và xu hướng lỗi.';}
+    if(tab==='reports'){renderReports();CURRENT_PAGE='dashboard';document.getElementById('page-title').textContent='Tổng quan';document.getElementById('page-sub').textContent='';}
     const pc=document.getElementById('page-content');
     pc.insertAdjacentHTML('afterbegin',`<div class="tabs" role="tablist" style="margin-bottom:20px"><div class="tab ${tab==='overview'?'active':''}" role="tab" aria-selected="${tab==='overview'}" onclick="dashTab('overview')">Tổng quan</div><div class="tab ${tab==='reports'?'active':''}" role="tab" aria-selected="${tab==='reports'}" onclick="dashTab('reports')">Báo cáo</div></div>`);
     document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page==='dashboard'));
@@ -3793,7 +3872,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
       const label=ins.status==='rejected'?'Sửa & nộp lại':ins.status==='draft'?'Tiếp tục kiểm tra':'Bắt đầu kiểm tra';
       body.insertAdjacentHTML('afterbegin',`<div class="card" style="margin-bottom:14px;border-color:var(--primary-line);background:var(--primary-soft)">
         ${ins.status==='rejected'&&ins.rejectReason?`<div style="color:var(--red);font-size:13px;margin-bottom:8px"><b>Lead trả lại:</b> ${esc(ins.rejectReason)}</div>`:''}
-        <div style="font-size:13px;color:var(--text-2);margin-bottom:10px">Phiếu được giao cho bạn · Hạn ${fmtDate(ins.dueDate)} · <span style="color:${dl<0?'var(--red)':dl===0?'var(--amber)':'var(--muted)'};font-weight:${dl<=0?600:400}">${dl<0?`quá hạn ${-dl} ngày`:dl===0?'hôm nay':`còn ${dl} ngày`}</span></div>
+        <div style="font-size:13px;color:var(--text-2);margin-bottom:10px">Phiếu được giao cho bạn · Hạn ${fmtDate(ins.dueDate)} · <span style="color:${dl<0?'var(--red)':dl===0?'var(--amber)':'var(--muted)'};font-weight:${dl<=0?600:400}">${dl<0?`quá hạn ${-dl} ngày`:dl===0?'hôm nay':`${dLeft(dl)}`}</span></div>
         <button class="btn btn-primary" style="width:100%;justify-content:center;height:44px;font-size:15px" onclick="closePanel();startInspection('${id}')">${label} →</button></div>`);
     }
     return r;
