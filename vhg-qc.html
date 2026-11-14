@@ -2059,7 +2059,7 @@ function renderInspections(){
     document.querySelectorAll('#if-presets .chip').forEach(c=>c.classList.toggle('active',c.dataset.p===F.preset));
   }
   window.switchInspTab = drawTab;
-  window.setInspF = (k,v)=>{ F[k]=v; if(k==='from'||k==='to') F.preset=''; if(k==='preset'){F.from='';F.to='';document.getElementById('if-from').value='';document.getElementById('if-to').value='';} drawTab(); };
+  window.setInspF = (k,v)=>{ F[k]=v; if(k==='from'||k==='to') F.preset=''; if(k==='preset'){F.from='';F.to='';} drawTab(); };
   window.resetInspF = ()=>{ Object.assign(F,{q:'',type:'',field:'created',preset:'',from:'',to:'',sort:'created-desc'}); renderInspections(); };
 
   const typeOpts = Object.keys(TYPES).map(k=>`<option value="${k}" ${F.type===k?'selected':''}>${TYPES[k].name}</option>`).join('');
@@ -2070,9 +2070,6 @@ function renderInspections(){
     <div class="card" style="padding:12px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
       <input class="form-input" style="width:200px;padding:7px 10px;font-size:13px" placeholder="Tìm mã phiếu, PO…" value="${esc(F.q)}" oninput="setInspF('q',this.value)">
       <select ${ctl} onchange="setInspF('type',this.value)"><option value="">Tất cả loại phiếu</option>${typeOpts}</select>
-      <input type="date" id="if-from" ${ctl} value="${F.from}" onchange="setInspF('from',this.value)" title="Từ ngày">
-      <span style="color:var(--muted)">→</span>
-      <input type="date" id="if-to" ${ctl} value="${F.to}" onchange="setInspF('to',this.value)" title="Đến ngày">
       <span id="if-presets" style="display:flex;gap:6px;flex-wrap:wrap">${presets.map(([p,l])=>`<button class="chip" data-p="${p}" onclick="setInspF('preset','${p}')">${l}</button>`).join('')}</span>
       <select ${ctl} onchange="setInspF('sort',this.value)">
         <option value="created-desc" ${F.sort==='created-desc'?'selected':''}>Mới tạo trước</option>
