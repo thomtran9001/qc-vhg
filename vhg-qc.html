@@ -2848,7 +2848,8 @@ window.toggleFollow=(k,id)=>{ const o=folTarget(k,id); o.followers=o.followers||
 window.addFollower=(k,id,uid)=>{ if(!uid) return; const o=folTarget(k,id); o.followers=o.followers||[];
   if(!o.followers.includes(uid)) o.followers.push(uid);
   notify([uid],`${ME.name} đã thêm bạn theo dõi ${id}`,{kind:k,id});
-  saveDB(); toast(`Đã thêm ${getUser(uid).name}`,'success'); reopenObj(k,id); };
+  notify([o.assignedTo,o.createdBy,o.owner,...o.followers].filter(x=>x&&x!==uid),(uid===ME.id?`${ME.name} đã theo dõi ${id}`:`${ME.name} đã thêm ${getUser(uid).name} theo dõi ${id}`),{kind:k,id});
+  saveDB(); if(window.innerWidth>640) toast(`Đã thêm ${getUser(uid).name}`,'success'); reopenObj(k,id); if(typeof updateBell==='function') updateBell(); };
 
 function refreshAll(){
   const re=window._lastPanel;
