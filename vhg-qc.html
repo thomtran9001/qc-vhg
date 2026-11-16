@@ -1386,10 +1386,12 @@ function can(action){
 }
 // Quyền trong TỪNG phiếu (task): người nhận + người giao được sửa; follower chỉ xem.
 function isAssignee(ins){ return !!ins && ins.assignedTo===ME.id; }
+function isCreator(ins){ return !!ins && ins.createdBy===ME.id; }
 function isFollower(o){ return !!o && (o.followers||[]).includes(ME.id); }
 function canEditTask(ins){
   if(!ME||!ins) return false;
-  if(ME.role==='admin'||ME.role==='lead') return true;   // người giao / quản lý
+  if(ME.role==='admin') return true;
+  if(ME.role==='lead') return isCreator(ins);            // Lead QC: chỉ phiếu do mình tạo
   if(ME.role==='qc') return isAssignee(ins);             // chỉ đúng người được giao
   return false;                                          // mer & follower: chỉ xem
 }
@@ -3900,7 +3902,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
     const r=parse(location.hash);if(!ME||!r||document.body.classList.contains('m-on'))return;
     applying=true;
     try{
-      if(r.page==='insp'&&r.id){if(gi(r.id)){if(ME.role==='qc'&&canEditTask(gi(r.id)))openTask(r.id);else{navigate(CURRENT_PAGE||'dashboard');showInspDetail(r.id);}}else{toast('Không tìm thấy phiếu '+r.id,'error');navigate('dashboard');setHash('#/dashboard',true)}}
+      if(r.page==='insp'&&r.id){if(gi(r.id)){if((ME.role==='qc'||(ME.role==='lead'&&isCreator(gi(r.id))&&['pending','draft','rejected'].includes(gi(r.id).status)))&&canEditTask(gi(r.id)))openTask(r.id);else{navigate(CURRENT_PAGE||'dashboard');showInspDetail(r.id);}}else{toast('Không tìm thấy phiếu '+r.id,'error');navigate('dashboard');setHash('#/dashboard',true)}}
       else if(r.page!==CURRENT_PAGE||document.getElementById('page-title').textContent==='')navigate(r.page);
       else navigate(r.page);
       const now=parse(location.hash);if(now&&now.page!=='insp'&&now.page!==CURRENT_PAGE&&!(now.page==='reports'&&CURRENT_PAGE==='dashboard'))setHash('#/'+CURRENT_PAGE,true);
@@ -4001,7 +4003,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.
   window.showInspDetail=showInspDetail=function(id,...a){
     const r=_show.call(this,id,...a);
     const ins=gi(id),body=document.getElementById('sp-body');
-    if(ins&&body&&isAssignee(ins)&&['pending','draft','rejected'].includes(ins.status)){
+    if(ins&&body&&(isAssignee(ins)||(ME.role==='lead'&&isCreator(ins)))&&['pending','draft','rejected'].includes(ins.status)){
       const dl=daysLeft(ins.dueDate);
       const label=ins.status==='rejected'?'Sửa & nộp lại':ins.status==='draft'?'Tiếp tục kiểm tra':'Bắt đầu kiểm tra';
       body.insertAdjacentHTML('afterbegin',`<div class="card" style="margin-bottom:14px;border-color:var(--primary-line);background:var(--primary-soft)">
