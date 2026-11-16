@@ -95,6 +95,18 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
 
 .section-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text)}
 .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:var(--shadow);margin-bottom:10px}
+.if-tog{display:none}
+.m-only{display:none}
+.cc-sum{display:none}
+@media(max-width:640px){
+  .check-card.cc-done:not(.cc-open){padding:10px 12px;cursor:pointer}
+  .check-card.cc-done:not(.cc-open)>:not(.check-label){display:none!important}
+  .check-card.cc-done:not(.cc-open) .check-label{display:flex;gap:8px;margin:0;font-weight:500}
+  .check-card.cc-done:not(.cc-open) .cc-sum{display:inline;margin-left:auto;white-space:nowrap;color:var(--muted);font-size:13px}
+  .m-dup{display:none}
+  #header-actions>span:only-child{display:none}
+  .cc-sum b.pass{color:var(--pass)}.cc-sum b.na{color:var(--muted)}
+}
 
 /* Table */
 .tbl-wrap{background:var(--card);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
@@ -639,6 +651,52 @@ details[open]>.pi-sum::before{transform:rotate(45deg)}
 /* chữ phụ tối thiểu 12px cho dễ đọc */
 .page-content [style*="font-size:10px"],.page-content [style*="font-size:10.5px"],.page-content [style*="font-size:11px"],.side-panel [style*="font-size:10px"],.side-panel [style*="font-size:11px"]{font-size:12px !important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
+
+/* ── COMPACT MOBILE LIST ── */
+@media(max-width:640px){
+  table.rt:not(.staff-tbl):not(.rep-type) tr{display:flex;flex-wrap:wrap;align-items:center;column-gap:0;row-gap:3px;padding:11px 12px;margin-bottom:0;border-radius:0;box-shadow:none;border:none;border-bottom:1px solid var(--line)}
+  table.rt:not(.staff-tbl):not(.rep-type) tbody{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  table.rt:not(.staff-tbl):not(.rep-type) tr:last-child{border-bottom:none}
+  table.rt:not(.staff-tbl):not(.rep-type) tr::before{content:'';flex-basis:100%;order:2;height:0}
+  table.rt:not(.staff-tbl):not(.rep-type) td{display:inline-flex;align-items:center;padding:0;order:3;font-size:13px;color:var(--muted);text-align:left;justify-content:flex-start;max-width:100%;white-space:normal!important}
+  table.rt:not(.staff-tbl):not(.rep-type) td::before{display:none!important}
+  table.rt:not(.staff-tbl):not(.rep-type) td:first-child{order:0;flex:1 1 auto;min-width:0;font-size:15px;color:var(--text);padding:0;margin:0;border:none}
+  table.rt:not(.staff-tbl):not(.rep-type) td[data-label="Trạng thái"]{order:1;margin-left:8px}
+  table.rt:not(.staff-tbl):not(.rep-type) td[data-label="Mức độ"]{order:1}
+  table.rt:not(.staff-tbl):not(.rep-type) td.rt-full{order:4;flex-basis:100%;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap!important;max-width:100%!important}
+  table.rt:not(.staff-tbl):not(.rep-type) td.rt-act{order:5;flex-basis:100%;padding-top:6px}
+  table.rt:not(.staff-tbl):not(.rep-type) tr[onclick] td.rt-act .btn-outline{display:none}
+  table.rt:not(.staff-tbl):not(.rep-type) tr[onclick] td.rt-act:not(:has(.btn-primary)){display:none}
+  table.rt td.m-hide{display:none!important}
+  table.rt .badge,table.rt .type-chip{font-size:11px}
+  table.rt:not(.staff-tbl):not(.rep-type) td[colspan]{flex-basis:100%;justify-content:center}
+  .task-row{box-shadow:none;border-radius:0;margin:0!important;border:none;border-bottom:1px solid var(--line);padding:11px 12px!important;flex-direction:row!important;flex-wrap:wrap;align-items:center!important;gap:4px 8px!important;background:var(--surface)}
+  .task-row .task-go{display:none!important}
+  .task-row>.type-chip,.task-row>.badge,.task-row>span:first-child{order:2;font-size:11px}
+  .task-row>div[style*="flex:1"]{order:1;flex:1 1 100%!important}
+  .task-row:first-of-type{border-top-left-radius:12px;border-top-right-radius:12px}
+  .if-tog{display:none}
+  @media(max-width:640px){
+    .insp-filter{grid-template-columns:1fr 44px !important;background:none!important;border:none!important;padding:0!important;box-shadow:none!important}
+    .insp-filter .if-q{grid-column:1 !important;height:44px!important}
+    .insp-filter .if-tog{display:flex;align-items:center;justify-content:center;gap:4px;width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);position:relative}
+    .if-tog b{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;line-height:18px;text-align:center}
+    .insp-filter:not(.open) select,.insp-filter:not(.open) #if-presets,.insp-filter:not(.open) .if-foot{display:none !important}
+    .insp-filter.open select:first-of-type{grid-row:2;grid-column:1/-1}
+    .insp-filter.open select:last-of-type{grid-row:4;grid-column:1/-1}
+  }
+  table.rt:not(.staff-tbl):not(.rep-type) tr[onclick] td.rt-act{display:none!important}
+  table.rt:not(.staff-tbl):not(.rep-type) td+td:not([data-label="Trạng thái"]):not(.rt-act):not(.rt-full)::before{display:none!important}
+  table.rt:not(.staff-tbl):not(.rep-type) tr{column-gap:10px}
+  table.rt:not(.staff-tbl):not(.rep-type) td:first-child{flex:1 1 0}
+  table.rt .type-chip{background:none!important;border:none!important;padding:0!important;color:var(--accent)}
+  .task-row .type-chip{background:none;border:none;padding:0;font-size:12px}
+  .task-row>.btn{order:3;min-height:36px}.task-row>.tr-b1{margin-left:auto}
+  .task-row>.badge.open{order:2}
+  tr.m-more{display:none!important}
+  .m-allpo{display:block;order:9;width:100%;margin:4px 0 8px;padding:10px 0;text-align:center;background:none;border:none;color:var(--accent);font-weight:600;font-size:14px}
+  .if-print{flex:0 0 44px!important;padding:0!important}.if-print span{display:none}
+}
 /* ── MOBILE UX LAYER ── */
 #bnav{display:none}
 @media(max-width:640px){
@@ -1466,16 +1524,17 @@ function poTrack(po){
   return {ins,openNCR,sub,appr,rej,pct,label,color,pr,dl:daysLeft(po.etd)};
 }
 const poSort=(a,b)=>{const ta=poTrack(a),tb=poTrack(b);return ta.pr-tb.pr||ta.dl-tb.dl;};
-function poTrackTable(pos){
-  const rows=[...pos].sort(poSort).map(po=>{const t=poTrack(po);
-    return `<tr onclick="showPODetail('${po.id}')" style="cursor:pointer">
+function poTrackTable(pos,lim){
+  const rows=[...pos].sort(poSort).map((po,ix)=>{const t=poTrack(po);
+    return `<tr ${lim&&ix>=lim?'class="m-more"':''} onclick="showPODetail('${po.id}')" style="cursor:pointer">
       <td><strong>${po.id}</strong>${t.openNCR.length?` <span class="badge open" style="font-size:10px">${t.openNCR.length} NCR</span>`:''}</td>
       <td data-label="Sản phẩm">${po.product}<div style="font-size:11px;color:var(--muted)">${po.factory}</div></td>
       <td data-label="Tiến độ" class="rt-full" style="min-width:130px"><div class="progress-bar"><div class="progress-fill" style="width:${t.pct}%;background:${t.pct>=100?'var(--pass)':'var(--accent)'}"></div></div><div style="font-size:11px;color:var(--muted);margin-top:3px">${t.appr.length}/${t.ins.length||0} phiếu đạt</div></td>
       <td data-label="Trạng thái"><span class="badge" style="background:${t.color}1a;color:${t.color}">${t.label}</span></td>
       <td data-label="ETD" style="white-space:nowrap;color:${t.dl<7?'var(--fail)':'var(--muted)'}">${fmtDate(po.etd)}<span style="font-size:11px"> · ${t.dl>=0?`${dLeft(t.dl)}`:`quá hạn ${Math.abs(t.dl)}`}</span></td>
     </tr>`;}).join('')||`<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Không có PO trong phạm vi của bạn</td></tr>`;
-  return `<div class="tbl-wrap"><table class="rt"><thead><tr><th>PO#</th><th>Sản phẩm / Nhà máy</th><th>Tiến độ</th><th>Trạng thái</th><th>ETD</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const more=lim&&pos.length>lim?`<button class="m-only m-allpo" onclick="navigate('pos')">Xem tất cả ${pos.length} PO ›</button>`:'';
+  return `<div class="tbl-wrap"><table class="rt"><thead><tr><th>PO#</th><th>Sản phẩm / Nhà máy</th><th>Tiến độ</th><th>Trạng thái</th><th>ETD</th></tr></thead><tbody>${rows}</tbody></table></div>`+more;
 }
 
 // QC: việc cần làm, bị trả lại nổi bật, vấn đề liên quan
@@ -1487,17 +1546,17 @@ function renderDashboardQC(){
   const waiting = assigned.filter(i=>i.status==='submitted');
   const myNCR = visNCRs().filter(n=>n.status!=='closed');
   const row = (ins,tag,view)=>{const po=getPO(ins.poId);const dl=daysLeft(ins.dueDate);const over=dl<0;
-    return `<div class="card" style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="${view?`showInspDetail('${ins.id}')`:`startInspection('${ins.id}')`}">
+    return `<div class="card task-row" style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="${view?`showInspDetail('${ins.id}')`:`startInspection('${ins.id}')`}">
       ${typeChip(ins.type)}
       <div style="flex:1;min-width:0"><div style="font-weight:600">${ins.poId} · ${po.product}</div>
       <div style="font-size:12px;color:var(--muted);margin-top:2px">${po.factory} · ${getUser(ins.assignedTo).name} · Hạn ${fmtDate(ins.dueDate)} ${over&&!view?`<span style="color:var(--fail);font-weight:600">· quá hạn ${Math.abs(dl)} ngày</span>`:`· ${dLeft(dl)}`}</div></div>
       ${tag}
-      <button class="btn ${view?'btn-outline':'btn-primary'} btn-sm">${view?'Xem':ins.status==='rejected'?'Sửa lại →':ins.status==='draft'?'Tiếp tục →':'Bắt đầu →'}</button>
+      <button class="btn task-go ${view?'btn-outline':'btn-primary'} btn-sm">${view?'Xem':ins.status==='rejected'?'Sửa lại →':ins.status==='draft'?'Tiếp tục →':'Bắt đầu →'}</button>
     </div>`;};
   const rejHtml = rejected.map(i=>row(i,'<span class="badge rejected">Bị trả lại</span>')).join('');
   const todoHtml = todo.map(i=>row(i,'')).join('')||'<div class="empty-state"><div class="es-icon">🎉</div><p>Không còn việc chờ làm</p></div>';
   const followHtml = following.map(i=>row(i,'<span class="badge na">👁 Theo dõi</span>',true)).join('');
-  const ncrHtml = myNCR.map(n=>`<div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="showNCRDetail('${n.id}')">${sevBadge(n.severity)}<div style="flex:1;min-width:0"><div style="font-weight:600">${n.id} · ${n.poId}</div><div style="font-size:12px;color:var(--muted)">${(n.desc||'').substring(0,70)}…</div></div>${ncrBadge(n.status)}</div>`).join('')||'<div style="color:var(--muted);font-size:13px;padding:8px 0">Không có vấn đề liên quan</div>';
+  const ncrHtml = myNCR.map(n=>`<div class="card task-row" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="showNCRDetail('${n.id}')">${sevBadge(n.severity)}<div style="flex:1;min-width:0"><div style="font-weight:600">${n.id} · ${n.poId}</div><div style="font-size:12px;color:var(--muted)">${(n.desc||'').substring(0,70)}…</div></div>${ncrBadge(n.status)}</div>`).join('')||'<div style="color:var(--muted);font-size:13px;padding:8px 0">Không có vấn đề liên quan</div>';
   setPage('Tổng quan', `
     <div class="kpi-row">
       ${kpi('teal','Việc cần làm',todo.length,'inspections')}
@@ -1544,28 +1603,28 @@ function renderDashboardLead(){
   const cards = submitted.map(ins=>{
     const po=getPO(ins.poId), u=getUser(ins.assignedTo);
     const hasNCR = DB.ncrs.some(n=>n.inspId===ins.id&&n.status!=='closed');
-    return `<div class="card" style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="showInspDetail('${ins.id}')">
+    return `<div class="card task-row" style="display:flex;align-items:center;gap:14px;cursor:pointer" onclick="showInspDetail('${ins.id}')">
       ${typeChip(ins.type)}
       <div style="flex:1">
         <div style="font-weight:600">${ins.poId} · ${po.product}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">${u.name} · Nộp ${timeAgo(ins.submittedAt)}</div>
       </div>
       ${hasNCR?'<span class="badge open" style="font-size:10px">NCR mở</span>':''}
-      <button class="btn btn-success btn-sm" onclick="event.stopPropagation();quickApprove('${ins.id}')">✓ Duyệt</button>
+      <button class="btn btn-success btn-sm tr-b1" onclick="event.stopPropagation();quickApprove('${ins.id}')">✓ Duyệt</button>
       <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showRejectModal('${ins.id}')">✗ Trả lại</button>
     </div>`;
   }).join('') || '<div class="empty-state"><div class="es-icon">✅</div><p>Không có phiếu chờ duyệt</p></div>';
 
   const ncrCards = ncrOpen.map(n=>{
     const po=getPO(n.poId);
-    return `<div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="showNCRDetail('${n.id}')">
+    return `<div class="card task-row" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="showNCRDetail('${n.id}')">
       ${sevBadge(n.severity)}
       <div style="flex:1">
         <div style="font-weight:600">${n.id} · ${n.poId}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">${n.desc.substring(0,60)}...</div>
       </div>
       <span style="font-size:11px;color:var(--muted)">${timeAgo(n.createdAt)}</span>
-      <button class="btn btn-outline btn-sm">Xem</button>
+      <button class="btn btn-outline btn-sm task-go">Xem</button>
     </div>`;
   }).join('') || '<div style="color:var(--muted);font-size:13px;padding:12px 0">Không có vấn đề mở</div>';
 
@@ -1579,7 +1638,7 @@ function renderDashboardLead(){
     <div class="section-title">Cần duyệt ngay</div>
     ${cards}
     <div class="section-title" style="margin-top:20px">Theo dõi PO</div>
-    ${poTrackTable(visPOs())}
+    ${poTrackTable(visPOs(),5)}
     <div class="section-title" style="margin-top:20px">Vấn đề chưa đóng</div>
     ${ncrCards}
   `);
@@ -1740,7 +1799,7 @@ function renderReview(){
       <td data-label="Điểm"><span style="font-weight:700;color:${pct>=80?'var(--pass)':pct>=60?'var(--warn)':'var(--fail)'}">${pct}%</span></td>
       <td class="rt-act" style="display:flex;gap:6px;align-items:center">
         ${hasNCR?'<span class="badge open" style="font-size:10px;flex:none">NCR</span>':''}
-        <button class="btn btn-success btn-sm" onclick="event.stopPropagation();quickApprove('${ins.id}')">✓ Duyệt</button>
+        <button class="btn btn-success btn-sm tr-b1" onclick="event.stopPropagation();quickApprove('${ins.id}')">✓ Duyệt</button>
         <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showRejectModal('${ins.id}')">✗ Trả lại</button>
       </td>
     </tr>`;
@@ -2092,7 +2151,7 @@ function renderWork(){
         ${ins.status==='draft'&&ins.checklistItems?`<div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:${pc.pass/pc.total*100}%"></div></div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${pc.pass}/${pc.total} đã đánh giá</div>`:''}
       </div>
-      <button class="btn btn-primary" onclick="startInspection('${ins.id}')">${ins.status==='draft'?'Tiếp tục →':'Bắt đầu →'}</button>
+      <button class="btn btn-primary" onclick="event.stopPropagation();startInspection('${ins.id}')">${ins.status==='draft'?'Tiếp tục →':'Bắt đầu →'}</button>
     </div>`;
   }).join('');
   setPage('Việc của tôi', cards);
@@ -2119,12 +2178,12 @@ function renderInspForm(id){
   document.getElementById('header-actions').innerHTML = `<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">${answered}/${total}</strong> đã đánh giá</span>`;
 
   const items = ins.checklistItems.map((item,idx)=>`
-    <div class="check-card ${item.result?item.result+'-state':''}" id="cc-${idx}">
-      <div class="check-label">${idx+1}. ${item.label}</div>
+    <div class="check-card ${item.result?item.result+'-state':''} ${item.result==='pass'||item.result==='na'?'cc-done':''}" id="cc-${idx}" onclick="if(this.classList.contains('cc-done')&&!this.classList.contains('cc-open')){this.classList.add('cc-open')}">
+      <div class="check-label">${idx+1}. ${item.label}<span class="cc-sum">${item.value?esc(String(item.value))+' · ':''}<b class="${item.result}">${item.result==='pass'?'✓ Đạt':item.result==='na'?'N/A':''}</b></span></div>
       ${item.spec?`<div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4">📐 ${item.spec}</div>`:''}
       ${item.type==='number'?`<div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
         <input class="form-input" style="width:140px;padding:5px 8px;font-size:13px" type="text" placeholder="Giá trị đo..." value="${item.value||''}" oninput="setItemValue('${id}',${idx},this.value)">
-        <span style="font-size:12px;color:var(--muted)">Tiêu chuẩn: ${item.spec||'—'}</span>
+        <span class="${item.spec?'m-dup':''}" style="font-size:12px;color:var(--muted)">Tiêu chuẩn: ${item.spec||'—'}</span>
       </div>`:''}
       <div class="check-btns">
         <button class="check-btn pass-btn ${item.result==='pass'?'active':''}" onclick="setResult('${id}',${idx},'pass')">ĐẠT</button>
@@ -2253,15 +2312,16 @@ function renderInspections(){
     const rows = insps.map(ins=>{
       const pc=passCount(ins.checklistItems);
       const od=ins.dueDate&&new Date(ins.dueDate)<today&&!['submitted','approved'].includes(ins.status);
-      return `<tr>
+      const act=['pending','draft','rejected'].includes(ins.status)?`startInspection('${ins.id}')`:`showInspDetail('${ins.id}')`;
+      return `<tr onclick="${act}" style="cursor:pointer">
         <td><strong>${ins.id}</strong></td>
         <td data-label="Loại">${typeChip(ins.type)}</td>
         <td data-label="PO">${ins.poId}</td>
-        <td data-label="Tạo lúc" style="white-space:nowrap">${fmtDT(insCreated(ins))}</td>
+        <td data-label="Tạo lúc" class="m-hide" style="white-space:nowrap">${fmtDT(insCreated(ins))}</td>
         <td data-label="Hạn" style="white-space:nowrap;${od?'color:var(--fail);font-weight:600':''}">${fmtDate(ins.dueDate)}${od?' · Quá hạn':''}</td>
-        <td data-label="Đạt">${ins.checklistItems?`${pc.pass}/${pc.total}`:'—'}</td>
+        <td data-label="Đạt" class="${ins.checklistItems?'':'m-hide'}">${ins.checklistItems?`${pc.pass}/${pc.total} đạt`:'—'}</td>
         <td data-label="Trạng thái">${statusBadge(ins.status)}</td>
-        <td class="rt-act">${ins.status==='pending'||ins.status==='draft'?`<button class="btn btn-primary btn-sm" onclick="startInspection('${ins.id}')">${ins.status==='draft'?'Tiếp tục':'Bắt đầu'}</button>`:ins.status==='rejected'?`<button class="btn btn-primary btn-sm" onclick="startInspection('${ins.id}')">Sửa lại</button>`:`<button class="btn btn-outline btn-sm" onclick="showInspDetail('${ins.id}')">Xem</button>`}</td>
+        <td class="rt-act">${ins.status==='pending'||ins.status==='draft'?`<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();startInspection('${ins.id}')">${ins.status==='draft'?'Tiếp tục':'Bắt đầu'}</button>`:ins.status==='rejected'?`<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();startInspection('${ins.id}')">Sửa lại</button>`:`<button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showInspDetail('${ins.id}')">Xem</button>`}</td>
       </tr>`;
     }).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">Không có phiếu phù hợp bộ lọc</td></tr>`;
 
@@ -2269,6 +2329,7 @@ function renderInspections(){
       `<div class="tab ${t===F.tab?'active':''}" onclick="switchInspTab('${t}')">${tabLabels[t]} <span style="color:var(--muted);font-weight:400">${mine.filter(i=>inTab(i,t)).length}</span></div>`).join('');
     document.querySelector('#insp-table tbody').innerHTML = rows;
     document.getElementById('if-count').textContent = `${insps.length} phiếu`;
+    {const n=(F.type?1:0)+(F.preset?1:0)+(F.sort!=='created-desc'?1:0),b=document.getElementById('if-n');if(b){b.textContent=n||'';b.style.display=n?'':'none';}}
     document.querySelectorAll('#if-presets .chip').forEach(c=>c.classList.toggle('active',c.dataset.p===F.preset));
   }
   window.switchInspTab = drawTab;
@@ -2282,6 +2343,7 @@ function renderInspections(){
     <div class="tabs" id="insp-tabs"></div>
     <div class="card insp-filter" style="padding:12px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
       <input class="form-input if-q" style="width:200px;padding:7px 10px;font-size:13px" placeholder="Tìm mã phiếu, PO…" value="${esc(F.q)}" oninput="setInspF('q',this.value)">
+      <button class="if-tog" type="button" aria-label="Bộ lọc" onclick="this.closest('.insp-filter').classList.toggle('open')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg><b id="if-n"></b></button>
       <select ${ctl} onchange="setInspF('type',this.value)"><option value="">Tất cả loại phiếu</option>${typeOpts}</select>
       <span id="if-presets" style="display:flex;gap:6px;flex-wrap:wrap">${presets.map(([p,l])=>`<button class="chip" data-p="${p}" onclick="setInspF('preset','${p}')">${l}</button>`).join('')}</span>
       <select ${ctl} onchange="setInspF('sort',this.value)">
@@ -3481,7 +3543,7 @@ function docHtml(ins,ro){
 }
 function poInfoBlock(ins){
   const ids=ins.pos&&ins.pos.length?ins.pos:[ins.poId];
-  const open=(()=>{try{return localStorage.getItem('vhg-poinfo-open')!=='0'}catch(e){return true}})();
+  const open=(()=>{let v=null;try{v=localStorage.getItem('vhg-poinfo-open')}catch(e){}return innerWidth<=640?v==='1':v!=='0'})();
   const body=ids.map(pid=>{const po=getPO(pid);if(!po)return '';const L=po.lines||[];const dl=daysLeft(po.etd);
     const meta=`<div class="pi-meta">${ids.length>1?`<span><b>${esc(po.id)}</b></span>`:''}<span><i>Nhà máy</i>${esc(po.factory)}</span><span><i>Người mua</i>${esc(po.buyer)}</span><span><i>ETD</i><b style="color:${dl<7?'var(--fail)':'var(--text)'}">${fmtDate(po.etd)}</b> <em style="color:${dl<7?'var(--fail)':'var(--muted)'}">${dLeft(dl)}</em></span></div>`;
     const tot=L.reduce((a,l)=>a+(+l.qty||0),0),unit=[...new Set(L.map(l=>l.unit).filter(Boolean))];
@@ -3504,7 +3566,7 @@ function renderDocForm(id){
     <div class="card" style="margin-top:16px"><div class="check-label">📷 Ảnh hiện trường khác</div>${phBlock(id,'photos',ins.photos,false,'📷 Chụp / tải ảnh')}</div></div>
     <div class="insp-footer"><div class="if-prog"><div class="insp-progress"><strong>${answered}/${total}</strong> đã đánh giá · ${pct}% · Kết luận: <b>${CONCL[ins.doc.conclusion]||'chưa chọn'}</b></div>
       <div class="progress-bar" style="width:200px;margin-top:4px"><div class="progress-fill" style="width:${pct}%"></div></div></div>
-      <div class="if-acts" style="display:flex;gap:8px"><button class="btn btn-outline" onclick="printReport('${id}')">📄 Xem mẫu in</button><button class="btn btn-outline" onclick="saveDraft('${id}')">Lưu nháp</button><button class="btn btn-primary" onclick="submitInsp('${id}')">Nộp phiếu →</button></div></div>`;
+      <div class="if-acts" style="display:flex;gap:8px"><button class="btn btn-outline if-print" aria-label="Xem mẫu in" title="Xem mẫu in" onclick="printReport('${id}')">📄<span> Xem mẫu in</span></button><button class="btn btn-outline" onclick="saveDraft('${id}')">Lưu nháp</button><button class="btn btn-primary" onclick="submitInsp('${id}')">Nộp phiếu →</button></div></div>`;
 }
 
 // ── overrides ──
