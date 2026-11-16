@@ -3486,7 +3486,7 @@ function dirRowsTbl(ins,ro,P,cols){
 const DIR_COLS=['No.# Item#','Description / Mô tả','Item# Code','Q.ty Order / SL đơn hàng','Q.ty Inspection / SL kiểm','Critical / Nghiêm trọng','Major / Lỗi nặng','Minor / Lỗi nhẹ','Q.ty Rejected / SL từ chối','Remark / Ghi chú',''];
 function dirHtml(ins,ro){
   const id=ins.id,D=ins.doc,H=D.header,P='doc.header.',f=(k)=>inp(id,P+k,H[k],ro);
-  let h=`<div class="df-box"><b>Loại báo cáo:</b> ${ro?`<b>${esc(H.mode)}</b>`:`<div class="ppf" style="display:inline-flex">${['Inline','Final','Re-Final'].map(m=>`<button type="button" class="ppf-b pending ${H.mode===m?'on':''}" onclick="dfSet('${id}','doc.header.mode','${m}',1)">${m}</button>`).join('')}</div>`}</div>`;
+  let h=`<div class="df-box df-mode"><b>Loại báo cáo:</b> ${ro?`<b>${esc(H.mode)}</b>`:`<div class="ppf" style="display:inline-flex">${['Inline','Final','Re-Final'].map(m=>`<button type="button" class="ppf-b pending ${H.mode===m?'on':''}" onclick="dfSet('${id}','doc.header.mode','${m}',1)">${m}</button>`).join('')}</div>`}</div>`;
   h+=kv([[['FACTORY (NHÀ MÁY)',f('factory')],['DATE (NGÀY)',f('date')]],[['CUSTOMER (KHÁCH HÀNG)',f('customer')],['COLOR CODE / Mã màu',f('color')]],[['FINISHING SUPPLIERS',f('supplier')],['Collection Range',f('collection')]],[['REPORTED BY',f('reportedBy')],['REVIEW / APPROVED BY',f('approvedBy')]]]);
   h+=dirRowsTbl(ins,ro,'doc.rows',DIR_COLS);
   h+=secH('CONTROL PLAN ON PROCESS');
@@ -4148,6 +4148,10 @@ const _rrDoc=rerenderDoc;window.rerenderDoc=rerenderDoc=function(id){const r=_rr
   // icon-button thiếu tên
   document.querySelectorAll('button').forEach(b=>{if(!b.getAttribute('aria-label')&&!b.textContent.trim()&&b.title)b.setAttribute('aria-label',b.title);});
 })();
+// Loại báo cáo lên trước Thông tin PO
+function hoistMode(){const pi=document.getElementById('po-info'),root=document.getElementById('df-root');if(!pi||!root)return;const m=root.querySelector('.df-mode');if(!m)return;document.querySelectorAll('#page-content > .df-mode').forEach(x=>x.remove());pi.before(m);}
+{const _a=window.rerenderDoc;window.rerenderDoc=rerenderDoc=function(){const r=_a.apply(this,arguments);hoistMode();return r};
+ const _b=window.renderDocForm||renderDocForm;window.renderDocForm=renderDocForm=function(){const r=_b.apply(this,arguments);hoistMode();return r};}
 // ── INIT ──
 loadDB();
 saveDB();
