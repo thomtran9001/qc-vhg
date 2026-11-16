@@ -105,6 +105,10 @@ svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-widt
   .check-card.cc-done:not(.cc-open) .cc-sum{display:inline;margin-left:auto;white-space:nowrap;color:var(--muted);font-size:13px}
   .m-dup{display:none}
   .df-head{display:none!important}
+  .m-hide2{display:none!important}
+  .phl-g{grid-template-columns:minmax(0,1fr)!important}
+  .phl-g>div{min-width:0}
+  input[type=date].form-input,input[type=date]{width:100%;min-width:0;max-width:100%;-webkit-appearance:none;appearance:none;box-sizing:border-box;min-height:44px}
   #header-actions>span:only-child{display:none}
   .cc-sum b.pass{color:var(--pass)}.cc-sum b.na{color:var(--muted)}
 }
@@ -3043,11 +3047,11 @@ function renderPhotoLogForm(id){
   document.getElementById('header-actions').innerHTML=`<span style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">${done}/${ins.stages.length}</strong> công đoạn</span>`;
   const cards=ins.stages.map((s,k)=>`<div class="check-card ${s.photos.length||s.desc?'pass-state':''}">
     <div class="check-label">${k+1}. ${s.name}</div>
-    <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
+    <div class="phl-g" style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start">
       <div><label class="form-label">Ngày</label><input type="date" class="form-input" value="${s.date}" onchange="setStage('${id}',${k},'date',this.value)"></div>
       <div><label class="form-label">Mô tả</label><textarea class="check-note" style="margin:0" oninput="setStage('${id}',${k},'desc',this.value)">${esc(s.desc)}</textarea></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+    <div class="phl-g" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
       <div><label class="form-label">Vấn đề</label><textarea class="check-note" style="margin:0" oninput="setStage('${id}',${k},'issue',this.value)">${esc(s.issue)}</textarea></div>
       <div><label class="form-label">Cách xử lý</label><textarea class="check-note" style="margin:0" oninput="setStage('${id}',${k},'fix',this.value)">${esc(s.fix)}</textarea></div>
     </div>
@@ -3055,7 +3059,7 @@ function renderPhotoLogForm(id){
     ${thumbsHtml(s.photos,j=>`delStagePhoto('${id}',${k},${j})`)}
   </div>`).join('');
   document.getElementById('page-content').innerHTML=`<div style="max-width:760px;padding-bottom:80px">
-    <div class="card" style="font-size:13px;color:var(--muted)">Báo cáo ảnh theo công đoạn cho hàng mẫu door/frame (khung, cửa, mặt hộc). Mỗi công đoạn ghi ngày, ảnh, mô tả, vấn đề và cách xử lý.</div>${cards}</div>
+    <div class="card m-hide2" style="font-size:13px;color:var(--muted)">Báo cáo ảnh theo công đoạn cho hàng mẫu door/frame (khung, cửa, mặt hộc). Mỗi công đoạn ghi ngày, ảnh, mô tả, vấn đề và cách xử lý.</div>${cards}</div>
     <div class="insp-footer"><div class="insp-progress"><strong>${done}/${ins.stages.length}</strong> công đoạn đã ghi nhận</div>
     <div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="saveDraft('${id}')">Lưu nháp</button><button class="btn btn-primary" onclick="submitInsp('${id}')">Nộp báo cáo →</button></div></div>`;
 }
