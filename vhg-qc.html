@@ -1139,6 +1139,30 @@ details[open]>.pi-sum::before{transform:rotate(45deg)}
   .side-panel .pd-lines+div .btn{height:36px;padding:0 14px!important;font-size:14px!important}
   .side-panel .ncr-warn{margin-bottom:20px!important}
 }
+
+/* ── Phiếu chỉ xem gọn (mobile) ── */
+.ro-sum{display:none}
+@media(max-width:640px){
+  .df-ro table.ro-tb tr.ro-cl{cursor:pointer;padding:0!important;gap:0!important}
+  .df-ro table.ro-tb tr.ro-cl>td.ro-sum{display:flex!important;align-items:center;gap:10px;width:100%;padding:12px 14px!important;border:0!important;grid-column:1/-1}
+  .df-ro table.ro-tb tr.ro-cl:not(.ro-op)>td:not(.ro-sum){display:none!important}
+  .df-ro table.ro-tb tr.ro-op>td.ro-sum{border-bottom:1px solid var(--line)!important;margin-bottom:6px}
+  .df-ro table.ro-tb tr.ro-op>td:not(.ro-sum){padding-left:14px!important;padding-right:14px!important}
+  .ro-no{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#e2f2ef;color:#0b6c61;font-size:12px;font-weight:700}
+  .ro-no:empty{display:none}
+  .ro-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .ro-t{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ro-s{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ro-s b{font-weight:600;color:var(--text)}
+  .ro-tr{flex:none;display:flex;align-items:center;gap:6px}
+  .ro-ch{color:#8a938f;transition:transform .15s}.ro-op .ro-ch{transform:rotate(180deg)}
+  .df-ro table.ro-tb tbody{display:flex;flex-direction:column;gap:8px}
+  .df-ro table.df-kv,.df-ro table.df-kv tbody{display:block!important;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+  .df-ro table.df-kv tbody{border:0}
+  .df-ro table.df-kv tr{display:grid!important;grid-template-columns:auto 1fr;border:0!important;padding:0!important;margin:0!important;background:none!important}
+  .df-ro table.df-kv th,.df-ro table.df-kv td{display:block!important;background:none!important;border:0!important;border-bottom:1px solid var(--line)!important;padding:10px 14px!important;font-size:14px}
+  .df-ro table.df-kv td{text-align:right;font-weight:600}
+  .df-ro table.df-kv tr:last-child>*:nth-last-child(-n+2){border-bottom:0!important}
+}
 /* ── MOBILE UX LAYER ── */
 #bnav{display:none}
 @media(max-width:640px){
@@ -4741,6 +4765,28 @@ window.poPick=function(q,focus){
 };
 window.poPickSet=function(id){const sel=document.getElementById('ci-po'),q=document.getElementById('ci-po-q'),l=document.getElementById('ci-po-l');const p=POS.find(x=>x.id===id);if(!p||!sel)return;sel.value=id;sel.dispatchEvent(new Event('change'));q.value=`${p.id} — ${p.product}`;l.hidden=true;q.blur();};
 {const _o=window.openCreateInsp;window.openCreateInsp=openCreateInsp=function(){const r=_o.apply(this,arguments);const sel=document.getElementById('ci-po'),q=document.getElementById('ci-po-q');if(sel&&q){const p=POS.find(x=>x.id===sel.value);if(p)q.value=`${p.id} — ${p.product}`;}return r;};}
+// Phiếu chỉ xem (mobile): mỗi dòng bảng dài thu thành 1 dòng tóm tắt, bấm để mở
+window.roCompact=function(root){
+  if(!root)return;
+  root.querySelectorAll('table.df-tbl:not(.df-kv)').forEach(tb=>{
+    const hd=[...tb.querySelectorAll('thead th')].map(th=>th.textContent.trim());if(hd.length<6||tb.querySelector('.cp-row,.pg-st,.rq-row,.km-row'))return;
+    tb.classList.add('ro-tb');
+    tb.querySelectorAll('tbody tr:not(.row-sum)').forEach(tr=>{
+      const td=[...tr.children];if(td.length<6||tr.querySelector('.ro-sum'))return;
+      const tx=i=>(td[i]?td[i].textContent.trim():'');
+      const no=/^\d+$/.test(tx(0))?tx(0):'';const st=no?1:0;
+      const title=[tx(st),tx(st+1)].filter(Boolean).join(' · ');
+      const sub=[st+2,st+3].filter(i=>i<td.length-1&&tx(i)&&tx(i).length<14).map(i=>`${hd[i].split('/').pop().trim().replace(/\s*\(.*?\)/g,'').replace(/^SL /,'')}: <b>${tx(i)}</b>`).join(' · ');
+      const last=td[td.length-1],res=last.querySelector('.df-res');
+      const nf=td.slice(0,-1).reduce((a,c)=>a+c.querySelectorAll('.ww-c.F,.df-res.fail').length,0);
+      const tot=tr.querySelector('.ww-tot b');
+      tr.classList.add('ro-cl');
+      tr.insertAdjacentHTML('afterbegin',`<td class="ro-sum" data-label=""><span class="ro-no">${no}</span><span class="ro-b"><span class="ro-t">${esc(title)}</span>${sub?`<span class="ro-s">${sub}</span>`:''}</span><span class="ro-tr">${tot?`<span class="ml-pill t-danger">${tot.textContent} lỗi</span>`:nf?`<span class="ml-pill t-danger">${nf} x</span>`:''}${res?res.outerHTML:''}<svg class="ro-ch" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></span></td>`);
+      tr.addEventListener('click',ev=>{if(ev.target.closest('a,button,input,select,.ww-code,img'))return;tr.classList.toggle('ro-op');});
+    });
+  });
+};
+{const _sid=window.showInspDetail;window.showInspDetail=function(id){_sid.apply(this,arguments);roCompact(document.querySelector('#sp-body .df-ro'));};}
 // ── INIT ──
 loadDB();
 saveDB();
